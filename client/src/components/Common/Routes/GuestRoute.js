@@ -3,7 +3,7 @@ import { Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-const NonPrivateRoute = ({ component: Component, auth, ...rest }) => (
+const GuestRoute = ({ component: Component, auth, ...rest }) => (
   <Route
     {...rest}
     render={(props) =>
@@ -12,13 +12,13 @@ const NonPrivateRoute = ({ component: Component, auth, ...rest }) => (
       ) : auth.isAdmin === true ? (
         <Redirect to="/admin" />
       ) : (
-        <Redirect to="/" />
+        <Redirect to="/user" />
       )
     }
   />
 );
 
-NonPrivateRoute.propTypes = {
+GuestRoute.propTypes = {
   auth: PropTypes.object.isRequired,
 };
 
@@ -26,4 +26,4 @@ const mapStateToProps = (state) => ({
   auth: state.auth,
 });
 
-export default connect(mapStateToProps)(NonPrivateRoute);
+export default connect(mapStateToProps)(GuestRoute);

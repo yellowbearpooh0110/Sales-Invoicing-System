@@ -1,11 +1,9 @@
 import * as React from 'react';
 import { NavLink, Route, Switch, useRouteMatch } from 'react-router-dom';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import {
   AppBar,
   Box,
-  CssBaseline,
   Divider,
   Drawer,
   IconButton,
@@ -28,7 +26,6 @@ import Swal from 'sweetalert2';
 
 import { logout } from 'services/auth.service';
 import Users from './Users';
-import sidebarImg from 'images/sidebar.jpg';
 
 function mapStateToProps(state) {
   const { auth } = state;
@@ -43,7 +40,7 @@ const useAdminStyles = makeStyles({
     '& .MuiDrawer-paper': {
       boxSizing: 'border-box',
       width: (props) => props.drawerWidth,
-      background: `url(${sidebarImg}) center / cover #000`,
+      backgroundColor: `#000`,
       zIndex: 1,
       '&::before': {
         width: '100%',
@@ -115,9 +112,9 @@ const Admin = (props) => {
             label: 'Users',
           },
           {
-            path: '/admin/invoices',
+            path: '/admin/orders',
             icon: <SwapHorizIcon />,
-            label: 'Invoices',
+            label: 'Orders',
           },
         ].map((item, index) => (
           <NavLink key={index} to={item.path} exact activeClassName="active">
@@ -142,7 +139,6 @@ const Admin = (props) => {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
       <AppBar
         position="fixed"
         sx={{
@@ -208,22 +204,12 @@ const Admin = (props) => {
       >
         <Toolbar />
         <Switch>
-          <Route path={`${path}/users`} exact>
-            <Users />
-          </Route>
-          <Route path={`${path}/invoices`} exact></Route>
+          <Route path={`${path}/users`} exact component={Users} />
+          <Route path={`${path}/orders`} exact />
         </Switch>
       </Box>
     </Box>
   );
-};
-
-Admin.propTypes = {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
-  window: PropTypes.func,
 };
 
 export default connect(mapStateToProps, { logout })(Admin);

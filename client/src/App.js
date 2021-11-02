@@ -4,10 +4,10 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Provider } from 'react-redux';
 import axios from 'axios';
 
-import Guest from 'components/Guest';
+import { SignIn } from 'components/Guest';
 import Admin from 'components/Admin';
 import Standard from 'components/Standard';
-import { AdminRoute, NonPrivateRoute, PrivateRoute } from 'components/Routes';
+import { AdminRoute, GuestRoute, PrivateRoute } from 'components/Common/Routes';
 import store from 'store';
 
 axios.defaults.baseURL = 'http://localhost:4000';
@@ -25,15 +25,17 @@ const App = () => {
         <CssBaseline />
         <Container
           maxWidth={false}
-          // disableGutters
+          disableGutters
           sx={{
             height: '100vh',
             overflow: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
           <BrowserRouter>
             <Switch>
-              <NonPrivateRoute path="" component={Guest} />
+              <GuestRoute path="/signin" component={SignIn} />
               <AdminRoute path="/admin" component={Admin} />
               <PrivateRoute path="/user" component={Standard} />
             </Switch>

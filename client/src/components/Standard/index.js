@@ -1,11 +1,11 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { NavLink, Route, Switch, useRouteMatch } from 'react-router-dom';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import {
   AppBar,
   Box,
-  CssBaseline,
+  Button,
+  Collapse,
   Divider,
   Drawer,
   IconButton,
@@ -20,14 +20,15 @@ import {
   Home as HomeIcon,
   Logout as LogoutIcon,
   Menu as MenuIcon,
-  PeopleAlt as PeopleAltIcon,
   SwapHoriz as SwapHorizIcon,
+  ExpandMore as ExpandMoreIcon,
 } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import Swal from 'sweetalert2';
 
 import { logout } from 'services/auth.service';
-import sidebarImg from 'images/sidebar.jpg';
+
+import Order from './Order';
 
 function mapStateToProps(state) {
   const { auth } = state;
@@ -35,40 +36,34 @@ function mapStateToProps(state) {
 }
 
 const drawerWidth = 240;
+const drawerHeight = 50;
 
 const useStandardStyles = makeStyles({
   root: {},
   sidebar: {
-    '& .MuiDrawer-paper': {
-      boxSizing: 'border-box',
-      width: (props) => props.drawerWidth,
-      background: `url(${sidebarImg}) center / cover #000`,
-      zIndex: 1,
-      '&::before': {
-        width: '100%',
-        height: '100%',
-        content: '""',
-        display: 'block',
-        opacity: 0.8,
-        position: 'absolute',
-        background: '#000',
-      },
-    },
+    boxSizing: 'border-box',
+    paddingTop: '10px',
+    width: (props) => props.drawerWidth,
+    backgroundColor: '#fff',
+    borderRight: '1px solid rgba(0, 0, 0, 0.12)',
     '& a': {
       textDecoration: 'none',
     },
   },
   navlink: {
-    color: '#fff',
+    color: '#6b778c',
+    '&:hover': {
+      // backgroundColor: '#5664d20a',
+    },
     transition: 'background-color ease .5s',
-    '.active &': {
-      backgroundColor: '#00acc1',
-    },
+
     '& .MuiListItemIcon-root': {
-      color: '#fff',
+      minWidth: '40px',
     },
-    '& .MuiListItemText-root': {
-      color: '#fff',
+    '& .MuiListItemIcon-root, & .MuiListItemText-root': {
+      '.active &': {
+        color: '#5664d2',
+      },
     },
   },
 });
@@ -78,6 +73,7 @@ const Standard = (props) => {
   const classes = useStandardStyles({ drawerWidth });
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const { path } = useRouteMatch();
+  const [expIndex, setExpIndex] = useState(0);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -98,34 +94,82 @@ const Standard = (props) => {
         props.logout();
       }
     });
-    // props.logout();
   };
 
   const drawer = (
     <>
-      <Toolbar />
       <Divider />
       <List>
         {[
-          { path: '/admin', icon: <HomeIcon />, label: 'Home' },
+          { path: '/user', icon: <HomeIcon />, label: 'Home' },
           {
-            path: '/admin/users',
-            icon: <PeopleAltIcon />,
-            label: 'Users',
-          },
-          {
-            path: '/admin/transactions',
             icon: <SwapHorizIcon />,
-            label: 'Transactions',
+            label: 'Order',
+            children: [
+              {
+                path: '/user/order/list',
+                label: 'List',
+              },
+              {
+                path: '/user/order/create',
+                label: 'Create',
+              },
+            ],
           },
         ].map((item, index) => (
-          <NavLink key={index} to={item.path} exact activeClassName="active">
-            <ListItem button className={classes.navlink}>
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.label} />
-            </ListItem>
-          </NavLink>
+          <Box key={index}>
+            {item.children ? (
+              <>
+                <ListItem
+                  button
+                  className={classes.navlink}
+                  onClick={() => {
+                    expIndex === index ? setExpIndex(-1) : setExpIndex(index);
+                  }}
+                  secondaryAction={
+                    <ExpandMoreIcon
+                      sx={{
+                        transition: 'transform ease .3s',
+                        transform: expIndex === index ? '' : 'Rotate(-90deg)',
+                      }}
+                    />
+                  }
+                >
+                  <ListItemIcon>{item.icon}</ListItemIcon>
+                  <ListItemText primary={item.label} />
+                </ListItem>
+                <Collapse in={expIndex === index}>
+                  <List disablePadding>
+                    {item.children.map((child, childIndex) => (
+                      <NavLink
+                        key={childIndex}
+                        to={child.path}
+                        exact
+                        onClick={handleDrawerToggle}
+                        activeClassName="active"
+                      >
+                        <ListItem button className={classes.navlink}>
+                          <ListItemIcon>{null}</ListItemIcon>
+                          <ListItemText primary={child.label} />
+                        </ListItem>
+                      </NavLink>
+                    ))}
+                  </List>
+                </Collapse>
+              </>
+            ) : (
+              <NavLink to={item.path} exact activeClassName="active">
+                <ListItem button className={classes.navlink}>
+                  <ListItemIcon>{item.icon}</ListItemIcon>
+                  <ListItemText primary={item.label} />
+                </ListItem>
+              </NavLink>
+            )}
+          </Box>
         ))}
+      </List>
+      <Divider />
+      <List>
         <ListItem button className={classes.navlink} onClick={handleLogout}>
           <ListItemIcon>
             <LogoutIcon />
@@ -140,21 +184,20 @@ const Standard = (props) => {
     window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
+    <>
       <AppBar
-        position="fixed"
+        position="static"
         sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
+          backgroundColor: '#5664d2',
+          flexBasis: `${drawerHeight}px`,
+          maxHeight: `${drawerHeight}px`,
         }}
       >
-        <Toolbar>
+        <Toolbar variant="dense">
           <IconButton
             color="inherit"
             aria-label="open drawer"
             edge="start"
-            onClick={handleDrawerToggle}
             sx={{ mr: 2, display: { sm: 'none' } }}
           >
             <MenuIcon />
@@ -165,62 +208,53 @@ const Standard = (props) => {
         </Toolbar>
       </AppBar>
       <Box
-        component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label="mailbox folders"
+        flexBasis={`calc(100% - ${drawerHeight}px)`}
+        maxHeight={`calc(100% - ${drawerHeight}px)`}
+        position="relative"
+        display="flex"
+        backgroundColor="#f4f5f7"
       >
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
         <Drawer
           container={container}
-          className={classes.sidebar}
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
             keepMounted: true, // Better open performance on mobile.
           }}
-          sx={{
-            display: { xs: 'block', sm: 'none' },
+          PaperProps={{
+            className: classes.sidebar,
           }}
         >
           {drawer}
         </Drawer>
-        <Drawer
+        <Box
           variant="permanent"
           className={classes.sidebar}
           sx={{
             display: { xs: 'none', sm: 'block' },
-            zIndex: 1,
           }}
           open
         >
           {drawer}
-        </Drawer>
+        </Box>
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            p: 3,
+            width: { sm: `calc(100% - ${drawerWidth}px)` },
+          }}
+        >
+          <Toolbar />
+          <Switch>
+            <Route path={`${path}/order`} component={Order} />
+            <Route path={`${path}/transactions`} exact />
+          </Switch>
+        </Box>
       </Box>
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-        }}
-      >
-        <Toolbar />
-        <Switch>
-          <Route path={`${path}/invoice`} exact></Route>
-          <Route path={`${path}/transactions`} exact></Route>
-        </Switch>
-      </Box>
-    </Box>
+    </>
   );
-};
-
-Standard.propTypes = {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
-  window: PropTypes.func,
 };
 
 export default connect(mapStateToProps, { logout })(Standard);
