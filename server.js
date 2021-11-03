@@ -10,7 +10,8 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // api routes
-app.use('/users', require('server/routes/user/user.routes'));
+app.use('/chairbrand', require('server/routes/chairbrand.routes'));
+app.use('/user', require('server/routes/user.routes'));
 
 // global error handler
 app.use(errorHandler);

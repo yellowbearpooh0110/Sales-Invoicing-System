@@ -7,5 +7,5 @@ function model(sequelize) {
     name: { type: DataTypes.STRING, allowNull: false },
   };
 
-  return sequelize.define('ChairBrand', attributes);
+  return sequelize.define('ChairModel', attributes);
 }

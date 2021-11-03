@@ -2,17 +2,18 @@ const express = require('express');
 const router = express.Router();
 const Joi = require('joi');
 const validateRequest = require('server/middleware/validate-request');
+const admin = require('server/middleware/admin');
 const authorize = require('server/middleware/authorize');
 const userController = require('server/controller/user.controller');
 
 // routes
 router.post('/login', authenticateSchema, authenticate);
 router.post('/register', registerSchema, register);
-router.get('/', authorize(), getAll);
+router.get('/', admin(), getAll);
 router.get('/current', authorize(), getCurrent);
 router.get('/:id', authorize(), getById);
-router.put('/:id', authorize(), updateSchema, update);
-router.delete('/:id', authorize(), _delete);
+router.put('/:id', admin(), updateSchema, update);
+router.delete('/:id', admin(), _delete);
 
 module.exports = router;
 
