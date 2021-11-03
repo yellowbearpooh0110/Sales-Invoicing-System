@@ -5,7 +5,7 @@ const Joi = require('joi');
 const admin = require('server/middleware/admin');
 const authorize = require('server/middleware/authorize');
 const validateRequest = require('server/middleware/validate-request');
-const chairbrandController = require('server/controller/chairbrand.controller');
+const chairorderController = require('server/controller/chairorder.controller');
 
 router.post('/create', admin(), createSchema, create);
 router.get('/', authorize(), getAll);
@@ -31,44 +31,44 @@ function bulkDeleteSchema(req, res, next) {
 }
 
 function create(req, res, next) {
-  chairbrandController
+  chairorderController
     .create(req.body)
     .then(() => {
-      res.json({ message: 'New ChairBrand was created successfully.' });
+      res.json({ message: 'New ChairOrder was created successfully.' });
     })
     .catch(next);
 }
 
 function getAll(req, res, next) {
-  chairbrandController
+  chairorderController
     .getAll()
-    .then((chairbrands) => res.json(chairbrands))
+    .then((chairorders) => res.json(chairorders))
     .catch(next);
 }
 
 function getById(req, res, next) {
-  chairbrandController
+  chairorderController
     .getById(req.params.id)
-    .then((chairbrand) => res.json(chairbrand))
+    .then((chairorder) => res.json(chairorder))
     .catch(next);
 }
 
 function update(req, res, next) {
-  chairbrandController
+  chairorderController
     .update(req.params.id, req.body)
-    .then((chairbrand) => res.json(chairbrand))
+    .then((chairorder) => res.json(chairorder))
     .catch(next);
 }
 
 function _delete(req, res, next) {
-  chairbrandController
+  chairorderController
     .delete(req.params.id)
-    .then(() => res.json({ message: 'ChairBrand was deleted successfully.' }))
+    .then(() => res.json({ message: 'ChairOrder was deleted successfully.' }))
     .catch(next);
 }
 
 function _bulkDelete(req, res, next) {
-  chairbrandController
+  chairorderController
     .bulkDelete({ id: req.body.ids })
     .then((affectedRows) =>
       res.json({

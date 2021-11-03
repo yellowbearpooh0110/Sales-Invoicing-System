@@ -3,7 +3,7 @@ import axios from 'axios';
 export const login = (data) => (dispatch) => {
   return new Promise((resolve, reject) => {
     axios
-      .post('/users/login', data)
+      .post('/user/login', data)
       .then((response) => {
         // handle success
         const { token, type } = response.data;
@@ -14,7 +14,7 @@ export const login = (data) => (dispatch) => {
       })
       .catch(function (error) {
         // handle error
-        reject(new Error(error));
+        reject(error);
       })
       .then(function () {
         // always executed

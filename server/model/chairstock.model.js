@@ -1,21 +1,33 @@
 const { DataTypes, Sequelize } = require('sequelize');
-const ChairBrand = require('./chairBrand.model');
+const ChairBrand = require('./chairbrand.model');
+const ChairModel = require('./chairmodel.model');
+const ProductColor = require('./productcolor.model');
 
 module.exports = model;
 
 function model(sequelize) {
   const attributes = {
-    name: { type: DataTypes.STRING, allowNull: false },
-    // brandName: {
-    //   type: Sequelize.INTEGER,
-    //   references: {
-    //     model: ChairBrand(sequelize),
-    //     key: 'id',
-    //   },
-    // },
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      allowNull: false,
+      primaryKey: true,
+    },
+    withHeadrest: {
+      type: DataTypes.STRING,
+    },
+    QTY: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
   };
 
-  return sequelize
-    .define('ChairStock', attributes)
-    .belongsTo(ChairBrand(sequelize));
+  const ChairStock = sequelize.define('ChairStock', attributes);
+  ChairStock.belongsTo(ProductColor(sequelize), { foreignKey: 'frameColor' });
+  ChairStock.belongsTo(ProductColor(sequelize), { foreignKey: 'backColor' });
+  ChairStock.belongsTo(ProductColor(sequelize), { foreignKey: 'seatColor' });
+  ChairStock.belongsTo(ChairBrand(sequelize), { foreignKey: 'chairBrand' });
+  ChairStock.belongsTo(ChairModel(sequelize), { foreignKey: 'chairModel' });
+
+  return ChairStock;
 }

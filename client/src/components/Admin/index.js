@@ -12,6 +12,7 @@ import AppHeader from 'components/Common/AppHeader';
 import { CollapsedSidebar, FixedSidebar } from 'components/Common/Sidebar';
 import { logout } from 'services/auth.service';
 import Users from './Users';
+import { ChairBrand, ChairModel } from './Chair';
 
 function mapStateToProps(state) {
   const { auth } = state;
@@ -22,22 +23,12 @@ const drawerWidth = 240;
 const drawerHeight = 50;
 
 const menuLists = [
+  [{ path: '/admin', icon: <HomeIcon />, label: 'Home' }],
   [
-    { path: '/admin', icon: <HomeIcon />, label: 'Home' },
-    {
-      icon: <SwapHorizIcon />,
-      label: 'Order',
-      children: [
-        {
-          path: '/admin/order/list',
-          label: 'List',
-        },
-        {
-          path: '/admin/order/create',
-          label: 'Create',
-        },
-      ],
-    },
+    { path: '/admin/chair/brand', icon: <SwapHorizIcon />, label: 'Brand' },
+    { path: '/admin/chair/model', icon: <SwapHorizIcon />, label: 'Model' },
+    { path: '/admin/chair/stock', icon: <SwapHorizIcon />, label: 'Stock' },
+    { path: '/admin/chair/order', icon: <SwapHorizIcon />, label: 'Order' },
   ],
 ];
 
@@ -104,12 +95,14 @@ const Admin = (props) => {
             flexGrow: 1,
             p: 3,
             width: { sm: `calc(100% - ${drawerWidth}px)` },
+            maxWidth: '100%',
           }}
         >
           <Toolbar />
           <Switch>
-            <Route path={`${path}/users`} component={Users} />
-            <Route path={`${path}/transactions`} exact />
+            <Route path={`${path}/user`} component={Users} />
+            <Route path={`${path}/chair/brand`} exact component={ChairBrand} />
+            <Route path={`${path}/chair/model`} exact component={ChairModel} />
           </Switch>
         </Box>
       </Box>

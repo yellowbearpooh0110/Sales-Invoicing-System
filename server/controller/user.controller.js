@@ -10,6 +10,7 @@ module.exports = {
   create,
   update,
   delete: _delete,
+  bulkDelete: _bulkDelete,
 };
 
 async function authenticate({ email, password }) {
@@ -75,6 +76,10 @@ async function update(id, params) {
 async function _delete(id) {
   const user = await getUser(id);
   await user.destroy();
+}
+
+async function _bulkDelete(where) {
+  return await db.User.destroy({ where });
 }
 
 // helper functions

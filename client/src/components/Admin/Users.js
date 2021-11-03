@@ -12,7 +12,7 @@ import {
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-import DataGrid from './DataGrid';
+import DataGrid from 'components/Common/DataGrid';
 
 const columns = [
   {

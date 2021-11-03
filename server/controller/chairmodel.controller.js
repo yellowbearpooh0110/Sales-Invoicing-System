@@ -9,6 +9,7 @@ module.exports = {
   create,
   update,
   delete: _delete,
+  bulkDelete: _bulkDelete,
 };
 
 async function getAll() {
@@ -16,7 +17,7 @@ async function getAll() {
 }
 
 async function getById(id) {
-  getChairModel(id);
+  return await getChairModel(id);
 }
 
 async function create(params) {
@@ -34,7 +35,7 @@ async function update(id, params) {
 
   // validate
   if (!params.name) throw 'You should provide ChairModel name';
-  if (chairModel.name !== params.name)
+  if (chairModel.name === params.name)
     throw 'The should provide a new ChairModel name';
   if (await db.ChairModel.findOne({ where: { name: params.name } })) {
     throw 'ChairModel "' + params.name + '" is already taken';
@@ -49,6 +50,10 @@ async function update(id, params) {
 async function _delete(id) {
   const chairModel = await getChairModel(id);
   await chairModel.destroy();
+}
+
+async function _bulkDelete(where) {
+  return await db.ChairModel.destroy({ where });
 }
 
 //helper function

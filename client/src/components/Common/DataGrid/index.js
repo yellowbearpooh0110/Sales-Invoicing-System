@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -17,11 +17,10 @@ import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Switch } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
-import { Edit as EditIcon } from '@mui/icons-material';
+import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -120,7 +119,7 @@ EnhancedTableHead.propTypes = {
 };
 
 const EnhancedTableToolbar = (props) => {
-  const { numSelected } = props;
+  const { numSelected, onBulkRemoveClick } = props;
 
   return (
     <Toolbar
@@ -158,7 +157,7 @@ const EnhancedTableToolbar = (props) => {
 
       {numSelected > 0 ? (
         <Tooltip title="Delete">
-          <IconButton>
+          <IconButton onClick={onBulkRemoveClick}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
@@ -175,17 +174,24 @@ const EnhancedTableToolbar = (props) => {
 
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
+  onBulkRemoveClick: PropTypes.func.isRequired,
 };
 
 const DataGrid = (props) => {
-  const { columns, rows, onEditClick } = props;
+  const {
+    columns,
+    rows,
+    onEditClick,
+    onRemoveClick,
+    onBulkRemoveClick,
+  } = props;
 
-  const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('id');
-  const [selected, setSelected] = React.useState([]);
-  const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [order, setOrder] = useState('asc');
+  const [orderBy, setOrderBy] = useState('id');
+  const [selected, setSelected] = useState([]);
+  const [page, setPage] = useState(0);
+  const [dense, setDense] = useState(true);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -244,7 +250,17 @@ const DataGrid = (props) => {
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar
+          numSelected={selected.length}
+          onBulkRemoveClick={(event) => {
+            event.preventDefault();
+            onBulkRemoveClick(selected).then(() => {
+              setSelected(
+                selected.filter((item) => item in rows.map((row) => row.id))
+              );
+            });
+          }}
+        />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -288,16 +304,16 @@ const DataGrid = (props) => {
                           }}
                         />
                       </TableCell>
-                      {columns.map((field, index) => (
+                      {columns.map((field, filedIndex) => (
                         <TableCell
-                          key={index}
+                          key={filedIndex}
                           component="th"
-                          id={index === 0 ? labelId : ''}
+                          id={filedIndex === 0 ? labelId : ''}
                           scope="row"
                           align="center"
                           padding="none"
                         >
-                          {row[field.id]}
+                          {field.id === 'id' ? index + 1 : row[field.id]}
                         </TableCell>
                       ))}
                       <TableCell align="center">
@@ -306,7 +322,14 @@ const DataGrid = (props) => {
                             onEditClick(e, index);
                           }}
                         >
-                          <EditIcon></EditIcon>
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton
+                          onClick={(e) => {
+                            onRemoveClick(e, index);
+                          }}
+                        >
+                          <DeleteIcon />
                         </IconButton>
                       </TableCell>
                     </TableRow>
@@ -340,6 +363,14 @@ const DataGrid = (props) => {
       />
     </Box>
   );
+};
+
+DataGrid.propTypes = {
+  columns: PropTypes.array.isRequired,
+  rows: PropTypes.array.isRequired,
+  onEditClick: PropTypes.func.isRequired,
+  onRemoveClick: PropTypes.func.isRequired,
+  onBulkRemoveClick: PropTypes.func.isRequired,
 };
 
 export default DataGrid;

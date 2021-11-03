@@ -53,12 +53,13 @@ const SignIn = connect(mapStateToProps, { login })((props) => {
         password: data.get('password'),
       })
       .then()
-      .catch(() => {
+      .catch((err) => {
+        // console.log(err.response);
         form.password.value = '';
         Swal.fire({
           icon: 'error',
           title: 'Login Failure',
-          text: 'Email Address or Password is not correct.',
+          text: err.response.data.message,
           allowOutsideClick: false,
         });
       });

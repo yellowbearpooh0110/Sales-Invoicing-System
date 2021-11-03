@@ -11,6 +11,10 @@ app.use(cors());
 
 // api routes
 app.use('/chairbrand', require('server/routes/chairbrand.routes'));
+app.use('/chairmodel', require('server/routes/chairmodel.routes'));
+app.use('/chairorder', require('server/routes/chairorder.routes'));
+app.use('/chairstock', require('server/routes/chairstock.routes'));
+app.use('/productcolor', require('server/routes/productcolor.routes'));
 app.use('/user', require('server/routes/user.routes'));
 
 // global error handler

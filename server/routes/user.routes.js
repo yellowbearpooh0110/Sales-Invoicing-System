@@ -14,6 +14,7 @@ router.get('/current', authorize(), getCurrent);
 router.get('/:id', authorize(), getById);
 router.put('/:id', admin(), updateSchema, update);
 router.delete('/:id', admin(), _delete);
+router.delete('/', admin(), bulkDeleteSchema, _bulkDelete);
 
 module.exports = router;
 
@@ -21,6 +22,13 @@ function authenticateSchema(req, res, next) {
   const schema = Joi.object({
     email: Joi.string().required(),
     password: Joi.string().required(),
+  });
+  validateRequest(req, next, schema);
+}
+
+function bulkDeleteSchema(req, res, next) {
+  const schema = Joi.object({
+    ids: Joi.array().required(),
   });
   validateRequest(req, next, schema);
 }
@@ -91,5 +99,18 @@ function _delete(req, res, next) {
   userController
     .delete(req.params.id)
     .then(() => res.json({ message: 'User deleted successfully' }))
+    .catch(next);
+}
+
+function _bulkDelete(req, res, next) {
+  userController
+    .bulkDelete({ id: req.body.ids })
+    .then((affectedRows) =>
+      res.json({
+        message: `${affectedRows} ChairBrand${
+          affectedRows === 1 ? ' was' : 's were'
+        } deleted successfully.`,
+      })
+    )
     .catch(next);
 }

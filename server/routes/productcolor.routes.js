@@ -5,7 +5,7 @@ const Joi = require('joi');
 const admin = require('server/middleware/admin');
 const authorize = require('server/middleware/authorize');
 const validateRequest = require('server/middleware/validate-request');
-const chairbrandController = require('server/controller/chairbrand.controller');
+const productcolorController = require('server/controller/productcolor.controller');
 
 router.post('/create', admin(), createSchema, create);
 router.get('/', authorize(), getAll);
@@ -31,44 +31,44 @@ function bulkDeleteSchema(req, res, next) {
 }
 
 function create(req, res, next) {
-  chairbrandController
+  productcolorController
     .create(req.body)
     .then(() => {
-      res.json({ message: 'New ChairBrand was created successfully.' });
+      res.json({ message: 'New ProductColor was created successfully.' });
     })
     .catch(next);
 }
 
 function getAll(req, res, next) {
-  chairbrandController
+  productcolorController
     .getAll()
-    .then((chairbrands) => res.json(chairbrands))
+    .then((productcolors) => res.json(productcolors))
     .catch(next);
 }
 
 function getById(req, res, next) {
-  chairbrandController
+  productcolorController
     .getById(req.params.id)
-    .then((chairbrand) => res.json(chairbrand))
+    .then((productcolor) => res.json(productcolor))
     .catch(next);
 }
 
 function update(req, res, next) {
-  chairbrandController
+  productcolorController
     .update(req.params.id, req.body)
-    .then((chairbrand) => res.json(chairbrand))
+    .then((productcolor) => res.json(productcolor))
     .catch(next);
 }
 
 function _delete(req, res, next) {
-  chairbrandController
+  productcolorController
     .delete(req.params.id)
-    .then(() => res.json({ message: 'ChairBrand was deleted successfully.' }))
+    .then(() => res.json({ message: 'ProductColor was deleted successfully.' }))
     .catch(next);
 }
 
 function _bulkDelete(req, res, next) {
-  chairbrandController
+  productcolorController
     .bulkDelete({ id: req.body.ids })
     .then((affectedRows) =>
       res.json({
