@@ -1,4 +1,4 @@
-import { BrowserRouter, Switch } from 'react-router-dom';
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { Container, CssBaseline } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Provider } from 'react-redux';
@@ -35,6 +35,9 @@ const App = () => {
         >
           <BrowserRouter>
             <Switch>
+              <Route path="/" exact>
+                <Redirect to="/signin" />
+              </Route>
               <GuestRoute path="/signin" component={SignIn} />
               <AdminRoute path="/admin" component={Admin} />
               <PrivateRoute path="/user" component={Standard} />
