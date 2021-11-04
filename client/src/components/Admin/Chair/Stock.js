@@ -23,10 +23,22 @@ const columns = [
     label: 'Id',
   },
   {
-    id: 'name',
+    id: 'brandName',
     numeric: false,
     disablePadding: false,
-    label: 'Name',
+    label: 'Brand',
+  },
+  {
+    id: 'modelName',
+    numeric: false,
+    disablePadding: false,
+    label: 'Model',
+  },
+  {
+    id: 'frameColor',
+    numeric: false,
+    disablePadding: false,
+    label: 'FrameColor',
   },
 ];
 
@@ -35,8 +47,8 @@ function mapStateToProps(state) {
   return { auth };
 }
 
-const Brand = connect(mapStateToProps)((props) => {
-  const [brands, setBrands] = useState([]);
+const Stock = connect(mapStateToProps)((props) => {
+  const [stocks, setStocks] = useState([]);
   const [editOpen, setEditOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [id, setID] = useState('');
@@ -44,19 +56,19 @@ const Brand = connect(mapStateToProps)((props) => {
 
   const handleEditClick = (event, index) => {
     event.preventDefault();
-    if (index < brands.length && index >= 0) {
-      setID(brands[index].id);
-      setName(brands[index].name);
+    if (index < stocks.length && index >= 0) {
+      setID(stocks[index].id);
+      setName(stocks[index].name);
     }
     setEditOpen(true);
   };
 
   const handleRemoveClick = (event, index) => {
     event.preventDefault();
-    if (index < brands.length && index >= 0) {
+    if (index < stocks.length && index >= 0) {
       Swal.fire({
         title: 'Are you sure?',
-        text: 'This action will remove current ChairBrand permanently.',
+        text: 'This action will remove current ChairStock permanently.',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Yes, Remove!',
@@ -65,10 +77,10 @@ const Brand = connect(mapStateToProps)((props) => {
       }).then((result) => {
         if (result.isConfirmed) {
           axios
-            .delete(`/chairbrand/${brands[index].id}`)
+            .delete(`/chairstock/${stocks[index].id}`)
             .then((response) => {
               // handle success
-              getBrands();
+              getStocks();
             })
             .catch(function (error) {
               // handle error
@@ -91,7 +103,7 @@ const Brand = connect(mapStateToProps)((props) => {
   const handleBulkRemoveClick = (selected) => {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'This action will remove selected ChairBrands permanently.',
+      text: 'This action will remove selected ChairStocks permanently.',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Yes, Remove!',
@@ -100,10 +112,10 @@ const Brand = connect(mapStateToProps)((props) => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete('/chairbrand', { data: { ids: selected } })
+          .delete('/chairstock', { data: { ids: selected } })
           .then((response) => {
             // handle success
-            getBrands();
+            getStocks();
             resolve();
           })
           .catch(function (error) {
@@ -127,11 +139,11 @@ const Brand = connect(mapStateToProps)((props) => {
   const handleSave = (event) => {
     event.preventDefault();
     axios
-      .put(`/chairbrand/${id}`, { name })
+      .put(`/chairstock/${id}`, { name })
       .then((response) => {
         // handle success
         setEditOpen(false);
-        getBrands();
+        getStocks();
       })
       .catch(function (error) {
         // handle error
@@ -154,11 +166,11 @@ const Brand = connect(mapStateToProps)((props) => {
   const handleCreate = (event) => {
     event.preventDefault();
     axios
-      .post(`/chairbrand/create`, { name })
+      .post(`/chairstock/create`, { name })
       .then((response) => {
         // handle success
         setCreateOpen(false);
-        getBrands();
+        getStocks();
       })
       .catch(function (error) {
         // handle error
@@ -178,12 +190,12 @@ const Brand = connect(mapStateToProps)((props) => {
       });
   };
 
-  const getBrands = (cancelToken) => {
+  const getStocks = (cancelToken) => {
     axios
-      .get('/chairbrand', { cancelToken })
+      .get('/chairstock', { cancelToken })
       .then((response) => {
         // handle success
-        setBrands(response.data);
+        setStocks(response.data);
       })
       .catch(function (error) {
         // handle error
@@ -196,14 +208,14 @@ const Brand = connect(mapStateToProps)((props) => {
 
   useEffect(() => {
     const source = axios.CancelToken.source();
-    getBrands(source.token);
-    return () => source.cancel('Brand Component got unmounted');
+    getStocks(source.token);
+    return () => source.cancel('Stock Component got unmounted');
   }, []);
 
   return (
     <>
       <DataGrid
-        rows={brands}
+        rows={stocks}
         columns={columns}
         onEditClick={handleEditClick}
         onRemoveClick={handleRemoveClick}
@@ -217,13 +229,13 @@ const Brand = connect(mapStateToProps)((props) => {
           setCreateOpen(true);
         }}
       >
-        Add New Brand
+        Add New Stock
       </Button>
       <Dialog open={editOpen}>
-        <DialogTitle>Edit ChairBrand</DialogTitle>
+        <DialogTitle>Edit ChairStock</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Please Edit the ChairBrand and Click Save button.
+            Please Edit the ChairStock and Click Save button.
           </DialogContentText>
           <TextField
             autoFocus
@@ -249,15 +261,26 @@ const Brand = connect(mapStateToProps)((props) => {
         </DialogActions>
       </Dialog>
       <Dialog open={createOpen}>
-        <DialogTitle>Edit ChairBrand</DialogTitle>
+        <DialogTitle>Edit ChairStock</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Please Input ChairBrand Name and Click Save button.
+            Please Input ChairStock Name and Click Save button.
           </DialogContentText>
           <TextField
             autoFocus
             margin="dense"
-            label="Name"
+            label="Brand"
+            fullWidth
+            variant="standard"
+            value={name}
+            onChange={(e) => {
+              setName(e.target.value);
+            }}
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Model"
             fullWidth
             variant="standard"
             value={name}
@@ -281,4 +304,4 @@ const Brand = connect(mapStateToProps)((props) => {
   );
 });
 
-export default Brand;
+export default Stock;

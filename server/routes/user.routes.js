@@ -11,7 +11,7 @@ router.post('/login', authenticateSchema, authenticate);
 router.post('/register', registerSchema, register);
 router.get('/', admin(), getAll);
 router.get('/current', authorize(), getCurrent);
-router.get('/:id', authorize(), getById);
+router.get('/:id', admin(), getById);
 router.put('/:id', admin(), updateSchema, update);
 router.delete('/:id', admin(), _delete);
 router.delete('/', admin(), bulkDeleteSchema, _bulkDelete);

@@ -12,7 +12,7 @@ import AppHeader from 'components/Common/AppHeader';
 import { CollapsedSidebar, FixedSidebar } from 'components/Common/Sidebar';
 import { logout } from 'services/auth.service';
 import Users from './Users';
-import { ChairBrand, ChairModel } from './Chair';
+import { ChairBrand, ChairModel, ChairStock } from './Chair';
 
 function mapStateToProps(state) {
   const { auth } = state;
@@ -103,6 +103,7 @@ const Admin = (props) => {
             <Route path={`${path}/user`} component={Users} />
             <Route path={`${path}/chair/brand`} exact component={ChairBrand} />
             <Route path={`${path}/chair/model`} exact component={ChairModel} />
+            <Route path={`${path}/chair/stock`} exact component={ChairStock} />
           </Switch>
         </Box>
       </Box>

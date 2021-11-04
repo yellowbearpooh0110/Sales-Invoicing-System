@@ -89,40 +89,38 @@ const Model = connect(mapStateToProps)((props) => {
   };
 
   const handleBulkRemoveClick = (selected) => {
-    return new Promise((resolve, reject) => {
-      Swal.fire({
-        title: 'Are you sure?',
-        text: 'This action will remove selected ChairModels permanently.',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, Remove!',
-        cancelButtonText: 'No, Keep Them.',
-        allowOutsideClick: false,
-      }).then((result) => {
-        if (result.isConfirmed) {
-          axios
-            .delete('/chairmodel', { data: { ids: selected } })
-            .then((response) => {
-              // handle success
-              getModels();
-              resolve();
-            })
-            .catch(function (error) {
-              // handle error
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: error.response.data.message,
-                allowOutsideClick: false,
-              });
-              console.log(error);
-              reject();
-            })
-            .then(function () {
-              // always executed
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This action will remove selected ChairModels permanently.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Remove!',
+      cancelButtonText: 'No, Keep Them.',
+      allowOutsideClick: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .delete('/chairmodel', { data: { ids: selected } })
+          .then((response) => {
+            // handle success
+            getModels();
+            resolve();
+          })
+          .catch(function (error) {
+            // handle error
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.response.data.message,
+              allowOutsideClick: false,
             });
-        }
-      });
+            console.log(error);
+            reject();
+          })
+          .then(function () {
+            // always executed
+          });
+      }
     });
   };
 

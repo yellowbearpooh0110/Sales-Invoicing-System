@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -193,6 +193,16 @@ const DataGrid = (props) => {
   const [dense, setDense] = useState(true);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  const prevRows = useRef();
+
+  useEffect(() => {
+    if (prevRows.current !== rows) {
+      prevRows.current = rows;
+      setSelected(selected.filter((item) => item in rows.map((row) => row.id)));
+    }
+    // setSelected(selected.filter((item) => item in rows.map((row) => row.id)));
+  }, [rows, selected]);
+
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -254,11 +264,7 @@ const DataGrid = (props) => {
           numSelected={selected.length}
           onBulkRemoveClick={(event) => {
             event.preventDefault();
-            onBulkRemoveClick(selected).then(() => {
-              setSelected(
-                selected.filter((item) => item in rows.map((row) => row.id))
-              );
-            });
+            onBulkRemoveClick(selected);
           }}
         />
         <TableContainer>
