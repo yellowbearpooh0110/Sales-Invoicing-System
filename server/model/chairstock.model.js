@@ -14,6 +14,12 @@ function model(sequelize) {
       primaryKey: true,
     },
     withHeadrest: {
+      type: DataTypes.BOOLEAN,
+    },
+    withAdArmrest: {
+      type: DataTypes.BOOLEAN,
+    },
+    specialRemarks: {
       type: DataTypes.STRING,
     },
     QTY: {

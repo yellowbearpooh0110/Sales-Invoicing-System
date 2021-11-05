@@ -22,9 +22,9 @@ async function getById(id) {
 
 async function create(params) {
   // validate
-  if (await db.ChairBrand.findOne({ where: { name: params.name } })) {
-    throw 'Brand Name "' + params.name + '" is already taken';
-  }
+  // if (await db.ChairBrand.findOne({ where: { name: params.name } })) {
+  //   throw 'Brand Name "' + params.name + '" is already taken';
+  // }
 
   // save ChairBrand
   await db.ChairBrand.create(params);

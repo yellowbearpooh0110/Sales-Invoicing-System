@@ -36,7 +36,10 @@ function create(req, res, next) {
     .then(() => {
       res.json({ message: 'New ChairBrand was created successfully.' });
     })
-    .catch(next);
+    // .catch(next);
+    .catch((err) => {
+      next(new Error(err.original.sqlMessage));
+    });
 }
 
 function getAll(req, res, next) {

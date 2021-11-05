@@ -104,7 +104,6 @@ const Model = connect(mapStateToProps)((props) => {
           .then((response) => {
             // handle success
             getModels();
-            resolve();
           })
           .catch(function (error) {
             // handle error
@@ -115,7 +114,6 @@ const Model = connect(mapStateToProps)((props) => {
               allowOutsideClick: false,
             });
             console.log(error);
-            reject();
           })
           .then(function () {
             // always executed

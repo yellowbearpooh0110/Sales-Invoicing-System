@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import {
+  Autocomplete,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Stack,
   TextField,
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
@@ -23,22 +25,10 @@ const columns = [
     label: 'Id',
   },
   {
-    id: 'brandName',
+    id: 'name',
     numeric: false,
     disablePadding: false,
-    label: 'Brand',
-  },
-  {
-    id: 'modelName',
-    numeric: false,
-    disablePadding: false,
-    label: 'Model',
-  },
-  {
-    id: 'frameColor',
-    numeric: false,
-    disablePadding: false,
-    label: 'FrameColor',
+    label: 'Name',
   },
 ];
 
@@ -47,18 +37,26 @@ function mapStateToProps(state) {
   return { auth };
 }
 
-const Stock = connect(mapStateToProps)((props) => {
+export default connect(mapStateToProps)((props) => {
   const [stocks, setStocks] = useState([]);
   const [editOpen, setEditOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [id, setID] = useState('');
   const [name, setName] = useState('');
+  const [brands, setBrands] = useState([]);
+  const [models, setModels] = useState([]);
+  const [colors, setColors] = useState([]);
+
+  const [brand, setBrand] = useState();
+  const [model, setModel] = useState();
+  const [frameColor, setFrameColor] = useState();
+  const [backColor, setBackColor] = useState();
+  const [seatColor, setSeatColor] = useState();
 
   const handleEditClick = (event, index) => {
     event.preventDefault();
-    if (index < stocks.length && index >= 0) {
+    if (index < brands.length && index >= 0) {
       setID(stocks[index].id);
-      setName(stocks[index].name);
     }
     setEditOpen(true);
   };
@@ -77,7 +75,7 @@ const Stock = connect(mapStateToProps)((props) => {
       }).then((result) => {
         if (result.isConfirmed) {
           axios
-            .delete(`/chairstock/${stocks[index].id}`)
+            .delete(`/chairbrand/${brands[index].id}`)
             .then((response) => {
               // handle success
               getStocks();
@@ -103,7 +101,7 @@ const Stock = connect(mapStateToProps)((props) => {
   const handleBulkRemoveClick = (selected) => {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'This action will remove selected ChairStocks permanently.',
+      text: 'This action will remove selected Brands permanently.',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Yes, Remove!',
@@ -112,7 +110,7 @@ const Stock = connect(mapStateToProps)((props) => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete('/chairstock', { data: { ids: selected } })
+          .delete('/chiarstock', { data: { ids: selected } })
           .then((response) => {
             // handle success
             getStocks();
@@ -164,7 +162,7 @@ const Stock = connect(mapStateToProps)((props) => {
   const handleCreate = (event) => {
     event.preventDefault();
     axios
-      .post(`/chairstock/create`, { name })
+      .post(`/chairbrand/create`, { name })
       .then((response) => {
         // handle success
         setCreateOpen(false);
@@ -188,12 +186,60 @@ const Stock = connect(mapStateToProps)((props) => {
       });
   };
 
+  const getBrands = (cancelToken) => {
+    axios
+      .get('/chairbrand', { cancelToken })
+      .then((response) => {
+        // handle success
+        setBrands(response.data);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
+  const getModels = (cancelToken) => {
+    axios
+      .get('/chairmodel', { cancelToken })
+      .then((response) => {
+        // handle success
+        setModels(response.data);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
   const getStocks = (cancelToken) => {
     axios
       .get('/chairstock', { cancelToken })
       .then((response) => {
         // handle success
-        setStocks(response.data);
+        setBrands(response.data);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
+  const getColors = (cancelToken) => {
+    axios
+      .get('/productcolor', { cancelToken })
+      .then((response) => {
+        // handle success
+        setColors(response.data);
       })
       .catch(function (error) {
         // handle error
@@ -207,7 +253,7 @@ const Stock = connect(mapStateToProps)((props) => {
   useEffect(() => {
     const source = axios.CancelToken.source();
     getStocks(source.token);
-    return () => source.cancel('Stock Component got unmounted');
+    return () => source.cancel('Brand Component got unmounted');
   }, []);
 
   return (
@@ -223,11 +269,13 @@ const Stock = connect(mapStateToProps)((props) => {
         variant="outlined"
         startIcon={<AddIcon />}
         onClick={() => {
-          setName('');
+          getBrands();
+          getModels();
+          getColors();
           setCreateOpen(true);
         }}
       >
-        Add New Stock
+        Add New Order
       </Button>
       <Dialog open={editOpen}>
         <DialogTitle>Edit ChairStock</DialogTitle>
@@ -258,27 +306,89 @@ const Stock = connect(mapStateToProps)((props) => {
           <Button onClick={handleSave}>Save</Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={createOpen}>
+      <Dialog fullWidth maxWidth="sm" open={createOpen}>
         <DialogTitle>Edit ChairStock</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Please Input ChairStock Name and Click Save button.
-          </DialogContentText>
+          <Stack spacing={1} fullWidth>
+            <DialogContentText>
+              Please Input Order Name and Click Save button.
+            </DialogContentText>
+            <Autocomplete
+              disablePortal
+              value={brand}
+              onChange={(event, newValue) => {
+                event.preventDefault();
+                setBrand(newValue);
+              }}
+              options={brands}
+              getOptionLabel={(option) => option.name}
+              fullWidth
+              renderInput={(params) => (
+                <TextField {...params} label="ChairBrand" variant="standard" />
+              )}
+            />
+            <Autocomplete
+              disablePortal
+              value={model}
+              onChange={(event, newValue) => {
+                event.preventDefault();
+                setModel(newValue);
+              }}
+              options={models}
+              getOptionLabel={(option) => option.name}
+              fullWidth
+              renderInput={(params) => (
+                <TextField {...params} label="ChairModel" variant="standard" />
+              )}
+            />
+            <Autocomplete
+              disablePortal
+              value={frameColor}
+              onChange={(event, newValue) => {
+                event.preventDefault();
+                setFrameColor(newValue);
+              }}
+              options={colors}
+              getOptionLabel={(option) => option.name}
+              fullWidth
+              renderInput={(params) => (
+                <TextField {...params} label="FrameColor" variant="standard" />
+              )}
+            />
+            <Autocomplete
+              disablePortal
+              value={backColor}
+              onChange={(event, newValue) => {
+                event.preventDefault();
+                setBackColor(newValue);
+              }}
+              options={colors}
+              getOptionLabel={(option) => option.name}
+              fullWidth
+              renderInput={(params) => (
+                <TextField {...params} label="BackColor" variant="standard" />
+              )}
+            />
+            <Autocomplete
+              disablePortal
+              value={seatColor}
+              onChange={(event, newValue) => {
+                event.preventDefault();
+                setSeatColor(newValue);
+              }}
+              options={colors}
+              getOptionLabel={(option) => option.name}
+              fullWidth
+              renderInput={(params) => (
+                <TextField {...params} label="SeatColor" variant="standard" />
+              )}
+            />
+          </Stack>
+
           <TextField
             autoFocus
             margin="dense"
-            label="Brand"
-            fullWidth
-            variant="standard"
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-            }}
-          />
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Model"
+            label="Name"
             fullWidth
             variant="standard"
             value={name}
@@ -289,7 +399,8 @@ const Stock = connect(mapStateToProps)((props) => {
         </DialogContent>
         <DialogActions>
           <Button
-            onClick={() => {
+            onClick={(event) => {
+              event.preventDefault();
               setCreateOpen(false);
             }}
           >
@@ -301,5 +412,3 @@ const Stock = connect(mapStateToProps)((props) => {
     </>
   );
 });
-
-export default Stock;

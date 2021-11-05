@@ -3,8 +3,8 @@ import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Box, Toolbar } from '@mui/material';
 import {
+  BookOnline as BookOnlineIcon,
   Home as HomeIcon,
-  SwapHoriz as SwapHorizIcon,
 } from '@mui/icons-material';
 import Swal from 'sweetalert2';
 
@@ -23,23 +23,8 @@ const drawerWidth = 240;
 const drawerHeight = 50;
 
 const menuLists = [
-  [
-    { path: '/user', icon: <HomeIcon />, label: 'Home' },
-    {
-      icon: <SwapHorizIcon />,
-      label: 'Order',
-      children: [
-        {
-          path: '/user/order/list',
-          label: 'List',
-        },
-        {
-          path: '/user/order/create',
-          label: 'Create',
-        },
-      ],
-    },
-  ],
+  [{ path: '/user', icon: <HomeIcon />, label: 'Home' }],
+  [{ path: '/user/order', icon: <BookOnlineIcon />, label: 'Order' }],
 ];
 
 const Standard = (props) => {
@@ -109,7 +94,6 @@ const Standard = (props) => {
           <Toolbar />
           <Switch>
             <Route path={`${path}/order`} component={Order} />
-            <Route path={`${path}/transactions`} exact />
           </Switch>
         </Box>
       </Box>

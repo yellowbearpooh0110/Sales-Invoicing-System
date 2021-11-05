@@ -3,8 +3,12 @@ import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Box, Toolbar } from '@mui/material';
 import {
+  BookOnline as BookOnlineIcon,
+  BlurOn as BlurOnIcon,
+  ColorLens as ColorLensIcon,
   Home as HomeIcon,
-  SwapHoriz as SwapHorizIcon,
+  Storefront as StorefrontIcon,
+  Style as StyleIcon,
 } from '@mui/icons-material';
 import Swal from 'sweetalert2';
 
@@ -13,6 +17,7 @@ import { CollapsedSidebar, FixedSidebar } from 'components/Common/Sidebar';
 import { logout } from 'services/auth.service';
 import Users from './Users';
 import { ChairBrand, ChairModel, ChairStock } from './Chair';
+import Color from './Color';
 
 function mapStateToProps(state) {
   const { auth } = state;
@@ -25,11 +30,12 @@ const drawerHeight = 50;
 const menuLists = [
   [{ path: '/admin', icon: <HomeIcon />, label: 'Home' }],
   [
-    { path: '/admin/chair/brand', icon: <SwapHorizIcon />, label: 'Brand' },
-    { path: '/admin/chair/model', icon: <SwapHorizIcon />, label: 'Model' },
-    { path: '/admin/chair/stock', icon: <SwapHorizIcon />, label: 'Stock' },
-    { path: '/admin/chair/order', icon: <SwapHorizIcon />, label: 'Order' },
+    { path: '/admin/chair/brand', icon: <BlurOnIcon />, label: 'Brand' },
+    { path: '/admin/chair/model', icon: <StyleIcon />, label: 'Model' },
+    { path: '/admin/chair/stock', icon: <StorefrontIcon />, label: 'Stock' },
+    { path: '/admin/chair/order', icon: <BookOnlineIcon />, label: 'Order' },
   ],
+  [{ path: '/admin/color', icon: <ColorLensIcon />, label: 'Color' }],
 ];
 
 const Admin = (props) => {
@@ -104,6 +110,7 @@ const Admin = (props) => {
             <Route path={`${path}/chair/brand`} exact component={ChairBrand} />
             <Route path={`${path}/chair/model`} exact component={ChairModel} />
             <Route path={`${path}/chair/stock`} exact component={ChairStock} />
+            <Route path={`${path}/color`} exact component={Color} />
           </Switch>
         </Box>
       </Box>

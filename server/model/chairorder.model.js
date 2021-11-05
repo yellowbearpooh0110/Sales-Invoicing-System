@@ -1,4 +1,6 @@
 const { DataTypes } = require('sequelize');
+const ChairStock = require('./chairstock.model');
+const User = require('./user.model');
 
 module.exports = model;
 
@@ -10,8 +12,24 @@ function model(sequelize) {
       allowNull: false,
       primaryKey: true,
     },
-    name: { type: DataTypes.STRING, allowNull: false },
+    invoiceNum: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+    },
+    clientName: { type: DataTypes.STRING, allowNull: false },
+    clientDistrict: { type: DataTypes.STRING, allowNull: false },
+    clientStreet: { type: DataTypes.STRING, allowNull: false },
+    clientFloor: { type: DataTypes.STRING, allowNull: false },
+    clientUnit: { type: DataTypes.STRING, allowNull: false },
+    clientBlock: { type: DataTypes.STRING, allowNull: false },
+    orderDate: { type: DataTypes.DATE, allowNull: false },
+    finishDate: { type: DataTypes.DATE },
+    specialRemarks: { type: DataTypes.STRING },
   };
 
-  return sequelize.define('ChairOrder', attributes);
+  const ChairOrder = sequelize.define('ChairOrder', attributes);
+  ChairOrder.belongsTo(ChairStock(sequelize), { foreignKey: 'stockID' });
+  ChairOrder.belongsTo(User(sequelize), { foreignKey: 'salesmanID' });
+
+  return ChairOrder;
 }

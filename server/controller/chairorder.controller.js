@@ -26,20 +26,16 @@ async function create(params) {
     throw 'Order Name "' + params.name + '" is already taken';
   }
 
+  // if (await db.ChairStock.findOne({ where: {
+  //   frameColor: params.frameColor
+  // } }))
   // save ChairOrder
   await db.ChairOrder.create(params);
 }
 
 async function update(id, params) {
   const chairOrder = await getChairOrder(id);
-
   // validate
-  if (!params.name) throw 'You should provide ChairOrder name';
-  if (chairOrder.name === params.name)
-    throw 'The should provide a new ChairOrder name';
-  if (await db.ChairOrder.findOne({ where: { name: params.name } })) {
-    throw 'ChairOrder "' + params.name + '" is already taken';
-  }
 
   // copy params to chairOrder and save
   Object.assign(chairOrder, params);
