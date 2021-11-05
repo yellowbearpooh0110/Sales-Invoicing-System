@@ -1,7 +1,6 @@
-const config = require('config.json');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
 const db = require('server/helper/db');
+const Sequelize = require('Sequelize');
+const { param } = require('../routes/chairstock.routes');
 
 module.exports = {
   getAll,
@@ -21,12 +20,26 @@ async function getById(id) {
 }
 
 async function create(params) {
+  const { QTY, ...restParams } = params;
+  if (
+    await db.ChairStock.findOne({
+      where: restParams,
+    })
+  )
+    throw 'Identical ChairStock Exists.';
   // save ChairStock
   await db.ChairStock.create(params);
 }
 
 async function update(id, params) {
   const chairStock = await getChairStock(id);
+  const { QTY, ...restParams } = params;
+  if (
+    await db.ChairStock.findOne({
+      where: { id: { [Sequelize.Op.ne]: id }, ...restParams },
+    })
+  )
+    throw 'Identical ChairStock Exists.';
   Object.assign(chairStock, params);
   await chairStock.save();
   return chairStock.get();

@@ -28,17 +28,7 @@ function model(sequelize) {
     },
   };
 
-  const options = {
-    indexes: [
-      {
-        name: 'unique_index',
-        unique: true,
-        fields: ['chairBrand', 'chairModel'],
-      },
-    ],
-  };
-
-  const ChairStock = sequelize.define('ChairStock', attributes, options);
+  const ChairStock = sequelize.define('ChairStock', attributes);
   ChairStock.belongsTo(ChairBrand(sequelize), { foreignKey: 'chairBrand' });
   ChairStock.belongsTo(ChairModel(sequelize), { foreignKey: 'chairModel' });
   ChairStock.belongsTo(ProductColor(sequelize), { foreignKey: 'frameColor' });
