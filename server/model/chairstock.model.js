@@ -28,12 +28,22 @@ function model(sequelize) {
     },
   };
 
-  const ChairStock = sequelize.define('ChairStock', attributes);
+  const options = {
+    indexes: [
+      {
+        name: 'unique_index',
+        unique: true,
+        fields: ['chairBrand', 'chairModel'],
+      },
+    ],
+  };
+
+  const ChairStock = sequelize.define('ChairStock', attributes, options);
+  ChairStock.belongsTo(ChairBrand(sequelize), { foreignKey: 'chairBrand' });
+  ChairStock.belongsTo(ChairModel(sequelize), { foreignKey: 'chairModel' });
   ChairStock.belongsTo(ProductColor(sequelize), { foreignKey: 'frameColor' });
   ChairStock.belongsTo(ProductColor(sequelize), { foreignKey: 'backColor' });
   ChairStock.belongsTo(ProductColor(sequelize), { foreignKey: 'seatColor' });
-  ChairStock.belongsTo(ChairBrand(sequelize), { foreignKey: 'chairBrand' });
-  ChairStock.belongsTo(ChairModel(sequelize), { foreignKey: 'chairModel' });
 
   return ChairStock;
 }

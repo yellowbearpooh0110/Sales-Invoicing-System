@@ -21,27 +21,11 @@ async function getById(id) {
 }
 
 async function create(params) {
-  // validate
-  if (await db.ChairModel.findOne({ where: { name: params.name } })) {
-    throw 'Model Name "' + params.name + '" is already taken';
-  }
-
-  // save ChairModel
   await db.ChairModel.create(params);
 }
 
 async function update(id, params) {
   const chairModel = await getChairModel(id);
-
-  // validate
-  if (!params.name) throw 'You should provide ChairModel name';
-  if (chairModel.name === params.name)
-    throw 'The should provide a new ChairModel name';
-  if (await db.ChairModel.findOne({ where: { name: params.name } })) {
-    throw 'ChairModel "' + params.name + '" is already taken';
-  }
-
-  // copy params to chairModel and save
   Object.assign(chairModel, params);
   await chairModel.save();
   return chairModel.get();

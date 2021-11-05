@@ -26,8 +26,9 @@ async function initialize() {
   db.User = require('server/model/user.model')(sequelize);
   db.ChairBrand = require('server/model/chairbrand.model')(sequelize);
   db.ChairModel = require('server/model/chairmodel.model')(sequelize);
-  db.ChairOrder = require('server/model/chairorder.model')(sequelize);
+  db.ChairRemark = require('server/model/chairremark.model')(sequelize);
   db.ChairStock = require('server/model/chairstock.model')(sequelize);
+  db.ChairOrder = require('server/model/chairorder.model')(sequelize);
   db.ProductColor = require('server/model/productcolor.model')(sequelize);
 
   // sync all models with database

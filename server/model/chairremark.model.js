@@ -10,8 +10,8 @@ function model(sequelize) {
       allowNull: false,
       primaryKey: true,
     },
-    detail: { type: DataTypes.STRING, allowNull: false, unique: true },
+    detail: { type: DataTypes.STRING, allowNull: false },
   };
 
-  return sequelize.define('ChairBrand', attributes);
+  return sequelize.define('ChairRemark', attributes);
 }

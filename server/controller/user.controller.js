@@ -17,7 +17,6 @@ async function authenticate({ email, password }) {
   const user = await db.User.scope('withPassword').findOne({
     where: { email },
   });
-
   if (!user || !(await bcrypt.compare(password, user.password)))
     throw 'Email or password is incorrect';
 
@@ -35,41 +34,18 @@ async function getById(id) {
 }
 
 async function create(params) {
-  // validate
-  if (await db.User.findOne({ where: { email: params.email } })) {
-    throw 'Email "' + params.email + '" is already taken';
-  }
-
-  // hash password
-  if (params.password) {
-    params.password = await bcrypt.hash(params.password, 10);
-  }
-
+  params.password && (params.password = await bcrypt.hash(params.password, 10));
   // save user
   await db.User.create(params);
 }
 
 async function update(id, params) {
   const user = await getUser(id);
-
-  // validate
-  const usernameChanged = params.username && user.username !== params.username;
-  if (
-    usernameChanged &&
-    (await db.User.findOne({ where: { username: params.username } }))
-  ) {
-    throw 'Username "' + params.username + '" is already taken';
-  }
-
   // hash password if it was entered
-  if (params.password) {
-    params.password = await bcrypt.hash(params.password, 10);
-  }
-
+  params.password && (params.password = await bcrypt.hash(params.password, 10));
   // copy params to user and save
   Object.assign(user, params);
   await user.save();
-
   return omitPassword(user.get());
 }
 

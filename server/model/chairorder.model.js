@@ -15,6 +15,7 @@ function model(sequelize) {
     invoiceNum: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
+      unique: true,
     },
     clientName: { type: DataTypes.STRING, allowNull: false },
     clientDistrict: { type: DataTypes.STRING, allowNull: false },

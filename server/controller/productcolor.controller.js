@@ -21,27 +21,11 @@ async function getById(id) {
 }
 
 async function create(params) {
-  // validate
-  if (await db.ProductColor.findOne({ where: { name: params.name } })) {
-    throw 'Color Name "' + params.name + '" is already taken';
-  }
-
-  // save ProductColor
   await db.ProductColor.create(params);
 }
 
 async function update(id, params) {
   const productColor = await getChairColor(id);
-
-  // validate
-  if (!params.name) throw 'You should provide ProductColor name';
-  if (productColor.name === params.name)
-    throw 'The should provide a new ProductColor name';
-  if (await db.ProductColor.findOne({ where: { name: params.name } })) {
-    throw 'ProductColor "' + params.name + '" is already taken';
-  }
-
-  // copy params to productColor and save
   Object.assign(productColor, params);
   await productColor.save();
   return productColor.get();

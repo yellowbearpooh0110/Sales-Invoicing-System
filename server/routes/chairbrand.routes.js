@@ -36,9 +36,9 @@ function create(req, res, next) {
     .then(() => {
       res.json({ message: 'New ChairBrand was created successfully.' });
     })
-    // .catch(next);
     .catch((err) => {
-      next(new Error(err.original.sqlMessage));
+      if (err.original) next(new Error(err.original.sqlMessage));
+      else next(err);
     });
 }
 
@@ -60,7 +60,10 @@ function update(req, res, next) {
   chairbrandController
     .update(req.params.id, req.body)
     .then((chairbrand) => res.json(chairbrand))
-    .catch(next);
+    .catch((err) => {
+      if (err.original) next(new Error(err.original.sqlMessage));
+      else next(err);
+    });
 }
 
 function _delete(req, res, next) {

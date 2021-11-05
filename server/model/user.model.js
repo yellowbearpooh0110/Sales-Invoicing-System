@@ -10,7 +10,7 @@ function model(sequelize) {
       allowNull: false,
       primaryKey: true,
     },
-    email: { type: DataTypes.STRING, allowNull: false },
+    email: { type: DataTypes.STRING, allowNull: false, unique: true },
     firstName: { type: DataTypes.STRING, allowNull: false },
     lastName: { type: DataTypes.STRING, allowNull: false },
     avatarUrl: { type: DataTypes.STRING, allowNull: true },

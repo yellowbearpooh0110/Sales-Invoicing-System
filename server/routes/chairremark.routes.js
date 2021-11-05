@@ -5,9 +5,9 @@ const Joi = require('joi');
 const admin = require('server/middleware/admin');
 const authorize = require('server/middleware/authorize');
 const validateRequest = require('server/middleware/validate-request');
-const productcolorController = require('server/controller/productcolor.controller');
+const chairremarkController = require('server/controller/chairremark.controller');
 
-router.post('/create', admin(), createSchema, create);
+router.post('/create', authorize(), createSchema, create);
 router.get('/', authorize(), getAll);
 router.get('/:id', authorize(), getById);
 router.put('/:id', admin(), createSchema, update);
@@ -18,7 +18,7 @@ module.exports = router;
 
 function createSchema(req, res, next) {
   const schema = Joi.object({
-    name: Joi.string().required(),
+    detail: Joi.string().required(),
   });
   validateRequest(req, next, schema);
 }
@@ -31,10 +31,10 @@ function bulkDeleteSchema(req, res, next) {
 }
 
 function create(req, res, next) {
-  productcolorController
+  chairremarkController
     .create(req.body)
     .then(() => {
-      res.json({ message: 'New ProductColor was created successfully.' });
+      res.json({ message: 'New ChairRemark was created successfully.' });
     })
     .catch((err) => {
       if (err.original) next(new Error(err.original.sqlMessage));
@@ -43,23 +43,23 @@ function create(req, res, next) {
 }
 
 function getAll(req, res, next) {
-  productcolorController
+  chairremarkController
     .getAll()
-    .then((productcolors) => res.json(productcolors))
+    .then((chairremarks) => res.json(chairremarks))
     .catch(next);
 }
 
 function getById(req, res, next) {
-  productcolorController
+  chairremarkController
     .getById(req.params.id)
-    .then((productcolor) => res.json(productcolor))
+    .then((chairremark) => res.json(chairremark))
     .catch(next);
 }
 
 function update(req, res, next) {
-  productcolorController
+  chairremarkController
     .update(req.params.id, req.body)
-    .then((productcolor) => res.json(productcolor))
+    .then((chairremark) => res.json(chairremark))
     .catch((err) => {
       if (err.original) next(new Error(err.original.sqlMessage));
       else next(err);
@@ -67,18 +67,18 @@ function update(req, res, next) {
 }
 
 function _delete(req, res, next) {
-  productcolorController
+  chairremarkController
     .delete(req.params.id)
-    .then(() => res.json({ message: 'ProductColor was deleted successfully.' }))
+    .then(() => res.json({ message: 'ChairRemark was deleted successfully.' }))
     .catch(next);
 }
 
 function _bulkDelete(req, res, next) {
-  productcolorController
+  chairremarkController
     .bulkDelete({ id: req.body.ids })
     .then((affectedRows) =>
       res.json({
-        message: `${affectedRows} ChairBrand${
+        message: `${affectedRows} ChairRemark${
           affectedRows === 1 ? ' was' : 's were'
         } deleted successfully.`,
       })

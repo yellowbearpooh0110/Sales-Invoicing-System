@@ -36,7 +36,10 @@ function create(req, res, next) {
     .then(() => {
       res.json({ message: 'New ChairModel was created successfully.' });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.original) next(new Error(err.original.sqlMessage));
+      else next(err);
+    });
 }
 
 function getAll(req, res, next) {
@@ -57,7 +60,10 @@ function update(req, res, next) {
   chairmodelController
     .update(req.params.id, req.body)
     .then((chairmodel) => res.json(chairmodel))
-    .catch(next);
+    .catch((err) => {
+      if (err.original) next(new Error(err.original.sqlMessage));
+      else next(err);
+    });
 }
 
 function _delete(req, res, next) {
