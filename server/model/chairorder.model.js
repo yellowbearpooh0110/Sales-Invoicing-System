@@ -20,16 +20,16 @@ function model(sequelize) {
     clientName: { type: DataTypes.STRING, allowNull: false },
     clientDistrict: { type: DataTypes.STRING, allowNull: false },
     clientStreet: { type: DataTypes.STRING, allowNull: false },
+    clientBlock: { type: DataTypes.STRING, allowNull: false },
     clientFloor: { type: DataTypes.STRING, allowNull: false },
     clientUnit: { type: DataTypes.STRING, allowNull: false },
-    clientBlock: { type: DataTypes.STRING, allowNull: false },
-    orderDate: { type: DataTypes.DATE, allowNull: false },
+    orderDate: { type: DataTypes.DATE },
     finishDate: { type: DataTypes.DATE },
-    specialRemarks: { type: DataTypes.STRING },
+    clientRemark: { type: DataTypes.STRING },
   };
 
   const ChairOrder = sequelize.define('ChairOrder', attributes);
-  ChairOrder.belongsTo(ChairStock(sequelize), { foreignKey: 'stockID' });
+  ChairOrder.belongsTo(ChairStock(sequelize), { foreignKey: 'stockId' });
   ChairOrder.belongsTo(User(sequelize), { foreignKey: 'salesmanID' });
 
   return ChairOrder;

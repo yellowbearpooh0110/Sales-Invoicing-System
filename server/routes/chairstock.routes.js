@@ -21,7 +21,7 @@ function createSchema(req, res, next) {
     frameColor: Joi.string().guid(),
     backColor: Joi.string().guid(),
     seatColor: Joi.string().guid(),
-    withHeadrest: Joi.string().guid(),
+    withHeadrest: Joi.boolean(),
     chairBrand: Joi.string().guid(),
     chairModel: Joi.string().guid(),
     QTY: Joi.number().required(),

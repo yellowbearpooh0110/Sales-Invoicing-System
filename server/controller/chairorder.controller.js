@@ -18,7 +18,30 @@ async function getById(id) {
 }
 
 async function create(params) {
-  await db.ChairOrder.create(params);
+  const {
+    chairBrand,
+    chairModel,
+    frameColor,
+    backColor,
+    seatColor,
+    chairRemark,
+    ...restParams
+  } = params;
+  const stockParams = {
+    chairBrand,
+    chairModel,
+    frameColor,
+    backColor,
+    seatColor,
+    chairRemark,
+  };
+  let chairStock = await db.ChairStock.findOne({
+    where: stockParams,
+  });
+  if (!chairStock)
+    chairStock = await db.ChairStock.create({ QTY: 0, ...stockParams });
+  restParams.stockId = chairStock.id;
+  await db.ChairOrder.create(restParams);
 }
 
 async function update(id, params) {

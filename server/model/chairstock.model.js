@@ -19,7 +19,7 @@ function model(sequelize) {
     withAdArmrest: {
       type: DataTypes.BOOLEAN,
     },
-    specialRemarks: {
+    chairRemark: {
       type: DataTypes.STRING,
     },
     QTY: {

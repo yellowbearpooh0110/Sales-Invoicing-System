@@ -7,7 +7,7 @@ const authorize = require('server/middleware/authorize');
 const validateRequest = require('server/middleware/validate-request');
 const chairorderController = require('server/controller/chairorder.controller');
 
-router.post('/create', admin(), createSchema, create);
+router.post('/create', authorize(), create);
 router.get('/', authorize(), getAll);
 router.get('/:id', authorize(), getById);
 router.put('/:id', admin(), createSchema, update);
