@@ -10,7 +10,9 @@ module.exports = {
 };
 
 async function getAll() {
-  return await db.ChairBrand.findAll();
+  return await db.ChairBrand.findAll({
+    order: ['createdAt'],
+  });
 }
 
 async function getById(id) {

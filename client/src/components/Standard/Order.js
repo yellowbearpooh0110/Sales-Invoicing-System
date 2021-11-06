@@ -182,14 +182,15 @@ export default connect(mapStateToProps)((props) => {
   };
 
   const handleCreate = (event) => {
+    console.log(brand);
     event.preventDefault();
     axios
       .post(`/chairorder/create`, {
-        chairBrand: brand ? brand.id : null,
-        chairModel: model ? model.id : null,
-        frameColor: frameColor ? frameColor.id : null,
-        backColor: backColor ? backColor.id : null,
-        seatColor: seatColor ? seatColor.id : null,
+        chairBrandId: brand ? brand.id : null,
+        chairModelId: model ? model.id : null,
+        frameColorId: frameColor ? frameColor.id : null,
+        backColorId: backColor ? backColor.id : null,
+        seatColorId: seatColor ? seatColor.id : null,
         chairRemark,
         clientName,
         clientDistrict,

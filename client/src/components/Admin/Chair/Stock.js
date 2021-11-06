@@ -225,7 +225,27 @@ const Stock = connect(mapStateToProps)((props) => {
   return (
     <>
       <DataGrid
-        rows={stocks}
+        rows={stocks.map(
+          ({
+            chairBrand,
+            chairModel,
+            frameColor,
+            backColor,
+            seatColor,
+            withHeadrest,
+            withAdArmrest,
+            ...restProps
+          }) => ({
+            chairBrand: chairBrand ? chairBrand.name : null,
+            chairModel: chairModel ? chairModel.name : null,
+            frameColor: frameColor ? frameColor.name : null,
+            backColor: backColor ? backColor.name : null,
+            seatColor: seatColor ? seatColor.name : null,
+            withHeadrest: withHeadrest ? 'Yes' : 'No',
+            withAdArmrest: withAdArmrest ? 'Yes' : 'No',
+            restProps,
+          })
+        )}
         columns={columns}
         onEditClick={handleEditClick}
         onRemoveClick={handleRemoveClick}

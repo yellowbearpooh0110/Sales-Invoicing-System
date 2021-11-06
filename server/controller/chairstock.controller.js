@@ -12,8 +12,14 @@ module.exports = {
 
 async function getAll() {
   return await db.ChairStock.findAll({
-    // attributes: ['id', 'chairBrandRef'],
-    include: [{ model: db.ChairBrand, as: 'chairBrand', attributes: ['name'] }],
+    attributes: ['id', 'chairRemark', 'QTY', 'withHeadrest', 'withAdArmrest'],
+    include: [
+      { model: db.ChairBrand, as: 'chairBrand', attributes: ['name'] },
+      { model: db.ChairModel, as: 'chairModel', attributes: ['name'] },
+      { model: db.ProductColor, as: 'frameColor', attributes: ['name'] },
+      { model: db.ProductColor, as: 'backColor', attributes: ['name'] },
+      { model: db.ProductColor, as: 'seatColor', attributes: ['name'] },
+    ],
   });
 }
 

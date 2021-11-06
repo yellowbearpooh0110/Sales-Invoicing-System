@@ -15,25 +15,47 @@ function model(sequelize) {
     },
     withHeadrest: {
       type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
     withAdArmrest: {
       type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
     chairRemark: {
       type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
     },
     QTY: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      defaultValue: 0,
     },
   };
 
   const ChairStock = sequelize.define('ChairStock', attributes);
-  ChairStock.belongsTo(ChairBrand(sequelize), { as: 'chairBrand' });
-  ChairStock.belongsTo(ChairModel(sequelize), { foreignKey: 'chairModel' });
-  ChairStock.belongsTo(ProductColor(sequelize), { foreignKey: 'frameColor' });
-  ChairStock.belongsTo(ProductColor(sequelize), { foreignKey: 'backColor' });
-  ChairStock.belongsTo(ProductColor(sequelize), { foreignKey: 'seatColor' });
+  ChairStock.belongsTo(ChairBrand(sequelize), {
+    as: 'chairBrand',
+    foreignKey: 'chairBrandId',
+  });
+  ChairStock.belongsTo(ChairModel(sequelize), {
+    as: 'chairModel',
+    foreignKey: 'chairModelId',
+  });
+  ChairStock.belongsTo(ProductColor(sequelize), {
+    as: 'frameColor',
+    foreignKey: 'frameColorId',
+  });
+  ChairStock.belongsTo(ProductColor(sequelize), {
+    as: 'backColor',
+    foreignKey: 'backColorId',
+  });
+  ChairStock.belongsTo(ProductColor(sequelize), {
+    as: 'seatColor',
+    foreignKey: 'seatColorId',
+  });
 
   return ChairStock;
 }

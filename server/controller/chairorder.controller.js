@@ -10,7 +10,9 @@ module.exports = {
 };
 
 async function getAll() {
-  return await db.ChairOrder.findAll();
+  return await db.ChairOrder.findAll({
+    include: [{ model: db.User, as: 'salesman', attributes: ['email'] }],
+  });
 }
 
 async function getById(id) {
@@ -19,20 +21,20 @@ async function getById(id) {
 
 async function create(params) {
   const {
-    chairBrand,
-    chairModel,
-    frameColor,
-    backColor,
-    seatColor,
+    chairBrandId,
+    chairModelId,
+    frameColorId,
+    backColorId,
+    seatColorId,
     chairRemark,
     ...restParams
   } = params;
   const stockParams = {
-    chairBrandId: chairBrand,
-    chairModel,
-    frameColor,
-    backColor,
-    seatColor,
+    chairBrandId,
+    chairModelId,
+    frameColorId,
+    backColorId,
+    seatColorId,
     chairRemark,
   };
   let chairStock = await db.ChairStock.findOne({

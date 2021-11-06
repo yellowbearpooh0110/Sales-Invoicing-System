@@ -29,8 +29,14 @@ function model(sequelize) {
   };
 
   const ChairOrder = sequelize.define('ChairOrder', attributes);
-  ChairOrder.belongsTo(ChairStock(sequelize), { foreignKey: 'stockId' });
-  ChairOrder.belongsTo(User(sequelize), { foreignKey: 'salesmanId' });
+  ChairOrder.belongsTo(ChairStock(sequelize), {
+    as: 'stock',
+    foreignKey: { name: 'stockId', allowNull: false },
+  });
+  ChairOrder.belongsTo(User(sequelize), {
+    as: 'salesman',
+    foreignKey: { name: 'salesmanId', allowNull: false },
+  });
 
   return ChairOrder;
 }
