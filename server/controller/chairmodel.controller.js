@@ -10,7 +10,9 @@ module.exports = {
 };
 
 async function getAll() {
-  return await db.ChairModel.findAll();
+  return await db.ChairModel.findAll({
+    order: ['createdAt'],
+  });
 }
 
 async function getById(id) {

@@ -10,7 +10,9 @@ module.exports = {
 };
 
 async function getAll() {
-  return await db.ProductColor.findAll();
+  return await db.ProductColor.findAll({
+    order: ['createdAt'],
+  });
 }
 
 async function getById(id) {

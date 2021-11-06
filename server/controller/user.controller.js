@@ -26,7 +26,9 @@ async function authenticate({ email, password }) {
 }
 
 async function getAll() {
-  return await db.User.findAll();
+  return await db.User.findAll({
+    order: ['createdAt'],
+  });
 }
 
 async function getById(id) {

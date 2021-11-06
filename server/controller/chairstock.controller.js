@@ -20,6 +20,7 @@ async function getAll() {
       { model: db.ProductColor, as: 'backColor', attributes: ['name'] },
       { model: db.ProductColor, as: 'seatColor', attributes: ['name'] },
     ],
+    order: ['createdAt'],
   });
 }
 

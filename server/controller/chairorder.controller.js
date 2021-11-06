@@ -12,6 +12,7 @@ module.exports = {
 async function getAll() {
   return await db.ChairOrder.findAll({
     include: [{ model: db.User, as: 'salesman', attributes: ['email'] }],
+    order: ['createdAt'],
   });
 }
 
