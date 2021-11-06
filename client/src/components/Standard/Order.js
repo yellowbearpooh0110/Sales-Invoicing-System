@@ -8,7 +8,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Popper,
   Stack,
   TextField,
 } from '@mui/material';
@@ -42,6 +41,12 @@ const columns = [
     numeric: false,
     disablePadding: false,
     label: 'Client Address',
+  },
+  {
+    id: 'salesmanEmail',
+    numeric: false,
+    disablePadding: false,
+    label: 'Salesman Email',
   },
 ];
 
@@ -268,7 +273,7 @@ export default connect(mapStateToProps)((props) => {
 
   const getOrders = (cancelToken) => {
     axios
-      .get('/chairorder', { cancelToken })
+      .get('/chairorder/current', { cancelToken })
       .then((response) => {
         // handle success
         setOrders(response.data);
@@ -330,9 +335,10 @@ export default connect(mapStateToProps)((props) => {
             clientBlock,
             clientFloor,
             clientUnit,
+            salesman,
             ...restProps
           }) => ({
-            ...restProps,
+            salesmanEmail: salesman.email,
             clientAddress: [
               clientDistrict,
               clientStreet,
@@ -340,6 +346,7 @@ export default connect(mapStateToProps)((props) => {
               clientFloor,
               clientUnit,
             ].join(', '),
+            ...restProps,
           })
         )}
         columns={columns}

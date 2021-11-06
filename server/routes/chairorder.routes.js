@@ -8,7 +8,8 @@ const validateRequest = require('server/middleware/validate-request');
 const chairorderController = require('server/controller/chairorder.controller');
 
 router.post('/create', authorize(), create);
-router.get('/', authorize(), getAll);
+router.get('/', admin(), getAll);
+router.get('/current', authorize(), getCurrent);
 router.get('/:id', authorize(), getById);
 router.put('/:id', admin(), createSchema, update);
 router.delete('/:id', admin(), _delete);
@@ -42,6 +43,13 @@ function create(req, res, next) {
 function getAll(req, res, next) {
   chairorderController
     .getAll()
+    .then((chairorders) => res.json(chairorders))
+    .catch(next);
+}
+
+function getCurrent(req, res, next) {
+  chairorderController
+    .getAll({ salesmanId: req.user.id })
     .then((chairorders) => res.json(chairorders))
     .catch(next);
 }

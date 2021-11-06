@@ -9,8 +9,9 @@ module.exports = {
   bulkDelete: _bulkDelete,
 };
 
-async function getAll() {
+async function getAll(where) {
   return await db.ChairOrder.findAll({
+    where,
     include: [{ model: db.User, as: 'salesman', attributes: ['email'] }],
     order: ['createdAt'],
   });
