@@ -1,6 +1,5 @@
 const db = require('server/helper/db');
 const Sequelize = require('Sequelize');
-const { param } = require('../routes/chairstock.routes');
 
 module.exports = {
   getAll,
@@ -12,7 +11,10 @@ module.exports = {
 };
 
 async function getAll() {
-  return await db.ChairStock.findAll();
+  return await db.ChairStock.findAll({
+    // attributes: ['id', 'chairBrandRef'],
+    include: [{ model: db.ChairBrand, as: 'chairBrand', attributes: ['name'] }],
+  });
 }
 
 async function getById(id) {

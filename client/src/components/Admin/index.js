@@ -16,7 +16,7 @@ import AppHeader from 'components/Common/AppHeader';
 import { CollapsedSidebar, FixedSidebar } from 'components/Common/Sidebar';
 import { logout } from 'services/auth.service';
 import Users from './Users';
-import { ChairBrand, ChairModel, ChairRemark, ChairStock } from './Chair';
+import { ChairBrand, ChairModel, ChairOrder, ChairStock } from './Chair';
 import Color from './Color';
 
 function mapStateToProps(state) {
@@ -32,7 +32,6 @@ const menuLists = [
   [
     { path: '/admin/chair/brand', icon: <BlurOnIcon />, label: 'Brand' },
     { path: '/admin/chair/model', icon: <StyleIcon />, label: 'Model' },
-    { path: '/admin/chair/remark', icon: <StyleIcon />, label: 'Remark' },
     { path: '/admin/chair/stock', icon: <StorefrontIcon />, label: 'Stock' },
     { path: '/admin/chair/order', icon: <BookOnlineIcon />, label: 'Order' },
   ],
@@ -110,11 +109,7 @@ const Admin = (props) => {
             <Route path={`${path}/user`} component={Users} />
             <Route path={`${path}/chair/brand`} exact component={ChairBrand} />
             <Route path={`${path}/chair/model`} exact component={ChairModel} />
-            <Route
-              path={`${path}/chair/remark`}
-              exact
-              component={ChairRemark}
-            />
+            <Route path={`${path}/chair/order`} exact component={ChairOrder} />
             <Route path={`${path}/chair/stock`} exact component={ChairStock} />
             <Route path={`${path}/color`} exact component={Color} />
           </Switch>

@@ -32,7 +32,7 @@ function bulkDeleteSchema(req, res, next) {
 
 function create(req, res, next) {
   chairorderController
-    .create(req.body)
+    .create({ ...req.body, salesmanId: req.user.id })
     .then(() => {
       res.json({ message: 'New ChairOrder was created successfully.' });
     })

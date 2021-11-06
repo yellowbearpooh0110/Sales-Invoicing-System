@@ -30,7 +30,7 @@ function model(sequelize) {
 
   const ChairOrder = sequelize.define('ChairOrder', attributes);
   ChairOrder.belongsTo(ChairStock(sequelize), { foreignKey: 'stockId' });
-  ChairOrder.belongsTo(User(sequelize), { foreignKey: 'salesmanID' });
+  ChairOrder.belongsTo(User(sequelize), { foreignKey: 'salesmanId' });
 
   return ChairOrder;
 }

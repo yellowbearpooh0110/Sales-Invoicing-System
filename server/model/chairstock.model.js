@@ -29,7 +29,7 @@ function model(sequelize) {
   };
 
   const ChairStock = sequelize.define('ChairStock', attributes);
-  ChairStock.belongsTo(ChairBrand(sequelize), { foreignKey: 'chairBrand' });
+  ChairStock.belongsTo(ChairBrand(sequelize), { as: 'chairBrand' });
   ChairStock.belongsTo(ChairModel(sequelize), { foreignKey: 'chairModel' });
   ChairStock.belongsTo(ProductColor(sequelize), { foreignKey: 'frameColor' });
   ChairStock.belongsTo(ProductColor(sequelize), { foreignKey: 'backColor' });

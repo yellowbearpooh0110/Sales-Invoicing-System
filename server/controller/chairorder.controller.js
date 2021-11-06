@@ -28,7 +28,7 @@ async function create(params) {
     ...restParams
   } = params;
   const stockParams = {
-as    chairBrandId: chairBrand,
+    chairBrandId: chairBrand,
     chairModel,
     frameColor,
     backColor,

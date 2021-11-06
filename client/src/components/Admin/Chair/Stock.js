@@ -23,13 +23,13 @@ const columns = [
     label: 'Id',
   },
   {
-    id: 'brandName',
+    id: 'chairBrand',
     numeric: false,
     disablePadding: false,
     label: 'Brand',
   },
   {
-    id: 'modelName',
+    id: 'chairModel',
     numeric: false,
     disablePadding: false,
     label: 'Model',
@@ -38,7 +38,19 @@ const columns = [
     id: 'frameColor',
     numeric: false,
     disablePadding: false,
-    label: 'FrameColor',
+    label: 'Frame Color',
+  },
+  {
+    id: 'backColor',
+    numeric: false,
+    disablePadding: false,
+    label: 'Back Color',
+  },
+  {
+    id: 'seatColor',
+    numeric: false,
+    disablePadding: false,
+    label: 'Seat Color',
   },
 ];
 
