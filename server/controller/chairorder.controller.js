@@ -12,7 +12,28 @@ module.exports = {
 async function getAll(where) {
   return await db.ChairOrder.findAll({
     where,
-    include: [{ model: db.User, as: 'salesman', attributes: ['email'] }],
+    include: [
+      { model: db.User, as: 'salesman', attributes: ['email'] },
+      {
+        model: db.ChairStock,
+        as: 'stock',
+        attributes: [
+          'id',
+          'chairRemark',
+          'QTY',
+          'withHeadrest',
+          'withAdArmrest',
+        ],
+        include: [
+          { model: db.ChairBrand, as: 'chairBrand', attributes: ['name'] },
+          { model: db.ChairModel, as: 'chairModel', attributes: ['name'] },
+          { model: db.ProductColor, as: 'frameColor', attributes: ['name'] },
+          { model: db.ProductColor, as: 'backColor', attributes: ['name'] },
+          { model: db.ProductColor, as: 'seatColor', attributes: ['name'] },
+        ],
+        order: ['createdAt'],
+      },
+    ],
     order: ['createdAt'],
   });
 }

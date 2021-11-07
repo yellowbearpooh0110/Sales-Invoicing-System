@@ -11,6 +11,7 @@ module.exports = {
 
 async function getAll() {
   return await db.ProductColor.findAll({
+    attributes: ['id', 'name'],
     order: ['createdAt'],
   });
 }

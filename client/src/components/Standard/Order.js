@@ -82,8 +82,10 @@ export default connect(mapStateToProps)((props) => {
 
   const handleEditClick = (event, index) => {
     event.preventDefault();
-    if (index < brands.length && index >= 0) {
+    if (index < orders.length && index >= 0) {
       setID(orders[index].id);
+      // setBrand(orders[index].b)
+      console.log(brands);
     }
     setEditOpen(true);
   };
@@ -367,23 +369,143 @@ export default connect(mapStateToProps)((props) => {
       >
         Add New Order
       </Button>
-      <Dialog open={editOpen}>
+      <Dialog fullWidth maxWidth="sm" open={editOpen}>
         <DialogTitle>Edit ChairOrder</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Please Edit the ChairOrder and Click Save button.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Name"
-            fullWidth
-            variant="standard"
-            value={clientName}
-            onChange={(e) => {
-              setClientName(e.target.value);
-            }}
-          />
+          <Stack spacing={1}>
+            <DialogContentText>
+              Please Input Order Name and Click Save button.
+            </DialogContentText>
+            {[
+              {
+                value: brand,
+                values: brands,
+                setValue: setBrand,
+                label: 'ChairBrand',
+              },
+              {
+                value: model,
+                values: models,
+                setValue: setModel,
+                label: 'ChairModel',
+              },
+              {
+                value: frameColor,
+                values: colors,
+                setValue: setFrameColor,
+                label: 'ChairFrameColor',
+              },
+              {
+                value: backColor,
+                values: colors,
+                setValue: setBackColor,
+                label: 'ChairBackColor',
+              },
+              {
+                value: seatColor,
+                values: colors,
+                setValue: setSeatColor,
+                label: 'ChairSeatColor',
+              },
+            ].map(({ value, values, setValue, label }, index) => (
+              <Autocomplete
+                key={index}
+                disablePortal
+                value={value ? value : null}
+                onChange={(event, newValue) => {
+                  event.preventDefault();
+                  setValue(newValue);
+                }}
+                options={values}
+                getOptionLabel={(option) => option.name}
+                fullWidth
+                renderInput={(params) => (
+                  <TextField {...params} label={label} variant="standard" />
+                )}
+              />
+            ))}
+            <Autocomplete
+              disablePortal
+              freeSolo
+              value={chairRemark}
+              onChange={(event, newValue) => {
+                event.preventDefault();
+                setChairRemark(newValue);
+              }}
+              options={chairRemarks}
+              fullWidth
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Chair Remark"
+                  variant="standard"
+                  onChange={(event) => {
+                    event.preventDefault();
+                    setChairRemark(event.target.value);
+                  }}
+                />
+              )}
+            />
+
+            {[
+              {
+                label: 'Client Name',
+                value: clientName,
+                setValue: setClientName,
+                type: 'text',
+              },
+              {
+                label: 'ClientDistrict',
+                value: clientDistrict,
+                setValue: setClientDistrict,
+                type: 'text',
+              },
+              {
+                label: 'ClientStreet',
+                value: clientStreet,
+                setValue: setClientStreet,
+                type: 'text',
+              },
+              {
+                label: 'ClientBlock',
+                value: clientBlock,
+                setValue: setClientBlock,
+                type: 'number',
+              },
+              {
+                label: 'ClientFloor',
+                value: clientFloor,
+                setValue: setClientFloor,
+                type: 'number',
+              },
+              {
+                label: 'ClientUnit',
+                value: clientUnit,
+                setValue: setClientUnit,
+                type: 'number',
+              },
+              {
+                label: 'Remark',
+                value: remark,
+                setValue: setRemark,
+                type: 'text',
+              },
+            ].map((item, index) => (
+              <TextField
+                key={index}
+                autoFocus
+                margin="dense"
+                label={item.label}
+                fullWidth
+                variant="standard"
+                value={item.value}
+                type={item.type}
+                onChange={(e) => {
+                  item.setValue(e.target.value);
+                }}
+              />
+            ))}
+          </Stack>
         </DialogContent>
         <DialogActions>
           <Button
@@ -397,7 +519,7 @@ export default connect(mapStateToProps)((props) => {
         </DialogActions>
       </Dialog>
       <Dialog fullWidth maxWidth="sm" open={createOpen}>
-        <DialogTitle>Edit ChairOrder</DialogTitle>
+        <DialogTitle>Create ChairOrder</DialogTitle>
         <DialogContent>
           <Stack spacing={1}>
             <DialogContentText>

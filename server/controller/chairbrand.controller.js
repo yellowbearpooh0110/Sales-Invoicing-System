@@ -11,6 +11,7 @@ module.exports = {
 
 async function getAll() {
   return await db.ChairBrand.findAll({
+    attributes: ['id', 'name'],
     order: ['createdAt'],
   });
 }
