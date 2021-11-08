@@ -82,10 +82,25 @@ export default connect(mapStateToProps)((props) => {
 
   const handleEditClick = (event, index) => {
     event.preventDefault();
+    getBrands();
+    getModels();
+    getColors();
+    getChairRemarks();
+    console.log(index);
     if (index < orders.length && index >= 0) {
       setID(orders[index].id);
-      // setBrand(orders[index].b)
-      console.log(brands);
+      setBrand(orders[index].stock.chairBrand);
+      setModel(orders[index].stock.chairModel);
+      setFrameColor(orders[index].stock.frameColor);
+      setBackColor(orders[index].stock.backColor);
+      setSeatColor(orders[index].stock.seatColor);
+      setChairRemark(orders[index].stock.chairRemark);
+      setClientName(orders[index].clientName);
+      setClientDistrict(orders[index].clientDistrict);
+      setClientStreet(orders[index].clientStreet);
+      setClientBlock(orders[index].clientBlock);
+      setClientFloor(orders[index].clientFloor);
+      setClientUnit(orders[index].clientUnit);
     }
     setEditOpen(true);
   };
@@ -331,15 +346,20 @@ export default connect(mapStateToProps)((props) => {
     <>
       <DataGrid
         rows={orders.map(
-          ({
-            clientDistrict,
-            clientStreet,
-            clientBlock,
-            clientFloor,
-            clientUnit,
-            salesman,
-            ...restProps
-          }) => ({
+          (
+            {
+              id,
+              clientDistrict,
+              clientStreet,
+              clientBlock,
+              clientFloor,
+              clientUnit,
+              salesman,
+              ...restProps
+            },
+            index
+          ) => ({
+            id: index,
             salesmanEmail: salesman.email,
             clientAddress: [
               clientDistrict,

@@ -319,13 +319,15 @@ const DataGrid = (props) => {
                           align="center"
                           padding="none"
                         >
-                          {field.id === 'id' ? index + 1 : row[field.id]}
+                          {field.id === 'id'
+                            ? row[field.id] + 1
+                            : row[field.id]}
                         </TableCell>
                       ))}
                       <TableCell align="center">
                         <IconButton
                           onClick={(e) => {
-                            onEditClick(e, index);
+                            onEditClick(e, row.id);
                           }}
                         >
                           <EditIcon />

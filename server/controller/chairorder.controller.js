@@ -25,11 +25,31 @@ async function getAll(where) {
           'withAdArmrest',
         ],
         include: [
-          { model: db.ChairBrand, as: 'chairBrand', attributes: ['name'] },
-          { model: db.ChairModel, as: 'chairModel', attributes: ['name'] },
-          { model: db.ProductColor, as: 'frameColor', attributes: ['name'] },
-          { model: db.ProductColor, as: 'backColor', attributes: ['name'] },
-          { model: db.ProductColor, as: 'seatColor', attributes: ['name'] },
+          {
+            model: db.ChairBrand,
+            as: 'chairBrand',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: db.ChairModel,
+            as: 'chairModel',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: db.ProductColor,
+            as: 'frameColor',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: db.ProductColor,
+            as: 'backColor',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: db.ProductColor,
+            as: 'seatColor',
+            attributes: ['id', 'name'],
+          },
         ],
         order: ['createdAt'],
       },
