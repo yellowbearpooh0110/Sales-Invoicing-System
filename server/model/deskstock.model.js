@@ -20,24 +20,38 @@ function model(sequelize) {
     },
     beam: {
       type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
     },
     akInfo: {
       type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
     },
     woodInfo_1: {
       type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
     },
     woodInfo_2: {
       type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
     },
     melamineInfo: {
       type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
     },
     laminateInfo: {
       type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
     },
     bambooInfo: {
       type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
     },
     deskRemark: {
       type: DataTypes.STRING,

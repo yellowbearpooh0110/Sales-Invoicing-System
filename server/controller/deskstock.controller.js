@@ -12,13 +12,23 @@ module.exports = {
 
 async function getAll() {
   return await db.DeskStock.findAll({
-    attributes: ['id', 'deskRemark', 'QTY', 'withHeadrest', 'withAdArmrest'],
+    attributes: [
+      'id',
+      'armSize',
+      'feetSize',
+      'beam',
+      'akInfo',
+      'woodInfo_1',
+      'woodInfo_2',
+      'melamineInfo',
+      'laminateInfo',
+      'bambooInfo',
+      'deskRemark',
+      'QTY',
+    ],
     include: [
-      { model: db.DeskBrand, as: 'deskBrand', attributes: ['name'] },
       { model: db.DeskModel, as: 'deskModel', attributes: ['name'] },
-      { model: db.ProductColor, as: 'frameColor', attributes: ['name'] },
-      { model: db.ProductColor, as: 'backColor', attributes: ['name'] },
-      { model: db.ProductColor, as: 'seatColor', attributes: ['name'] },
+      { model: db.ProductColor, as: 'color', attributes: ['name'] },
     ],
     order: ['createdAt'],
   });

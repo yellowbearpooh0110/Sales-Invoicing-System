@@ -6,9 +6,7 @@ import {
   BookOnline as BookOnlineIcon,
   BlurOn as BlurOnIcon,
   ColorLens as ColorLensIcon,
-  Home as HomeIcon,
   Storefront as StorefrontIcon,
-  Style as StyleIcon,
 } from '@mui/icons-material';
 import Swal from 'sweetalert2';
 

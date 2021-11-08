@@ -3,11 +3,13 @@ import { connect } from 'react-redux';
 import {
   Autocomplete,
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  FormControlLabel,
   Stack,
   TextField,
 } from '@mui/material';
@@ -78,6 +80,8 @@ export default connect(mapStateToProps)((props) => {
   const [frameColor, setFrameColor] = useState();
   const [backColor, setBackColor] = useState();
   const [seatColor, setSeatColor] = useState();
+  const [withHeadrest, setWithHeadrest] = useState(false);
+  const [withAdArmrest, setWithAdArmrest] = useState(false);
   const [chairRemark, setChairRemark] = useState('');
 
   const handleEditClick = (event, index) => {
@@ -93,6 +97,8 @@ export default connect(mapStateToProps)((props) => {
       setFrameColor(orders[index].stock.frameColor);
       setBackColor(orders[index].stock.backColor);
       setSeatColor(orders[index].stock.seatColor);
+      setWithHeadrest(orders[index].stock.withHeadrest);
+      setWithAdArmrest(orders[index].stock.withAdArmrest);
       setChairRemark(orders[index].stock.chairRemark);
       setClientDistrict(orders[index].clientDistrict);
       setClientStreet(orders[index].clientStreet);
@@ -100,6 +106,7 @@ export default connect(mapStateToProps)((props) => {
       setClientBlock(orders[index].clientBlock);
       setClientFloor(orders[index].clientFloor);
       setClientUnit(orders[index].clientUnit);
+      console.log(orders[index].clientRemark);
       setRemark(orders[index].clientRemark);
       setEditOpen(true);
     }
@@ -185,6 +192,8 @@ export default connect(mapStateToProps)((props) => {
         frameColorId: frameColor ? frameColor.id : null,
         backColorId: backColor ? backColor.id : null,
         seatColorId: seatColor ? seatColor.id : null,
+        withHeadrest,
+        withAdArmrest,
         chairRemark,
         clientName,
         clientDistrict,
@@ -225,6 +234,8 @@ export default connect(mapStateToProps)((props) => {
         frameColorId: frameColor ? frameColor.id : null,
         backColorId: backColor ? backColor.id : null,
         seatColorId: seatColor ? seatColor.id : null,
+        withHeadrest,
+        withAdArmrest,
         chairRemark,
         clientName,
         clientDistrict,
@@ -241,6 +252,8 @@ export default connect(mapStateToProps)((props) => {
         setFrameColor(null);
         setBackColor(null);
         setSeatColor(null);
+        setWithHeadrest(false);
+        setWithAdArmrest(false);
         setChairRemark('');
         setClientName('');
         setClientDistrict('');
@@ -456,6 +469,28 @@ export default connect(mapStateToProps)((props) => {
                 )}
               />
             ))}
+            <FormControlLabel
+              control={
+                <Checkbox
+                  value={withHeadrest}
+                  onChange={() => {
+                    setWithHeadrest(!withHeadrest);
+                  }}
+                />
+              }
+              label="With Headrest"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  value={withAdArmrest}
+                  onChange={() => {
+                    setWithAdArmrest(!withAdArmrest);
+                  }}
+                />
+              }
+              label="With Adjustable Armrests"
+            />
             <Autocomplete
               disablePortal
               freeSolo
@@ -478,7 +513,6 @@ export default connect(mapStateToProps)((props) => {
                 />
               )}
             />
-
             {[
               {
                 label: 'Client Name',
@@ -605,6 +639,28 @@ export default connect(mapStateToProps)((props) => {
                 )}
               />
             ))}
+            <FormControlLabel
+              control={
+                <Checkbox
+                  value={withHeadrest}
+                  onChange={() => {
+                    setWithHeadrest(!withHeadrest);
+                  }}
+                />
+              }
+              label="With Headrest"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  value={withAdArmrest}
+                  onChange={() => {
+                    setWithAdArmrest(!withAdArmrest);
+                  }}
+                />
+              }
+              label="With Adjustable Armrests"
+            />
             <Autocomplete
               disablePortal
               freeSolo

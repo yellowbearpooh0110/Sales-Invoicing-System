@@ -23,34 +23,64 @@ const columns = [
     label: 'Id',
   },
   {
-    id: 'chairBrand',
-    numeric: false,
-    disablePadding: false,
-    label: 'Brand',
-  },
-  {
-    id: 'chairModel',
+    id: 'deskModel',
     numeric: false,
     disablePadding: false,
     label: 'Model',
   },
   {
-    id: 'frameColor',
+    id: 'color',
     numeric: false,
     disablePadding: false,
-    label: 'Frame Color',
+    label: 'Color',
   },
   {
-    id: 'backColor',
+    id: 'beam',
     numeric: false,
     disablePadding: false,
-    label: 'Back Color',
+    label: 'Beam',
   },
   {
-    id: 'seatColor',
+    id: 'akInfo',
     numeric: false,
     disablePadding: false,
-    label: 'Seat Color',
+    label: 'AK Info',
+  },
+  {
+    id: 'woodInfo_1',
+    numeric: false,
+    disablePadding: false,
+    label: 'Wood Info 1',
+  },
+  {
+    id: 'woodInfo_2',
+    numeric: false,
+    disablePadding: false,
+    label: 'Wood Info 2',
+  },
+  {
+    id: 'melamineInfo',
+    numeric: false,
+    disablePadding: false,
+    label: 'Melamine Info',
+  },
+  {
+    id: 'laminateInfo',
+    numeric: false,
+    disablePadding: false,
+    label: 'Laminate Info',
+  },
+  {
+    id: 'bambooInfo',
+    numeric: false,
+    disablePadding: false,
+    label: 'Bamboo Info',
+  },
+  {
+    id: 'deskRemark',
+    numeric: false,
+    disablePadding: false,
+    label: 'Desk Remark',
   },
 ];
 
@@ -225,32 +255,12 @@ const Stock = connect(mapStateToProps)((props) => {
   return (
     <>
       <DataGrid
-        rows={stocks.map(
-          (
-            {
-              id,
-              chairBrand,
-              chairModel,
-              frameColor,
-              backColor,
-              seatColor,
-              withHeadrest,
-              withAdArmrest,
-              ...restProps
-            },
-            index
-          ) => ({
-            id: index,
-            chairBrand: chairBrand ? chairBrand.name : null,
-            chairModel: chairModel ? chairModel.name : null,
-            frameColor: frameColor ? frameColor.name : null,
-            backColor: backColor ? backColor.name : null,
-            seatColor: seatColor ? seatColor.name : null,
-            withHeadrest: withHeadrest ? 'Yes' : 'No',
-            withAdArmrest: withAdArmrest ? 'Yes' : 'No',
-            ...restProps,
-          })
-        )}
+        rows={stocks.map(({ id, deskModel, color, ...restProps }, index) => ({
+          id: index,
+          deskModel: deskModel ? deskModel.name : null,
+          color: color ? color.name : null,
+          ...restProps,
+        }))}
         columns={columns}
         onEditClick={handleEditClick}
         onRemoveClick={handleRemoveClick}

@@ -25,7 +25,7 @@ function model(sequelize) {
     clientUnit: { type: DataTypes.STRING, allowNull: false },
     orderDate: { type: DataTypes.DATE },
     finishDate: { type: DataTypes.DATE },
-    clientRemark: { type: DataTypes.STRING },
+    clientRemark: { type: DataTypes.STRING, defaultValue: '' },
   };
 
   const DeskOrder = sequelize.define('DeskOrder', attributes);
