@@ -1,6 +1,6 @@
 const { DataTypes, Sequelize } = require('sequelize');
-const ChairBrand = require('./chairbrand.model');
-const ChairModel = require('./chairmodel.model');
+const DeskBrand = require('./deskbrand.model');
+const DeskModel = require('./deskmodel.model');
 const ProductColor = require('./productcolor.model');
 
 module.exports = model;
@@ -13,17 +13,34 @@ function model(sequelize) {
       allowNull: false,
       primaryKey: true,
     },
-    withHeadrest: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
+    armSize: {
+      type: DataTypes.FLOAT,
     },
-    withAdArmrest: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
+    feetSize: {
+      type: DataTypes.FLOAT,
     },
-    chairRemark: {
+    beam: {
+      type: DataTypes.STRING,
+    },
+    akInfo: {
+      type: DataTypes.STRING,
+    },
+    woodInfo1: {
+      type: DataTypes.STRING,
+    },
+    woodInfo2: {
+      type: DataTypes.STRING,
+    },
+    melamineInfo: {
+      type: DataTypes.STRING,
+    },
+    laminateInfo: {
+      type: DataTypes.STRING,
+    },
+    bambooInfo: {
+      type: DataTypes.STRING,
+    },
+    deskRemark: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: '',
@@ -39,6 +56,10 @@ function model(sequelize) {
   DeskStock.belongsTo(DeskModel(sequelize), {
     as: 'deskModel',
     foreignKey: 'deskModelId',
+  });
+  DeskStock.belongsTo(ProductColor(sequelize), {
+    as: 'color',
+    foreignKey: 'colorId',
   });
   return DeskStock;
 }
