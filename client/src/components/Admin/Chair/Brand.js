@@ -201,7 +201,10 @@ const Brand = connect(mapStateToProps)((props) => {
   return (
     <>
       <DataGrid
-        rows={brands}
+        rows={brands.map(({ id, ...restProps }, index) => ({
+          id: index,
+          ...restProps,
+        }))}
         columns={columns}
         onEditClick={handleEditClick}
         onRemoveClick={handleRemoveClick}

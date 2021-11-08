@@ -17,6 +17,7 @@ import { CollapsedSidebar, FixedSidebar } from 'components/Common/Sidebar';
 import { logout } from 'services/auth.service';
 import Users from './Users';
 import { ChairBrand, ChairModel, ChairOrder, ChairStock } from './Chair';
+import { DeskModel, DeskOrder, DeskStock } from './Desk';
 import Color from './Color';
 
 function mapStateToProps(state) {
@@ -56,6 +57,7 @@ const menuLists = [
     ],
   },
   {
+    category: 'Common',
     content: [
       { path: '/admin/color', icon: <ColorLensIcon />, label: 'Color' },
     ],
@@ -135,6 +137,10 @@ const Admin = (props) => {
             <Route path={`${path}/chair/model`} exact component={ChairModel} />
             <Route path={`${path}/chair/order`} exact component={ChairOrder} />
             <Route path={`${path}/chair/stock`} exact component={ChairStock} />
+
+            <Route path={`${path}/desk/model`} exact component={DeskModel} />
+            <Route path={`${path}/desk/order`} exact component={DeskOrder} />
+            <Route path={`${path}/desk/stock`} exact component={DeskStock} />
             <Route path={`${path}/color`} exact component={Color} />
           </Switch>
         </Box>
