@@ -1,5 +1,4 @@
 const { DataTypes, Sequelize } = require('sequelize');
-const DeskBrand = require('./deskbrand.model');
 const DeskModel = require('./deskmodel.model');
 const ProductColor = require('./productcolor.model');
 

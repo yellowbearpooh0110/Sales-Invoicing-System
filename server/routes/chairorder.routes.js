@@ -92,7 +92,7 @@ function _bulkDelete(req, res, next) {
     .bulkDelete({ id: req.body.ids })
     .then((affectedRows) =>
       res.json({
-        message: `${affectedRows} ChairBrand${
+        message: `${affectedRows} ChairOrder${
           affectedRows === 1 ? ' was' : 's were'
         } deleted successfully.`,
       })

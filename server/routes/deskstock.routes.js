@@ -5,7 +5,7 @@ const Joi = require('joi');
 const admin = require('server/middleware/admin');
 const authorize = require('server/middleware/authorize');
 const validateRequest = require('server/middleware/validate-request');
-const chairstockController = require('server/controller/chairstock.controller');
+const deskstockController = require('server/controller/deskstock.controller');
 
 router.post('/create', admin(), createSchema, create);
 router.get('/', authorize(), getAll);
@@ -22,8 +22,8 @@ function createSchema(req, res, next) {
     backColor: Joi.string().guid(),
     seatColor: Joi.string().guid(),
     withHeadrest: Joi.boolean(),
-    chairBrand: Joi.string().guid(),
-    chairModel: Joi.string().guid(),
+    deskBrand: Joi.string().guid(),
+    deskModel: Joi.string().guid(),
     QTY: Joi.number().required(),
   });
   validateRequest(req, next, schema);
@@ -37,48 +37,48 @@ function bulkDeleteSchema(req, res, next) {
 }
 
 function create(req, res, next) {
-  chairstockController
+  deskstockController
     .create(req.body)
     .then(() => {
-      res.json({ message: 'New ChairStock was created successfully.' });
+      res.json({ message: 'New DeskStock was created successfully.' });
     })
     .catch(next);
 }
 
 function getAll(req, res, next) {
-  chairstockController
+  deskstockController
     .getAll()
-    .then((chairstocks) => res.json(chairstocks))
+    .then((deskstocks) => res.json(deskstocks))
     .catch(next);
 }
 
 function getById(req, res, next) {
-  chairstockController
+  deskstockController
     .getById(req.params.id)
-    .then((chairstock) => res.json(chairstock))
+    .then((deskstock) => res.json(deskstock))
     .catch(next);
 }
 
 function update(req, res, next) {
-  chairstockController
+  deskstockController
     .update(req.params.id, req.body)
-    .then((chairstock) => res.json(chairstock))
+    .then((deskstock) => res.json(deskstock))
     .catch(next);
 }
 
 function _delete(req, res, next) {
-  chairstockController
+  deskstockController
     .delete(req.params.id)
-    .then(() => res.json({ message: 'ChairStock was deleted successfully.' }))
+    .then(() => res.json({ message: 'DeskStock was deleted successfully.' }))
     .catch(next);
 }
 
 function _bulkDelete(req, res, next) {
-  chairstockController
+  deskstockController
     .bulkDelete({ id: req.body.ids })
     .then((affectedRows) =>
       res.json({
-        message: `${affectedRows} ChairBrand${
+        message: `${affectedRows} DeskStock${
           affectedRows === 1 ? ' was' : 's were'
         } deleted successfully.`,
       })

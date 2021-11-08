@@ -60,7 +60,6 @@ export default connect(mapStateToProps)((props) => {
   const [editOpen, setEditOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [id, setID] = useState('');
-  const [brands, setBrands] = useState([]);
   const [models, setModels] = useState([]);
   const [colors, setColors] = useState([]);
   const [chairRemarks, setChairRemarks] = useState(['av', 'avas']);
@@ -83,7 +82,6 @@ export default connect(mapStateToProps)((props) => {
   const handleEditClick = (event, index) => {
     event.preventDefault();
     if (index < orders.length && index >= 0) {
-      getBrands();
       getModels();
       getColors();
       getChairRemarks();
@@ -119,7 +117,7 @@ export default connect(mapStateToProps)((props) => {
       }).then((result) => {
         if (result.isConfirmed) {
           axios
-            .delete(`/deskorder/${brands[index].id}`)
+            .delete(`/deskorder/${orders[index].id}`)
             .then((response) => {
               // handle success
               getOrders();
@@ -269,22 +267,6 @@ export default connect(mapStateToProps)((props) => {
       });
   };
 
-  const getBrands = (cancelToken) => {
-    axios
-      .get('/deskorder', { cancelToken })
-      .then((response) => {
-        // handle success
-        setBrands(response.data);
-      })
-      .catch(function (error) {
-        // handle error
-        console.log(error);
-      })
-      .then(function () {
-        // always executed
-      });
-  };
-
   const getModels = (cancelToken) => {
     axios
       .get('/chairmodel', { cancelToken })
@@ -393,7 +375,6 @@ export default connect(mapStateToProps)((props) => {
         variant="outlined"
         startIcon={<AddIcon />}
         onClick={() => {
-          getBrands();
           getModels();
           getColors();
           getChairRemarks();
@@ -410,12 +391,6 @@ export default connect(mapStateToProps)((props) => {
               Please Input Order Name and Click Save button.
             </DialogContentText>
             {[
-              {
-                value: brand,
-                values: brands,
-                setValue: setBrand,
-                label: 'ChairBrand',
-              },
               {
                 value: model,
                 values: models,
@@ -559,12 +534,6 @@ export default connect(mapStateToProps)((props) => {
               Please Input Order Name and Click Save button.
             </DialogContentText>
             {[
-              {
-                value: brand,
-                values: brands,
-                setValue: setBrand,
-                label: 'ChairBrand',
-              },
               {
                 value: model,
                 values: models,

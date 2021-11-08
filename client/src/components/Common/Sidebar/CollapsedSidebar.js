@@ -81,7 +81,7 @@ const FixedSidebar = ({
                   button
                   className={classes.navlink}
                   onClick={() => {
-                    if (expIndex === itemIndex && expList == listIndex) {
+                    if (expIndex === itemIndex && expList === listIndex) {
                       setExpIndex(-1);
                       setExpList(-1);
                     } else {
@@ -94,7 +94,7 @@ const FixedSidebar = ({
                       sx={{
                         transition: 'transform ease .3s',
                         transform:
-                          expIndex === itemIndex && expList == listIndex
+                          expIndex === itemIndex && expList === listIndex
                             ? ''
                             : 'Rotate(-90deg)',
                       }}
@@ -106,7 +106,7 @@ const FixedSidebar = ({
                 </ListItem>,
                 <Collapse
                   key={`listcollapse-${itemIndex}`}
-                  in={expIndex === itemIndex && expList == listIndex}
+                  in={expIndex === itemIndex && expList === listIndex}
                 >
                   <List disablePadding>
                     {listitem.children.map((child, childIndex) => (
