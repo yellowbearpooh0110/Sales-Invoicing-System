@@ -80,7 +80,7 @@ const Stock = connect(mapStateToProps)((props) => {
     if (index < stocks.length && index >= 0) {
       Swal.fire({
         title: 'Are you sure?',
-        text: 'This action will remove current ChairStock permanently.',
+        text: 'This action will remove current DeskStock permanently.',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Yes, Remove!',
@@ -89,7 +89,7 @@ const Stock = connect(mapStateToProps)((props) => {
       }).then((result) => {
         if (result.isConfirmed) {
           axios
-            .delete(`/chairstock/${stocks[index].id}`)
+            .delete(`/deskstock/${stocks[index].id}`)
             .then((response) => {
               // handle success
               getStocks();
@@ -115,7 +115,7 @@ const Stock = connect(mapStateToProps)((props) => {
   const handleBulkRemoveClick = (selected) => {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'This action will remove selected ChairStocks permanently.',
+      text: 'This action will remove selected DeskStocks permanently.',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Yes, Remove!',
@@ -124,7 +124,7 @@ const Stock = connect(mapStateToProps)((props) => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete('/chairstock', { data: { ids: selected } })
+          .delete('/deskstock', { data: { ids: selected } })
           .then((response) => {
             // handle success
             getStocks();
@@ -149,7 +149,7 @@ const Stock = connect(mapStateToProps)((props) => {
   const handleSave = (event) => {
     event.preventDefault();
     axios
-      .put(`/chairstock/${id}`, { name })
+      .put(`/deskstock/${id}`, { name })
       .then((response) => {
         // handle success
         setEditOpen(false);
@@ -176,7 +176,7 @@ const Stock = connect(mapStateToProps)((props) => {
   const handleCreate = (event) => {
     event.preventDefault();
     axios
-      .post(`/chairstock/create`, { name })
+      .post(`/deskstock/create`, { name })
       .then((response) => {
         // handle success
         setCreateOpen(false);
@@ -202,7 +202,7 @@ const Stock = connect(mapStateToProps)((props) => {
 
   const getStocks = (cancelToken) => {
     axios
-      .get('/chairstock', { cancelToken })
+      .get('/deskstock', { cancelToken })
       .then((response) => {
         // handle success
         setStocks(response.data);
@@ -267,10 +267,10 @@ const Stock = connect(mapStateToProps)((props) => {
         Add New Stock
       </Button>
       <Dialog open={editOpen}>
-        <DialogTitle>Edit ChairStock</DialogTitle>
+        <DialogTitle>Edit DeskStock</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Please Edit the ChairStock and Click Save button.
+            Please Edit the DeskStock and Click Save button.
           </DialogContentText>
           <TextField
             autoFocus
@@ -296,10 +296,10 @@ const Stock = connect(mapStateToProps)((props) => {
         </DialogActions>
       </Dialog>
       <Dialog open={createOpen}>
-        <DialogTitle>Edit ChairStock</DialogTitle>
+        <DialogTitle>Edit DeskStock</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Please Input ChairStock Name and Click Save button.
+            Please Input DeskStock Info and Click Save button.
           </DialogContentText>
           <TextField
             autoFocus

@@ -5,11 +5,10 @@ const Joi = require('joi');
 const admin = require('server/middleware/admin');
 const authorize = require('server/middleware/authorize');
 const validateRequest = require('server/middleware/validate-request');
-const chairorderController = require('server/controller/chairorder.controller');
+const deskmodelController = require('server/controller/deskmodel.controller');
 
-router.post('/create', authorize(), createSchema, create);
-router.get('/', admin(), getAll);
-router.get('/current', authorize(), getCurrent);
+router.post('/create', admin(), createSchema, create);
+router.get('/', authorize(), getAll);
 router.get('/:id', authorize(), getById);
 router.put('/:id', admin(), createSchema, update);
 router.delete('/:id', admin(), _delete);
@@ -19,19 +18,7 @@ module.exports = router;
 
 function createSchema(req, res, next) {
   const schema = Joi.object({
-    chairBrandId: Joi.string().guid(),
-    chairModelId: Joi.string().guid(),
-    frameColorId: Joi.string().guid(),
-    backColorId: Joi.string().guid(),
-    seatColorId: Joi.string().guid(),
-    chairRemark: Joi.string(),
-    clientName: Joi.string(),
-    clientDistrict: Joi.string(),
-    clientStreet: Joi.string(),
-    clientBlock: Joi.string(),
-    clientFloor: Joi.number(),
-    clientUnit: Joi.number(),
-    clientRemark: Joi.string(),
+    name: Joi.string().required(),
   });
   validateRequest(req, next, schema);
 }
@@ -44,51 +31,50 @@ function bulkDeleteSchema(req, res, next) {
 }
 
 function create(req, res, next) {
-  chairorderController
-    .create({ ...req.body, salesmanId: req.user.id })
+  deskmodelController
+    .create(req.body)
     .then(() => {
-      res.json({ message: 'New ChairOrder was created successfully.' });
+      res.json({ message: 'New DeskModel was created successfully.' });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.original) next(new Error(err.original.sqlMessage));
+      else next(err);
+    });
 }
 
 function getAll(req, res, next) {
-  chairorderController
+  deskmodelController
     .getAll()
-    .then((chairorders) => res.json(chairorders))
-    .catch(next);
-}
-
-function getCurrent(req, res, next) {
-  chairorderController
-    .getAll({ salesmanId: req.user.id })
-    .then((chairorders) => res.json(chairorders))
+    .then((deskmodels) => res.json(deskmodels))
     .catch(next);
 }
 
 function getById(req, res, next) {
-  chairorderController
+  deskmodelController
     .getById(req.params.id)
-    .then((chairorder) => res.json(chairorder))
+    .then((deskmodel) => res.json(deskmodel))
     .catch(next);
 }
 
 function update(req, res, next) {
-  chairorderController
+  deskmodelController
     .update(req.params.id, req.body)
-    .then((chairorder) => res.json(chairorder))
-    .catch(next);
+    .then((deskmodel) => res.json(deskmodel))
+    .catch((err) => {
+      if (err.original) next(new Error(err.original.sqlMessage));
+      else next(err);
+    });
 }
 
 function _delete(req, res, next) {
-  chairorderController
+  deskmodelController
     .delete(req.params.id)
-    .then(() => res.json({ message: 'ChairOrder was deleted successfully.' }))
+    .then(() => res.json({ message: 'DeskModel was deleted successfully.' }))
     .catch(next);
 }
 
 function _bulkDelete(req, res, next) {
-  chairorderController
+  deskmodelController
     .bulkDelete({ id: req.body.ids })
     .then((affectedRows) =>
       res.json({

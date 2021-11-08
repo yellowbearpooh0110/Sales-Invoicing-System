@@ -119,7 +119,7 @@ export default connect(mapStateToProps)((props) => {
       }).then((result) => {
         if (result.isConfirmed) {
           axios
-            .delete(`/chairbrand/${brands[index].id}`)
+            .delete(`/deskorder/${brands[index].id}`)
             .then((response) => {
               // handle success
               getOrders();
@@ -220,7 +220,7 @@ export default connect(mapStateToProps)((props) => {
     console.log(brand);
     event.preventDefault();
     axios
-      .post(`/chairorder/create`, {
+      .post(`/deskorder/create`, {
         chairBrandId: brand ? brand.id : null,
         chairModelId: model ? model.id : null,
         frameColorId: frameColor ? frameColor.id : null,
@@ -271,7 +271,7 @@ export default connect(mapStateToProps)((props) => {
 
   const getBrands = (cancelToken) => {
     axios
-      .get('/chairbrand', { cancelToken })
+      .get('/deskorder', { cancelToken })
       .then((response) => {
         // handle success
         setBrands(response.data);
@@ -303,7 +303,7 @@ export default connect(mapStateToProps)((props) => {
 
   const getOrders = (cancelToken) => {
     axios
-      .get('/chairorder', { cancelToken })
+      .get('/deskorder', { cancelToken })
       .then((response) => {
         // handle success
         setOrders(response.data);

@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const ChairStock = require('./chairstock.model');
+const DeskStock = require('./deskstock.model');
 const User = require('./user.model');
 
 module.exports = model;
@@ -28,15 +28,15 @@ function model(sequelize) {
     clientRemark: { type: DataTypes.STRING },
   };
 
-  const ChairOrder = sequelize.define('ChairOrder', attributes);
-  ChairOrder.belongsTo(ChairStock(sequelize), {
+  const DeskOrder = sequelize.define('DeskOrder', attributes);
+  DeskOrder.belongsTo(DeskStock(sequelize), {
     as: 'stock',
     foreignKey: { name: 'stockId', allowNull: false },
   });
-  ChairOrder.belongsTo(User(sequelize), {
+  DeskOrder.belongsTo(User(sequelize), {
     as: 'salesman',
     foreignKey: { name: 'salesmanId', allowNull: false },
   });
 
-  return ChairOrder;
+  return DeskOrder;
 }

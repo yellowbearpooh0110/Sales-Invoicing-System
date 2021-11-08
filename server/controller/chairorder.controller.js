@@ -91,7 +91,30 @@ async function create(params) {
 
 async function update(id, params) {
   const chairOrder = await getChairOrder(id);
-  Object.assign(chairOrder, params);
+  const {
+    chairBrandId,
+    chairModelId,
+    frameColorId,
+    backColorId,
+    seatColorId,
+    chairRemark,
+    ...restParams
+  } = params;
+  const stockParams = {
+    chairBrandId,
+    chairModelId,
+    frameColorId,
+    backColorId,
+    seatColorId,
+    chairRemark,
+  };
+  let chairStock = await db.ChairStock.findOne({
+    where: stockParams,
+  });
+  if (!chairStock)
+    chairStock = await db.ChairStock.create({ QTY: 0, ...stockParams });
+  restParams.stockId = chairStock.id;
+  Object.assign(chairOrder, restParams);
   await chairOrder.save();
   return chairOrder.get();
 }

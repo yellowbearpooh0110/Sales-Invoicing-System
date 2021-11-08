@@ -5,11 +5,10 @@ const Joi = require('joi');
 const admin = require('server/middleware/admin');
 const authorize = require('server/middleware/authorize');
 const validateRequest = require('server/middleware/validate-request');
-const chairorderController = require('server/controller/chairorder.controller');
+const chairstockController = require('server/controller/chairstock.controller');
 
-router.post('/create', authorize(), createSchema, create);
-router.get('/', admin(), getAll);
-router.get('/current', authorize(), getCurrent);
+router.post('/create', admin(), createSchema, create);
+router.get('/', authorize(), getAll);
 router.get('/:id', authorize(), getById);
 router.put('/:id', admin(), createSchema, update);
 router.delete('/:id', admin(), _delete);
@@ -19,19 +18,13 @@ module.exports = router;
 
 function createSchema(req, res, next) {
   const schema = Joi.object({
-    chairBrandId: Joi.string().guid(),
-    chairModelId: Joi.string().guid(),
-    frameColorId: Joi.string().guid(),
-    backColorId: Joi.string().guid(),
-    seatColorId: Joi.string().guid(),
-    chairRemark: Joi.string(),
-    clientName: Joi.string(),
-    clientDistrict: Joi.string(),
-    clientStreet: Joi.string(),
-    clientBlock: Joi.string(),
-    clientFloor: Joi.number(),
-    clientUnit: Joi.number(),
-    clientRemark: Joi.string(),
+    frameColor: Joi.string().guid(),
+    backColor: Joi.string().guid(),
+    seatColor: Joi.string().guid(),
+    withHeadrest: Joi.boolean(),
+    chairBrand: Joi.string().guid(),
+    chairModel: Joi.string().guid(),
+    QTY: Joi.number().required(),
   });
   validateRequest(req, next, schema);
 }
@@ -44,51 +37,44 @@ function bulkDeleteSchema(req, res, next) {
 }
 
 function create(req, res, next) {
-  chairorderController
-    .create({ ...req.body, salesmanId: req.user.id })
+  chairstockController
+    .create(req.body)
     .then(() => {
-      res.json({ message: 'New ChairOrder was created successfully.' });
+      res.json({ message: 'New ChairStock was created successfully.' });
     })
     .catch(next);
 }
 
 function getAll(req, res, next) {
-  chairorderController
+  chairstockController
     .getAll()
-    .then((chairorders) => res.json(chairorders))
-    .catch(next);
-}
-
-function getCurrent(req, res, next) {
-  chairorderController
-    .getAll({ salesmanId: req.user.id })
-    .then((chairorders) => res.json(chairorders))
+    .then((chairstocks) => res.json(chairstocks))
     .catch(next);
 }
 
 function getById(req, res, next) {
-  chairorderController
+  chairstockController
     .getById(req.params.id)
-    .then((chairorder) => res.json(chairorder))
+    .then((chairstock) => res.json(chairstock))
     .catch(next);
 }
 
 function update(req, res, next) {
-  chairorderController
+  chairstockController
     .update(req.params.id, req.body)
-    .then((chairorder) => res.json(chairorder))
+    .then((chairstock) => res.json(chairstock))
     .catch(next);
 }
 
 function _delete(req, res, next) {
-  chairorderController
+  chairstockController
     .delete(req.params.id)
-    .then(() => res.json({ message: 'ChairOrder was deleted successfully.' }))
+    .then(() => res.json({ message: 'ChairStock was deleted successfully.' }))
     .catch(next);
 }
 
 function _bulkDelete(req, res, next) {
-  chairorderController
+  chairstockController
     .bulkDelete({ id: req.body.ids })
     .then((affectedRows) =>
       res.json({

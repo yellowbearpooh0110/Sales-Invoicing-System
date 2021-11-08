@@ -110,7 +110,7 @@ export default connect(mapStateToProps)((props) => {
     if (index < orders.length && index >= 0) {
       Swal.fire({
         title: 'Are you sure?',
-        text: 'This action will remove current ChairStock permanently.',
+        text: 'This action will remove current ChairOrder permanently.',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Yes, Remove!',
@@ -119,7 +119,7 @@ export default connect(mapStateToProps)((props) => {
       }).then((result) => {
         if (result.isConfirmed) {
           axios
-            .delete(`/chairbrand/${brands[index].id}`)
+            .delete(`/chairorder/${brands[index].id}`)
             .then((response) => {
               // handle success
               getOrders();
@@ -179,7 +179,7 @@ export default connect(mapStateToProps)((props) => {
   const handleSave = (event) => {
     event.preventDefault();
     axios
-      .put(`/chairstock/${id}`, {
+      .put(`/chairorder/${id}`, {
         chairBrandId: brand ? brand.id : null,
         chairModelId: model ? model.id : null,
         frameColorId: frameColor ? frameColor.id : null,
@@ -271,7 +271,7 @@ export default connect(mapStateToProps)((props) => {
 
   const getBrands = (cancelToken) => {
     axios
-      .get('/chairbrand', { cancelToken })
+      .get('/chairorder', { cancelToken })
       .then((response) => {
         // handle success
         setBrands(response.data);
