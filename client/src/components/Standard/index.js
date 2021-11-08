@@ -23,8 +23,12 @@ const drawerWidth = 240;
 const drawerHeight = 50;
 
 const menuLists = [
-  [{ path: '/user', icon: <HomeIcon />, label: 'Home' }],
-  [{ path: '/user/order', icon: <BookOnlineIcon />, label: 'Order' }],
+  { content: [{ path: '/user', icon: <HomeIcon />, label: 'Home' }] },
+  {
+    content: [
+      { path: '/user/order', icon: <BookOnlineIcon />, label: 'Order' },
+    ],
+  },
 ];
 
 const Standard = (props) => {

@@ -8,6 +8,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Typography,
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import {
@@ -47,6 +48,7 @@ const useFixedSidebarStyles = makeStyles({
 
 const FixedSidebar = ({ drawerWidth, handleLogout, lists }) => {
   const classes = useFixedSidebarStyles({ drawerWidth });
+  const [expList, setExpList] = useState(-1);
   const [expIndex, setExpIndex] = useState(-1);
 
   return (
@@ -58,7 +60,8 @@ const FixedSidebar = ({ drawerWidth, handleLogout, lists }) => {
     >
       {lists.map((list, listIndex) => [
         <List key={`list-${listIndex}`}>
-          {list.map((listitem, itemIndex) =>
+          {list.category ? <Typography>{list.category}</Typography> : null}
+          {list.content.map((listitem, itemIndex) =>
             listitem.children ? (
               [
                 <ListItem
@@ -66,16 +69,22 @@ const FixedSidebar = ({ drawerWidth, handleLogout, lists }) => {
                   button
                   className={classes.navlink}
                   onClick={() => {
-                    expIndex === itemIndex
-                      ? setExpIndex(-1)
-                      : setExpIndex(itemIndex);
+                    if (expIndex === itemIndex && expList == listIndex) {
+                      setExpIndex(-1);
+                      setExpList(-1);
+                    } else {
+                      setExpIndex(itemIndex);
+                      setExpList(listIndex);
+                    }
                   }}
                   secondaryAction={
                     <ExpandMoreIcon
                       sx={{
                         transition: 'transform ease .3s',
                         transform:
-                          expIndex === itemIndex ? '' : 'Rotate(-90deg)',
+                          expIndex === itemIndex && expList == listIndex
+                            ? ''
+                            : 'Rotate(-90deg)',
                       }}
                     />
                   }
@@ -85,7 +94,7 @@ const FixedSidebar = ({ drawerWidth, handleLogout, lists }) => {
                 </ListItem>,
                 <Collapse
                   key={`listcollapse-${itemIndex}`}
-                  in={expIndex === itemIndex}
+                  in={expIndex === itemIndex && expList == listIndex}
                 >
                   <List disablePadding>
                     {listitem.children.map((child, childIndex) => (

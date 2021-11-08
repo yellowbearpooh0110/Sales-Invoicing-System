@@ -28,14 +28,38 @@ const drawerWidth = 240;
 const drawerHeight = 50;
 
 const menuLists = [
-  [{ path: '/admin', icon: <HomeIcon />, label: 'Home' }],
-  [
-    { path: '/admin/chair/brand', icon: <BlurOnIcon />, label: 'Brand' },
-    { path: '/admin/chair/model', icon: <StyleIcon />, label: 'Model' },
-    { path: '/admin/chair/stock', icon: <StorefrontIcon />, label: 'Stock' },
-    { path: '/admin/chair/order', icon: <BookOnlineIcon />, label: 'Order' },
-  ],
-  [{ path: '/admin/color', icon: <ColorLensIcon />, label: 'Color' }],
+  {
+    category: 'Chair',
+    content: [
+      {
+        icon: <BlurOnIcon />,
+        label: 'Basic',
+        children: [
+          { path: '/admin/chair/brand', label: 'Brand' },
+          { path: '/admin/chair/model', label: 'Model' },
+        ],
+      },
+      { path: '/admin/chair/stock', icon: <StorefrontIcon />, label: 'Stock' },
+      { path: '/admin/chair/order', icon: <BookOnlineIcon />, label: 'Order' },
+    ],
+  },
+  {
+    category: 'Desk',
+    content: [
+      {
+        icon: <BlurOnIcon />,
+        label: 'Basic',
+        children: [{ path: '/admin/desk/model', label: 'Model' }],
+      },
+      { path: '/admin/desk/stock', icon: <StorefrontIcon />, label: 'Stock' },
+      { path: '/admin/desk/order', icon: <BookOnlineIcon />, label: 'Order' },
+    ],
+  },
+  {
+    content: [
+      { path: '/admin/color', icon: <ColorLensIcon />, label: 'Color' },
+    ],
+  },
 ];
 
 const Admin = (props) => {
