@@ -317,7 +317,6 @@ export default connect(mapStateToProps)((props) => {
       .get('/deskorder', { cancelToken })
       .then((response) => {
         // handle success
-        console.log(response.data);
         setOrders(response.data);
       })
       .catch(function (error) {
@@ -508,7 +507,6 @@ export default connect(mapStateToProps)((props) => {
             ].map((item, index) => (
               <TextField
                 key={index}
-                autoFocus
                 margin="dense"
                 label={item.label}
                 fullWidth
@@ -588,7 +586,6 @@ export default connect(mapStateToProps)((props) => {
             ].map((item, index) => (
               <TextField
                 key={index}
-                autoFocus
                 margin="dense"
                 label={item.label}
                 fullWidth
@@ -614,7 +611,7 @@ export default connect(mapStateToProps)((props) => {
         </DialogActions>
       </Dialog>
       <Dialog fullWidth maxWidth="sm" open={createOpen}>
-        <DialogTitle>Edit DeskOrder</DialogTitle>
+        <DialogTitle>Create DeskOrder</DialogTitle>
         <DialogContent>
           <Stack spacing={1}>
             <DialogContentText>
@@ -708,7 +705,6 @@ export default connect(mapStateToProps)((props) => {
             ].map((item, index) => (
               <TextField
                 key={index}
-                autoFocus
                 margin="dense"
                 label={item.label}
                 fullWidth
@@ -788,7 +784,6 @@ export default connect(mapStateToProps)((props) => {
             ].map((item, index) => (
               <TextField
                 key={index}
-                autoFocus
                 margin="dense"
                 label={item.label}
                 fullWidth

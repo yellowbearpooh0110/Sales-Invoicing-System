@@ -513,7 +513,6 @@ export default connect(mapStateToProps)((props) => {
             ].map((item, index) => (
               <TextField
                 key={index}
-                autoFocus
                 margin="dense"
                 label={item.label}
                 fullWidth
@@ -662,7 +661,6 @@ export default connect(mapStateToProps)((props) => {
             ].map((item, index) => (
               <TextField
                 key={index}
-                autoFocus
                 margin="dense"
                 label={item.label}
                 fullWidth

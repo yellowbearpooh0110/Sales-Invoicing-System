@@ -273,7 +273,6 @@ const Stock = connect(mapStateToProps)((props) => {
             Please Edit the ChairStock and Click Save button.
           </DialogContentText>
           <TextField
-            autoFocus
             margin="dense"
             label="Name"
             fullWidth
@@ -302,7 +301,6 @@ const Stock = connect(mapStateToProps)((props) => {
             Please Input ChairStock Name and Click Save button.
           </DialogContentText>
           <TextField
-            autoFocus
             margin="dense"
             label="Brand"
             fullWidth
@@ -313,7 +311,6 @@ const Stock = connect(mapStateToProps)((props) => {
             }}
           />
           <TextField
-            autoFocus
             margin="dense"
             label="Model"
             fullWidth
