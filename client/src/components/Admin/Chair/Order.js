@@ -217,7 +217,6 @@ export default connect(mapStateToProps)((props) => {
   };
 
   const handleCreate = (event) => {
-    console.log(brand);
     event.preventDefault();
     axios
       .post(`/chairorder/create`, {

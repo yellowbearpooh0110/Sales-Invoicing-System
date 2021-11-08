@@ -24,10 +24,10 @@ function model(sequelize) {
     akInfo: {
       type: DataTypes.STRING,
     },
-    woodInfo1: {
+    woodInfo_1: {
       type: DataTypes.STRING,
     },
-    woodInfo2: {
+    woodInfo_2: {
       type: DataTypes.STRING,
     },
     melamineInfo: {
