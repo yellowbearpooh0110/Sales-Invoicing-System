@@ -18,12 +18,18 @@ module.exports = router;
 
 function createSchema(req, res, next) {
   const schema = Joi.object({
-    frameColor: Joi.string().guid(),
-    backColor: Joi.string().guid(),
-    seatColor: Joi.string().guid(),
-    withHeadrest: Joi.boolean(),
-    deskBrand: Joi.string().guid(),
-    deskModel: Joi.string().guid(),
+    deskModelId: Joi.string().guid(),
+    colorId: Joi.string().guid(),
+    armSize: Joi.number(),
+    feetSize: Joi.number(),
+    beam: Joi.string(),
+    akInfo: Joi.string(),
+    woodInfo_1: Joi.string(),
+    woodInfo_2: Joi.string(),
+    melamineInfo: Joi.string(),
+    laminateInfo: Joi.string(),
+    bambooInfo: Joi.string(),
+    deskRemark: Joi.string().allow(''),
     QTY: Joi.number().required(),
   });
   validateRequest(req, next, schema);

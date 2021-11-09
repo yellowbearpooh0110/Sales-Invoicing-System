@@ -8,22 +8,20 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Paper,
   Stack,
   TextField,
+  Typography,
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
 import DataGrid from 'components/Common/DataGrid';
 
 const columns = [
-  {
-    id: 'id',
-    numeric: false,
-    disablePadding: false,
-    label: 'Id',
-  },
   {
     id: 'invoiceNum',
     numeric: false,
@@ -56,6 +54,8 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps)((props) => {
+  const theme = useTheme();
+
   const [orders, setOrders] = useState([]);
   const [editOpen, setEditOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
@@ -258,24 +258,6 @@ export default connect(mapStateToProps)((props) => {
       .then((response) => {
         // handle success
         setCreateOpen(false);
-        setModel(null);
-        setColor(null);
-        setArmSize('');
-        setFeetSize('');
-        setBeam('');
-        setAkInfo('');
-        setWoodInfo_1('');
-        setWoodInfo_2('');
-        setMelamineInfo('');
-        setLaminateInfo('');
-        setBambooInfo('');
-        setDeskRemark('');
-        setClientName('');
-        setClientDistrict('');
-        setClientStreet('');
-        setClientBlock('');
-        setClientFloor('');
-        setClientUnit('');
         getOrders();
       })
       .catch(function (error) {
@@ -369,10 +351,12 @@ export default connect(mapStateToProps)((props) => {
   return (
     <>
       <DataGrid
+        title="Desk Orders"
         rows={orders.map(
           (
             {
               id,
+              invoiceNum,
               clientDistrict,
               clientStreet,
               clientBlock,
@@ -384,6 +368,7 @@ export default connect(mapStateToProps)((props) => {
             index
           ) => ({
             id: index,
+            invoiceNum: 'D_' + invoiceNum,
             salesmanEmail: salesman.email,
             clientAddress: [
               clientDistrict,
@@ -407,196 +392,275 @@ export default connect(mapStateToProps)((props) => {
           getModels();
           getColors();
           getDeskRemarks();
+          setModel(null);
+          setColor(null);
+          setArmSize('');
+          setFeetSize('');
+          setBeam('');
+          setAkInfo('');
+          setWoodInfo_1('');
+          setWoodInfo_2('');
+          setMelamineInfo('');
+          setLaminateInfo('');
+          setBambooInfo('');
+          setDeskRemark('');
+          setClientName('');
+          setClientDistrict('');
+          setClientStreet('');
+          setClientBlock('');
+          setClientFloor('');
+          setClientUnit('');
           setCreateOpen(true);
         }}
       >
         Add New Order
       </Button>
-      <Dialog fullWidth maxWidth="sm" open={editOpen}>
+      <Dialog
+        fullWidth
+        fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
+        maxWidth="sm"
+        open={editOpen}
+      >
         <DialogTitle>Edit DeskOrder</DialogTitle>
         <DialogContent>
-          <Stack spacing={1}>
-            <DialogContentText>
-              Please Input Order Name and Click Save button.
-            </DialogContentText>
-            {[
-              {
-                value: model,
-                values: models,
-                setValue: setModel,
-                label: 'DeskModel',
-              },
-              {
-                value: color,
-                values: colors,
-                setValue: setColor,
-                label: 'DeskColor',
-              },
-            ].map(({ value, values, setValue, label }, index) => (
-              <Autocomplete
-                key={index}
-                disablePortal
-                value={value ? value : null}
-                onChange={(event, newValue) => {
-                  event.preventDefault();
-                  setValue(newValue);
-                }}
-                options={values}
-                getOptionLabel={(option) => option.name}
-                fullWidth
-                renderInput={(params) => (
-                  <TextField {...params} label={label} variant="standard" />
-                )}
-              />
-            ))}
-            {[
-              {
-                label: 'Arm Size',
-                value: armSize,
-                setValue: setArmSize,
-                type: 'number',
-              },
-              {
-                label: 'Feet Size',
-                value: feetSize,
-                setValue: setFeetSize,
-                type: 'number',
-              },
-              {
-                label: 'Beam',
-                value: beam,
-                setValue: setBeam,
-                type: 'text',
-              },
-              {
-                label: 'AK Info',
-                value: akInfo,
-                setValue: setAkInfo,
-                type: 'text',
-              },
-              {
-                label: 'Wood Info 1',
-                value: woodInfo_1,
-                setValue: setWoodInfo_1,
-                type: 'text',
-              },
-              {
-                label: 'Wood Info 2',
-                value: woodInfo_2,
-                setValue: setWoodInfo_2,
-                type: 'text',
-              },
-              {
-                label: 'Melamine Info',
-                value: melamineInfo,
-                setValue: setMelamineInfo,
-                type: 'text',
-              },
-              {
-                label: 'Laminate Info',
-                value: laminateInfo,
-                setValue: setLaminateInfo,
-                type: 'text',
-              },
-              {
-                label: 'Bamboo Info',
-                value: bambooInfo,
-                setValue: setBambooInfo,
-                type: 'text',
-              },
-            ].map((item, index) => (
-              <TextField
-                key={index}
-                margin="dense"
-                label={item.label}
-                fullWidth
-                variant="standard"
-                value={item.value}
-                type={item.type}
-                onChange={(e) => {
-                  item.setValue(e.target.value);
-                }}
-              />
-            ))}
-            <Autocomplete
-              disablePortal
-              freeSolo
-              value={deskRemark}
-              onChange={(event, newValue) => {
-                event.preventDefault();
-                setDeskRemark(newValue);
+          <Stack spacing={2}>
+            <Paper
+              sx={{
+                mt: '5px',
+                p: '10px',
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
               }}
-              options={deskRemarks}
-              fullWidth
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Desk Remark"
-                  variant="standard"
-                  onChange={(event) => {
+            >
+              <Typography
+                variant="h6"
+                sx={{ flexBasis: '100%', minWidth: '100%' }}
+              >
+                Desk Features
+              </Typography>
+              {[
+                {
+                  value: model,
+                  values: models,
+                  setValue: setModel,
+                  label: 'DeskModel',
+                  width: '48%',
+                },
+                {
+                  value: color,
+                  values: colors,
+                  setValue: setColor,
+                  label: 'DeskColor',
+                  width: '48%',
+                },
+              ].map(({ value, values, setValue, label, width }, index) => (
+                <Autocomplete
+                  key={index}
+                  disablePortal
+                  value={value ? value : null}
+                  onChange={(event, newValue) => {
                     event.preventDefault();
-                    setDeskRemark(event.target.value);
+                    setValue(newValue);
+                  }}
+                  options={values}
+                  getOptionLabel={(option) => option.name}
+                  sx={{ flexBasis: width, minWidth: width }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label={label}
+                      margin="dense"
+                      variant="outlined"
+                      size="small"
+                    />
+                  )}
+                />
+              ))}
+              {[
+                {
+                  label: 'Arm Size',
+                  value: armSize,
+                  setValue: setArmSize,
+                  type: 'number',
+                  width: '30%',
+                },
+                {
+                  label: 'Feet Size',
+                  value: feetSize,
+                  setValue: setFeetSize,
+                  type: 'number',
+                  width: '30%',
+                },
+                {
+                  label: 'Beam',
+                  value: beam,
+                  setValue: setBeam,
+                  type: 'text',
+                  width: '30%',
+                },
+                {
+                  label: 'AK Info',
+                  value: akInfo,
+                  setValue: setAkInfo,
+                  type: 'text',
+                  width: '48%',
+                },
+                {
+                  label: 'Wood Info 1',
+                  value: woodInfo_1,
+                  setValue: setWoodInfo_1,
+                  type: 'text',
+                  width: '48%',
+                },
+                {
+                  label: 'Wood Info 2',
+                  value: woodInfo_2,
+                  setValue: setWoodInfo_2,
+                  type: 'text',
+                  width: '48%',
+                },
+                {
+                  label: 'Melamine Info',
+                  value: melamineInfo,
+                  setValue: setMelamineInfo,
+                  type: 'text',
+                  width: '48%',
+                },
+                {
+                  label: 'Laminate Info',
+                  value: laminateInfo,
+                  setValue: setLaminateInfo,
+                  type: 'text',
+                  width: '48%',
+                },
+                {
+                  label: 'Bamboo Info',
+                  value: bambooInfo,
+                  setValue: setBambooInfo,
+                  type: 'text',
+                  width: '48%',
+                },
+              ].map(({ label, value, setValue, type, width }, index) => (
+                <TextField
+                  key={index}
+                  label={label}
+                  sx={{ flexBasis: width, minWidth: width }}
+                  margin="dense"
+                  variant="outlined"
+                  size="small"
+                  value={value}
+                  type={type}
+                  onChange={(e) => {
+                    setValue(e.target.value);
                   }}
                 />
-              )}
-            />
-            {[
-              {
-                label: 'Client Name',
-                value: clientName,
-                setValue: setClientName,
-                type: 'text',
-              },
-              {
-                label: 'ClientDistrict',
-                value: clientDistrict,
-                setValue: setClientDistrict,
-                type: 'text',
-              },
-              {
-                label: 'ClientStreet',
-                value: clientStreet,
-                setValue: setClientStreet,
-                type: 'text',
-              },
-              {
-                label: 'ClientBlock',
-                value: clientBlock,
-                setValue: setClientBlock,
-                type: 'number',
-              },
-              {
-                label: 'ClientFloor',
-                value: clientFloor,
-                setValue: setClientFloor,
-                type: 'number',
-              },
-              {
-                label: 'ClientUnit',
-                value: clientUnit,
-                setValue: setClientUnit,
-                type: 'number',
-              },
-              {
-                label: 'Remark',
-                value: remark,
-                setValue: setRemark,
-                type: 'text',
-              },
-            ].map((item, index) => (
-              <TextField
-                key={index}
-                margin="dense"
-                label={item.label}
-                fullWidth
-                variant="standard"
-                value={item.value}
-                type={item.type}
-                onChange={(e) => {
-                  item.setValue(e.target.value);
+              ))}
+              <Autocomplete
+                disablePortal
+                freeSolo
+                value={deskRemark}
+                onChange={(event, newValue) => {
+                  event.preventDefault();
+                  setDeskRemark(newValue);
                 }}
+                options={deskRemarks}
+                fullWidth
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Desk Remark"
+                    margin="dense"
+                    variant="outlined"
+                    size="small"
+                    onChange={(event) => {
+                      event.preventDefault();
+                      setDeskRemark(event.target.value);
+                    }}
+                  />
+                )}
               />
-            ))}
+            </Paper>
+            <Paper
+              sx={{
+                p: '10px',
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{ flexBasis: '100%', minWidth: '100%' }}
+              >
+                Client Info
+              </Typography>
+              {[
+                {
+                  label: 'Name',
+                  value: clientName,
+                  setValue: setClientName,
+                  type: 'text',
+                  width: '55%',
+                },
+                {
+                  label: 'District',
+                  value: clientDistrict,
+                  setValue: setClientDistrict,
+                  type: 'text',
+                  width: '55%',
+                },
+                {
+                  label: 'Street',
+                  value: clientStreet,
+                  setValue: setClientStreet,
+                  type: 'text',
+                  width: '40%',
+                },
+                {
+                  label: 'Block',
+                  value: clientBlock,
+                  setValue: setClientBlock,
+                  type: 'number',
+                  width: '30%',
+                },
+                {
+                  label: 'Floor',
+                  value: clientFloor,
+                  setValue: setClientFloor,
+                  type: 'number',
+                  width: '30%',
+                },
+                {
+                  label: 'Unit',
+                  value: clientUnit,
+                  setValue: setClientUnit,
+                  type: 'number',
+                  width: '30%',
+                },
+                {
+                  label: 'Remark',
+                  value: remark,
+                  setValue: setRemark,
+                  type: 'text',
+                  width: '100%',
+                },
+              ].map((item, index) => (
+                <TextField
+                  key={index}
+                  margin="dense"
+                  label={item.label}
+                  variant="outlined"
+                  size="small"
+                  value={item.value}
+                  type={item.type}
+                  onChange={(e) => {
+                    item.setValue(e.target.value);
+                  }}
+                  sx={{ flexBasis: item.width, minWidth: item.width }}
+                />
+              ))}
+            </Paper>
           </Stack>
         </DialogContent>
         <DialogActions>
@@ -610,191 +674,252 @@ export default connect(mapStateToProps)((props) => {
           <Button onClick={handleSave}>Save</Button>
         </DialogActions>
       </Dialog>
-      <Dialog fullWidth maxWidth="sm" open={createOpen}>
+      <Dialog
+        fullWidth
+        fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
+        maxWidth="sm"
+        open={createOpen}
+      >
         <DialogTitle>Create DeskOrder</DialogTitle>
         <DialogContent>
-          <Stack spacing={1}>
-            <DialogContentText>
-              Please Input Order Name and Click Save button.
-            </DialogContentText>
-            {[
-              {
-                value: model,
-                values: models,
-                setValue: setModel,
-                label: 'DeskModel',
-              },
-              {
-                value: color,
-                values: colors,
-                setValue: setColor,
-                label: 'DeskColor',
-              },
-            ].map(({ value, values, setValue, label }, index) => (
-              <Autocomplete
-                key={index}
-                disablePortal
-                value={value ? value : null}
-                onChange={(event, newValue) => {
-                  event.preventDefault();
-                  setValue(newValue);
-                }}
-                options={values}
-                getOptionLabel={(option) => option.name}
-                fullWidth
-                renderInput={(params) => (
-                  <TextField {...params} label={label} variant="standard" />
-                )}
-              />
-            ))}
-            {[
-              {
-                label: 'Arm Size',
-                value: armSize,
-                setValue: setArmSize,
-                type: 'number',
-              },
-              {
-                label: 'Feet Size',
-                value: feetSize,
-                setValue: setFeetSize,
-                type: 'number',
-              },
-              {
-                label: 'Beam',
-                value: beam,
-                setValue: setBeam,
-                type: 'text',
-              },
-              {
-                label: 'AK Info',
-                value: akInfo,
-                setValue: setAkInfo,
-                type: 'text',
-              },
-              {
-                label: 'Wood Info 1',
-                value: woodInfo_1,
-                setValue: setWoodInfo_1,
-                type: 'text',
-              },
-              {
-                label: 'Wood Info 2',
-                value: woodInfo_2,
-                setValue: setWoodInfo_2,
-                type: 'text',
-              },
-              {
-                label: 'Melamine Info',
-                value: melamineInfo,
-                setValue: setMelamineInfo,
-                type: 'text',
-              },
-              {
-                label: 'Laminate Info',
-                value: laminateInfo,
-                setValue: setLaminateInfo,
-                type: 'text',
-              },
-              {
-                label: 'Bamboo Info',
-                value: bambooInfo,
-                setValue: setBambooInfo,
-                type: 'text',
-              },
-            ].map((item, index) => (
-              <TextField
-                key={index}
-                margin="dense"
-                label={item.label}
-                fullWidth
-                variant="standard"
-                value={item.value}
-                type={item.type}
-                onChange={(e) => {
-                  item.setValue(e.target.value);
-                }}
-              />
-            ))}
-            <Autocomplete
-              disablePortal
-              freeSolo
-              value={deskRemark}
-              onChange={(event, newValue) => {
-                event.preventDefault();
-                setDeskRemark(newValue);
+          <Stack spacing={2}>
+            <Paper
+              sx={{
+                mt: '5px',
+                p: '10px',
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
               }}
-              options={deskRemarks}
-              fullWidth
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Desk Remark"
-                  variant="standard"
-                  onChange={(event) => {
+            >
+              <Typography
+                variant="h6"
+                sx={{ flexBasis: '100%', minWidth: '100%' }}
+              >
+                Desk Features
+              </Typography>
+              {[
+                {
+                  value: model,
+                  values: models,
+                  setValue: setModel,
+                  label: 'DeskModel',
+                  width: '48%',
+                },
+                {
+                  value: color,
+                  values: colors,
+                  setValue: setColor,
+                  label: 'DeskColor',
+                  width: '48%',
+                },
+              ].map(({ value, values, setValue, label, width }, index) => (
+                <Autocomplete
+                  key={index}
+                  disablePortal
+                  value={value ? value : null}
+                  onChange={(event, newValue) => {
                     event.preventDefault();
-                    setDeskRemark(event.target.value);
+                    setValue(newValue);
+                  }}
+                  options={values}
+                  getOptionLabel={(option) => option.name}
+                  sx={{ flexBasis: width, minWidth: width }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label={label}
+                      margin="dense"
+                      variant="outlined"
+                      size="small"
+                    />
+                  )}
+                />
+              ))}
+              {[
+                {
+                  label: 'Arm Size',
+                  value: armSize,
+                  setValue: setArmSize,
+                  type: 'number',
+                  width: '30%',
+                },
+                {
+                  label: 'Feet Size',
+                  value: feetSize,
+                  setValue: setFeetSize,
+                  type: 'number',
+                  width: '30%',
+                },
+                {
+                  label: 'Beam',
+                  value: beam,
+                  setValue: setBeam,
+                  type: 'text',
+                  width: '30%',
+                },
+                {
+                  label: 'AK Info',
+                  value: akInfo,
+                  setValue: setAkInfo,
+                  type: 'text',
+                  width: '48%',
+                },
+                {
+                  label: 'Wood Info 1',
+                  value: woodInfo_1,
+                  setValue: setWoodInfo_1,
+                  type: 'text',
+                  width: '48%',
+                },
+                {
+                  label: 'Wood Info 2',
+                  value: woodInfo_2,
+                  setValue: setWoodInfo_2,
+                  type: 'text',
+                  width: '48%',
+                },
+                {
+                  label: 'Melamine Info',
+                  value: melamineInfo,
+                  setValue: setMelamineInfo,
+                  type: 'text',
+                  width: '48%',
+                },
+                {
+                  label: 'Laminate Info',
+                  value: laminateInfo,
+                  setValue: setLaminateInfo,
+                  type: 'text',
+                  width: '48%',
+                },
+                {
+                  label: 'Bamboo Info',
+                  value: bambooInfo,
+                  setValue: setBambooInfo,
+                  type: 'text',
+                  width: '48%',
+                },
+              ].map(({ label, value, setValue, type, width }, index) => (
+                <TextField
+                  key={index}
+                  label={label}
+                  sx={{ flexBasis: width, minWidth: width }}
+                  margin="dense"
+                  variant="outlined"
+                  size="small"
+                  value={value}
+                  type={type}
+                  onChange={(e) => {
+                    setValue(e.target.value);
                   }}
                 />
-              )}
-            />
-            {[
-              {
-                label: 'Client Name',
-                value: clientName,
-                setValue: setClientName,
-                type: 'text',
-              },
-              {
-                label: 'ClientDistrict',
-                value: clientDistrict,
-                setValue: setClientDistrict,
-                type: 'text',
-              },
-              {
-                label: 'ClientStreet',
-                value: clientStreet,
-                setValue: setClientStreet,
-                type: 'text',
-              },
-              {
-                label: 'ClientBlock',
-                value: clientBlock,
-                setValue: setClientBlock,
-                type: 'number',
-              },
-              {
-                label: 'ClientFloor',
-                value: clientFloor,
-                setValue: setClientFloor,
-                type: 'number',
-              },
-              {
-                label: 'ClientUnit',
-                value: clientUnit,
-                setValue: setClientUnit,
-                type: 'number',
-              },
-              {
-                label: 'Remark',
-                value: remark,
-                setValue: setRemark,
-                type: 'text',
-              },
-            ].map((item, index) => (
-              <TextField
-                key={index}
-                margin="dense"
-                label={item.label}
-                fullWidth
-                variant="standard"
-                value={item.value}
-                type={item.type}
-                onChange={(e) => {
-                  item.setValue(e.target.value);
+              ))}
+              <Autocomplete
+                disablePortal
+                freeSolo
+                value={deskRemark}
+                onChange={(event, newValue) => {
+                  event.preventDefault();
+                  setDeskRemark(newValue);
                 }}
+                options={deskRemarks}
+                fullWidth
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Desk Remark"
+                    margin="dense"
+                    variant="outlined"
+                    size="small"
+                    onChange={(event) => {
+                      event.preventDefault();
+                      setDeskRemark(event.target.value);
+                    }}
+                  />
+                )}
               />
-            ))}
+            </Paper>
+            <Paper
+              sx={{
+                p: '10px',
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{ flexBasis: '100%', minWidth: '100%' }}
+              >
+                Client Info
+              </Typography>
+              {[
+                {
+                  label: 'Name',
+                  value: clientName,
+                  setValue: setClientName,
+                  type: 'text',
+                  width: '55%',
+                },
+                {
+                  label: 'District',
+                  value: clientDistrict,
+                  setValue: setClientDistrict,
+                  type: 'text',
+                  width: '55%',
+                },
+                {
+                  label: 'Street',
+                  value: clientStreet,
+                  setValue: setClientStreet,
+                  type: 'text',
+                  width: '40%',
+                },
+                {
+                  label: 'Block',
+                  value: clientBlock,
+                  setValue: setClientBlock,
+                  type: 'number',
+                  width: '30%',
+                },
+                {
+                  label: 'Floor',
+                  value: clientFloor,
+                  setValue: setClientFloor,
+                  type: 'number',
+                  width: '30%',
+                },
+                {
+                  label: 'Unit',
+                  value: clientUnit,
+                  setValue: setClientUnit,
+                  type: 'number',
+                  width: '30%',
+                },
+                {
+                  label: 'Remark',
+                  value: remark,
+                  setValue: setRemark,
+                  type: 'text',
+                  width: '100%',
+                },
+              ].map((item, index) => (
+                <TextField
+                  key={index}
+                  margin="dense"
+                  label={item.label}
+                  variant="outlined"
+                  size="small"
+                  value={item.value}
+                  type={item.type}
+                  onChange={(e) => {
+                    item.setValue(e.target.value);
+                  }}
+                  sx={{ flexBasis: item.width, minWidth: item.width }}
+                />
+              ))}
+            </Paper>
           </Stack>
         </DialogContent>
         <DialogActions>

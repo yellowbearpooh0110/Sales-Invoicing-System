@@ -35,6 +35,18 @@ const columns = [
     label: 'Color',
   },
   {
+    id: 'armSize',
+    numeric: true,
+    disablePadding: false,
+    label: 'Arm Size',
+  },
+  {
+    id: 'feetSize',
+    numeric: true,
+    disablePadding: false,
+    label: 'Feet Size',
+  },
+  {
     id: 'beam',
     numeric: false,
     disablePadding: false,
@@ -255,6 +267,7 @@ const Stock = connect(mapStateToProps)((props) => {
   return (
     <>
       <DataGrid
+        title="Desk Stocks"
         rows={stocks.map(({ id, deskModel, color, ...restProps }, index) => ({
           id: index,
           deskModel: deskModel ? deskModel.name : null,

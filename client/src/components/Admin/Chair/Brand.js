@@ -201,6 +201,7 @@ const Brand = connect(mapStateToProps)((props) => {
   return (
     <>
       <DataGrid
+        title="Chair Brands"
         rows={brands.map(({ id, ...restProps }, index) => ({
           id: index,
           ...restProps,

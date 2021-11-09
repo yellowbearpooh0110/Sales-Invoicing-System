@@ -69,6 +69,8 @@ async function create(params) {
     frameColorId,
     backColorId,
     seatColorId,
+    withHeadrest,
+    withAdArmrest,
     chairRemark,
     ...restParams
   } = params;
@@ -78,6 +80,8 @@ async function create(params) {
     frameColorId,
     backColorId,
     seatColorId,
+    withHeadrest,
+    withAdArmrest,
     chairRemark,
   };
   let chairStock = await db.ChairStock.findOne({

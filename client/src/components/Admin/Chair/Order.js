@@ -7,25 +7,22 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   FormControlLabel,
+  Paper,
   Stack,
   TextField,
+  Typography,
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
 import DataGrid from 'components/Common/DataGrid';
 
 const columns = [
-  {
-    id: 'id',
-    numeric: false,
-    disablePadding: false,
-    label: 'Id',
-  },
   {
     id: 'invoiceNum',
     numeric: false,
@@ -36,19 +33,25 @@ const columns = [
     id: 'clientName',
     numeric: false,
     disablePadding: false,
-    label: 'Client Name',
+    label: ' Name',
   },
   {
     id: 'clientAddress',
     numeric: false,
     disablePadding: false,
-    label: 'Client Address',
+    label: ' Address',
   },
   {
-    id: 'salesmanEmail',
+    id: 'salesmanName',
     numeric: false,
     disablePadding: false,
-    label: 'Salesman Email',
+    label: 'Salesman Name',
+  },
+  {
+    id: 'orderDate',
+    numeric: false,
+    disablePadding: false,
+    label: 'Order Date',
   },
 ];
 
@@ -58,6 +61,8 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps)((props) => {
+  const theme = useTheme();
+
   const [orders, setOrders] = useState([]);
   const [editOpen, setEditOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
@@ -80,8 +85,8 @@ export default connect(mapStateToProps)((props) => {
   const [frameColor, setFrameColor] = useState();
   const [backColor, setBackColor] = useState();
   const [seatColor, setSeatColor] = useState();
-  const [withHeadrest, setWithHeadrest] = useState(false);
-  const [withAdArmrest, setWithAdArmrest] = useState(false);
+  const [withHeadrest, setWithHeadrest] = useState(true);
+  const [withAdArmrest, setWithAdArmrest] = useState(true);
   const [chairRemark, setChairRemark] = useState('');
 
   const handleEditClick = (event, index) => {
@@ -106,7 +111,6 @@ export default connect(mapStateToProps)((props) => {
       setClientBlock(orders[index].clientBlock);
       setClientFloor(orders[index].clientFloor);
       setClientUnit(orders[index].clientUnit);
-      console.log(orders[index].clientRemark);
       setRemark(orders[index].clientRemark);
       setEditOpen(true);
     }
@@ -247,20 +251,6 @@ export default connect(mapStateToProps)((props) => {
       .then((response) => {
         // handle success
         setCreateOpen(false);
-        setBrand(null);
-        setModel(null);
-        setFrameColor(null);
-        setBackColor(null);
-        setSeatColor(null);
-        setWithHeadrest(false);
-        setWithAdArmrest(false);
-        setChairRemark('');
-        setClientName('');
-        setClientDistrict('');
-        setClientStreet('');
-        setClientBlock('');
-        setClientFloor('');
-        setClientUnit('');
         getOrders();
       })
       .catch(function (error) {
@@ -283,7 +273,7 @@ export default connect(mapStateToProps)((props) => {
 
   const getBrands = (cancelToken) => {
     axios
-      .get('/chairorder', { cancelToken })
+      .get('/chairbrand', { cancelToken })
       .then((response) => {
         // handle success
         setBrands(response.data);
@@ -369,11 +359,40 @@ export default connect(mapStateToProps)((props) => {
 
   return (
     <>
+      <Button
+        variant="outlined"
+        startIcon={<AddIcon />}
+        onClick={() => {
+          getBrands();
+          getModels();
+          getColors();
+          getChairRemarks();
+          setBrand(null);
+          setModel(null);
+          setFrameColor(null);
+          setBackColor(null);
+          setSeatColor(null);
+          setWithHeadrest(false);
+          setWithAdArmrest(false);
+          setChairRemark('');
+          setClientName('');
+          setClientDistrict('');
+          setClientStreet('');
+          setClientBlock('');
+          setClientFloor('');
+          setClientUnit('');
+          setCreateOpen(true);
+        }}
+      >
+        Add New Order
+      </Button>
       <DataGrid
+        title="Chair Orders"
         rows={orders.map(
           (
             {
               id,
+              invoiceNum,
               clientDistrict,
               clientStreet,
               clientBlock,
@@ -385,7 +404,8 @@ export default connect(mapStateToProps)((props) => {
             index
           ) => ({
             id: index,
-            salesmanEmail: salesman.email,
+            invoiceNum: 'C_' + invoiceNum,
+            salesmanEmail: salesman.name,
             clientAddress: [
               clientDistrict,
               clientStreet,
@@ -401,175 +421,218 @@ export default connect(mapStateToProps)((props) => {
         onRemoveClick={handleRemoveClick}
         onBulkRemoveClick={handleBulkRemoveClick}
       ></DataGrid>
-      <Button
-        variant="outlined"
-        startIcon={<AddIcon />}
-        onClick={() => {
-          getBrands();
-          getModels();
-          getColors();
-          getChairRemarks();
-          setCreateOpen(true);
-        }}
+      <Dialog
+        fullWidth
+        fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
+        maxWidth="sm"
+        open={editOpen}
       >
-        Add New Order
-      </Button>
-      <Dialog fullWidth maxWidth="sm" open={editOpen}>
         <DialogTitle>Edit ChairOrder</DialogTitle>
         <DialogContent>
-          <Stack spacing={1}>
-            <DialogContentText>
-              Please Input Order Name and Click Save button.
-            </DialogContentText>
-            {[
-              {
-                value: brand,
-                values: brands,
-                setValue: setBrand,
-                label: 'ChairBrand',
-              },
-              {
-                value: model,
-                values: models,
-                setValue: setModel,
-                label: 'ChairModel',
-              },
-              {
-                value: frameColor,
-                values: colors,
-                setValue: setFrameColor,
-                label: 'ChairFrameColor',
-              },
-              {
-                value: backColor,
-                values: colors,
-                setValue: setBackColor,
-                label: 'ChairBackColor',
-              },
-              {
-                value: seatColor,
-                values: colors,
-                setValue: setSeatColor,
-                label: 'ChairSeatColor',
-              },
-            ].map(({ value, values, setValue, label }, index) => (
+          <Stack spacing={2}>
+            <Paper
+              sx={{
+                mt: '5px',
+                p: '10px',
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{ flexBasis: '100%', minWidth: '100%' }}
+              >
+                Chair Features
+              </Typography>
+              {[
+                {
+                  value: brand,
+                  values: brands,
+                  setValue: setBrand,
+                  label: 'ChairBrand',
+                  width: '48%',
+                },
+                {
+                  value: model,
+                  values: models,
+                  setValue: setModel,
+                  label: 'ChairModel',
+                  width: '48%',
+                },
+                {
+                  value: frameColor,
+                  values: colors,
+                  setValue: setFrameColor,
+                  label: 'ChairFrameColor',
+                  width: '30%',
+                },
+                {
+                  value: backColor,
+                  values: colors,
+                  setValue: setBackColor,
+                  label: 'ChairBackColor',
+                  width: '30%',
+                },
+                {
+                  value: seatColor,
+                  values: colors,
+                  setValue: setSeatColor,
+                  label: 'ChairSeatColor',
+                  width: '30%',
+                },
+              ].map(({ value, values, setValue, label, width }, index) => (
+                <Autocomplete
+                  key={index}
+                  disablePortal
+                  value={value ? value : null}
+                  onChange={(event, newValue) => {
+                    event.preventDefault();
+                    setValue(newValue);
+                  }}
+                  options={values}
+                  getOptionLabel={(option) => option.name}
+                  sx={{ flexBasis: width, minWidth: width }}
+                  renderInput={(params) => (
+                    <TextField
+                      margin="dense"
+                      {...params}
+                      label={label}
+                      variant="outlined"
+                      size="small"
+                    />
+                  )}
+                />
+              ))}
               <Autocomplete
-                key={index}
                 disablePortal
-                value={value ? value : null}
+                freeSolo
+                value={chairRemark}
                 onChange={(event, newValue) => {
                   event.preventDefault();
-                  setValue(newValue);
+                  setChairRemark(newValue);
                 }}
-                options={values}
-                getOptionLabel={(option) => option.name}
+                options={chairRemarks}
                 fullWidth
                 renderInput={(params) => (
-                  <TextField {...params} label={label} variant="standard" />
+                  <TextField
+                    {...params}
+                    label="Chair Remark"
+                    variant="outlined"
+                    margin="dense"
+                    size="small"
+                    onChange={(event) => {
+                      event.preventDefault();
+                      setChairRemark(event.target.value);
+                    }}
+                  />
                 )}
               />
-            ))}
-            <FormControlLabel
-              control={
-                <Checkbox
-                  value={withHeadrest}
-                  onChange={() => {
-                    setWithHeadrest(!withHeadrest);
-                  }}
-                />
-              }
-              label="With Headrest"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  value={withAdArmrest}
-                  onChange={() => {
-                    setWithAdArmrest(!withAdArmrest);
-                  }}
-                />
-              }
-              label="With Adjustable Armrests"
-            />
-            <Autocomplete
-              disablePortal
-              freeSolo
-              value={chairRemark}
-              onChange={(event, newValue) => {
-                event.preventDefault();
-                setChairRemark(newValue);
-              }}
-              options={chairRemarks}
-              fullWidth
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Chair Remark"
-                  variant="standard"
-                  onChange={(event) => {
-                    event.preventDefault();
-                    setChairRemark(event.target.value);
-                  }}
-                />
-              )}
-            />
-            {[
-              {
-                label: 'Client Name',
-                value: clientName,
-                setValue: setClientName,
-                type: 'text',
-              },
-              {
-                label: 'ClientDistrict',
-                value: clientDistrict,
-                setValue: setClientDistrict,
-                type: 'text',
-              },
-              {
-                label: 'ClientStreet',
-                value: clientStreet,
-                setValue: setClientStreet,
-                type: 'text',
-              },
-              {
-                label: 'ClientBlock',
-                value: clientBlock,
-                setValue: setClientBlock,
-                type: 'number',
-              },
-              {
-                label: 'ClientFloor',
-                value: clientFloor,
-                setValue: setClientFloor,
-                type: 'number',
-              },
-              {
-                label: 'ClientUnit',
-                value: clientUnit,
-                setValue: setClientUnit,
-                type: 'number',
-              },
-              {
-                label: 'Remark',
-                value: remark,
-                setValue: setRemark,
-                type: 'text',
-              },
-            ].map((item, index) => (
-              <TextField
-                key={index}
-                margin="dense"
-                label={item.label}
-                fullWidth
-                variant="standard"
-                value={item.value}
-                type={item.type}
-                onChange={(e) => {
-                  item.setValue(e.target.value);
-                }}
+              <FormControlLabel
+                sx={{ flexBasis: '45%', minWidth: '45%' }}
+                control={
+                  <Checkbox
+                    checked={withHeadrest}
+                    onChange={() => {
+                      setWithHeadrest(!withHeadrest);
+                    }}
+                  />
+                }
+                label="With Headrest"
               />
-            ))}
+              <FormControlLabel
+                sx={{ flexBasis: '45%', minWidth: '45%' }}
+                control={
+                  <Checkbox
+                    checked={withAdArmrest}
+                    onChange={() => {
+                      setWithAdArmrest(!withAdArmrest);
+                    }}
+                  />
+                }
+                label="With Adjustable Armrests"
+              />
+            </Paper>
+            <Paper
+              sx={{
+                p: '10px',
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{ flexBasis: '100%', minWidth: '100%' }}
+              >
+                Client Info
+              </Typography>
+              {[
+                {
+                  label: 'Name',
+                  value: clientName,
+                  setValue: setClientName,
+                  type: 'text',
+                  width: '55%',
+                },
+                {
+                  label: 'District',
+                  value: clientDistrict,
+                  setValue: setClientDistrict,
+                  type: 'text',
+                  width: '55%',
+                },
+                {
+                  label: 'Street',
+                  value: clientStreet,
+                  setValue: setClientStreet,
+                  type: 'text',
+                  width: '40%',
+                },
+                {
+                  label: 'Block',
+                  value: clientBlock,
+                  setValue: setClientBlock,
+                  type: 'number',
+                  width: '30%',
+                },
+                {
+                  label: 'Floor',
+                  value: clientFloor,
+                  setValue: setClientFloor,
+                  type: 'number',
+                  width: '30%',
+                },
+                {
+                  label: 'Unit',
+                  value: clientUnit,
+                  setValue: setClientUnit,
+                  type: 'number',
+                  width: '30%',
+                },
+                {
+                  label: 'Remark',
+                  value: remark,
+                  setValue: setRemark,
+                  type: 'text',
+                  width: '100%',
+                },
+              ].map((item, index) => (
+                <TextField
+                  key={index}
+                  margin="dense"
+                  label={item.label}
+                  variant="outlined"
+                  size="small"
+                  value={item.value}
+                  type={item.type}
+                  onChange={(e) => {
+                    item.setValue(e.target.value);
+                  }}
+                  sx={{ flexBasis: item.width, minWidth: item.width }}
+                />
+              ))}
+            </Paper>
           </Stack>
         </DialogContent>
         <DialogActions>
@@ -583,163 +646,218 @@ export default connect(mapStateToProps)((props) => {
           <Button onClick={handleSave}>Save</Button>
         </DialogActions>
       </Dialog>
-      <Dialog fullWidth maxWidth="sm" open={createOpen}>
-        <DialogTitle>Edit ChairOrder</DialogTitle>
+      <Dialog
+        fullWidth
+        fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
+        maxWidth="sm"
+        open={createOpen}
+      >
+        <DialogTitle>Create ChairOrder</DialogTitle>
         <DialogContent>
-          <Stack spacing={1}>
-            <DialogContentText>
-              Please Input Order Name and Click Save button.
-            </DialogContentText>
-            {[
-              {
-                value: brand,
-                values: brands,
-                setValue: setBrand,
-                label: 'ChairBrand',
-              },
-              {
-                value: model,
-                values: models,
-                setValue: setModel,
-                label: 'ChairModel',
-              },
-              {
-                value: frameColor,
-                values: colors,
-                setValue: setFrameColor,
-                label: 'ChairFrameColor',
-              },
-              {
-                value: backColor,
-                values: colors,
-                setValue: setBackColor,
-                label: 'ChairBackColor',
-              },
-              {
-                value: seatColor,
-                values: colors,
-                setValue: setSeatColor,
-                label: 'ChairSeatColor',
-              },
-            ].map(({ value, values, setValue, label }, index) => (
+          <Stack spacing={2}>
+            <Paper
+              sx={{
+                mt: '5px',
+                p: '10px',
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{ flexBasis: '100%', minWidth: '100%' }}
+              >
+                Chair Features
+              </Typography>
+              {[
+                {
+                  value: brand,
+                  values: brands,
+                  setValue: setBrand,
+                  label: 'ChairBrand',
+                  width: '48%',
+                },
+                {
+                  value: model,
+                  values: models,
+                  setValue: setModel,
+                  label: 'ChairModel',
+                  width: '48%',
+                },
+                {
+                  value: frameColor,
+                  values: colors,
+                  setValue: setFrameColor,
+                  label: 'ChairFrameColor',
+                  width: '30%',
+                },
+                {
+                  value: backColor,
+                  values: colors,
+                  setValue: setBackColor,
+                  label: 'ChairBackColor',
+                  width: '30%',
+                },
+                {
+                  value: seatColor,
+                  values: colors,
+                  setValue: setSeatColor,
+                  label: 'ChairSeatColor',
+                  width: '30%',
+                },
+              ].map(({ value, values, setValue, label, width }, index) => (
+                <Autocomplete
+                  key={index}
+                  disablePortal
+                  value={value ? value : null}
+                  onChange={(event, newValue) => {
+                    event.preventDefault();
+                    setValue(newValue);
+                  }}
+                  options={values}
+                  getOptionLabel={(option) => option.name}
+                  sx={{ flexBasis: width, minWidth: width }}
+                  renderInput={(params) => (
+                    <TextField
+                      margin="dense"
+                      {...params}
+                      label={label}
+                      variant="outlined"
+                      size="small"
+                    />
+                  )}
+                />
+              ))}
               <Autocomplete
-                key={index}
                 disablePortal
-                value={value ? value : null}
+                freeSolo
+                value={chairRemark}
                 onChange={(event, newValue) => {
                   event.preventDefault();
-                  setValue(newValue);
+                  setChairRemark(newValue);
                 }}
-                options={values}
-                getOptionLabel={(option) => option.name}
+                options={chairRemarks}
                 fullWidth
                 renderInput={(params) => (
-                  <TextField {...params} label={label} variant="standard" />
+                  <TextField
+                    {...params}
+                    label="Chair Remark"
+                    variant="outlined"
+                    margin="dense"
+                    size="small"
+                    onChange={(event) => {
+                      event.preventDefault();
+                      setChairRemark(event.target.value);
+                    }}
+                  />
                 )}
               />
-            ))}
-            <FormControlLabel
-              control={
-                <Checkbox
-                  value={withHeadrest}
-                  onChange={() => {
-                    setWithHeadrest(!withHeadrest);
-                  }}
-                />
-              }
-              label="With Headrest"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  value={withAdArmrest}
-                  onChange={() => {
-                    setWithAdArmrest(!withAdArmrest);
-                  }}
-                />
-              }
-              label="With Adjustable Armrests"
-            />
-            <Autocomplete
-              disablePortal
-              freeSolo
-              value={chairRemark}
-              onChange={(event, newValue) => {
-                event.preventDefault();
-                setChairRemark(newValue);
-              }}
-              options={chairRemarks}
-              fullWidth
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Chair Remark"
-                  variant="standard"
-                  onChange={(event) => {
-                    event.preventDefault();
-                    setChairRemark(event.target.value);
-                  }}
-                />
-              )}
-            />
-
-            {[
-              {
-                label: 'Client Name',
-                value: clientName,
-                setValue: setClientName,
-                type: 'text',
-              },
-              {
-                label: 'ClientDistrict',
-                value: clientDistrict,
-                setValue: setClientDistrict,
-                type: 'text',
-              },
-              {
-                label: 'ClientStreet',
-                value: clientStreet,
-                setValue: setClientStreet,
-                type: 'text',
-              },
-              {
-                label: 'ClientBlock',
-                value: clientBlock,
-                setValue: setClientBlock,
-                type: 'number',
-              },
-              {
-                label: 'ClientFloor',
-                value: clientFloor,
-                setValue: setClientFloor,
-                type: 'number',
-              },
-              {
-                label: 'ClientUnit',
-                value: clientUnit,
-                setValue: setClientUnit,
-                type: 'number',
-              },
-              {
-                label: 'Remark',
-                value: remark,
-                setValue: setRemark,
-                type: 'text',
-              },
-            ].map((item, index) => (
-              <TextField
-                key={index}
-                margin="dense"
-                label={item.label}
-                fullWidth
-                variant="standard"
-                value={item.value}
-                type={item.type}
-                onChange={(e) => {
-                  item.setValue(e.target.value);
-                }}
+              <FormControlLabel
+                sx={{ flexBasis: '45%', minWidth: '45%' }}
+                control={
+                  <Checkbox
+                    checked={withHeadrest}
+                    onChange={() => {
+                      setWithHeadrest(!withHeadrest);
+                    }}
+                  />
+                }
+                label="With Headrest"
               />
-            ))}
+              <FormControlLabel
+                sx={{ flexBasis: '45%', minWidth: '45%' }}
+                control={
+                  <Checkbox
+                    checked={withAdArmrest}
+                    onChange={() => {
+                      setWithAdArmrest(!withAdArmrest);
+                    }}
+                  />
+                }
+                label="With Adjustable Armrests"
+              />
+            </Paper>
+            <Paper
+              sx={{
+                p: '10px',
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{ flexBasis: '100%', minWidth: '100%' }}
+              >
+                Client Info
+              </Typography>
+              {[
+                {
+                  label: 'Name',
+                  value: clientName,
+                  setValue: setClientName,
+                  type: 'text',
+                  width: '55%',
+                },
+                {
+                  label: 'District',
+                  value: clientDistrict,
+                  setValue: setClientDistrict,
+                  type: 'text',
+                  width: '55%',
+                },
+                {
+                  label: 'Street',
+                  value: clientStreet,
+                  setValue: setClientStreet,
+                  type: 'text',
+                  width: '40%',
+                },
+                {
+                  label: 'Block',
+                  value: clientBlock,
+                  setValue: setClientBlock,
+                  type: 'number',
+                  width: '30%',
+                },
+                {
+                  label: 'Floor',
+                  value: clientFloor,
+                  setValue: setClientFloor,
+                  type: 'number',
+                  width: '30%',
+                },
+                {
+                  label: 'Unit',
+                  value: clientUnit,
+                  setValue: setClientUnit,
+                  type: 'number',
+                  width: '30%',
+                },
+                {
+                  label: 'Remark',
+                  value: remark,
+                  setValue: setRemark,
+                  type: 'text',
+                  width: '100%',
+                },
+              ].map((item, index) => (
+                <TextField
+                  key={index}
+                  margin="dense"
+                  label={item.label}
+                  variant="outlined"
+                  size="small"
+                  value={item.value}
+                  type={item.type}
+                  onChange={(e) => {
+                    item.setValue(e.target.value);
+                  }}
+                  sx={{ flexBasis: item.width, minWidth: item.width }}
+                />
+              ))}
+            </Paper>
           </Stack>
         </DialogContent>
         <DialogActions>

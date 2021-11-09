@@ -201,6 +201,7 @@ export default connect(mapStateToProps)((props) => {
   return (
     <>
       <DataGrid
+        title="Colors"
         rows={colors.map(({ id, ...restProps }, index) => ({
           id: index,
           ...restProps,

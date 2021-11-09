@@ -128,7 +128,6 @@ const Admin = (props) => {
             maxWidth: '100%',
           }}
         >
-          <Toolbar />
           <Switch>
             <Route path={`${path}/user`} component={Users} />
             <Route path={`${path}/chair/brand`} exact component={ChairBrand} />

@@ -30,7 +30,7 @@ function createSchema(req, res, next) {
     melamineInfo: Joi.string(),
     laminateInfo: Joi.string(),
     bambooInfo: Joi.string(),
-    deskRemark: Joi.string(),
+    deskRemark: Joi.string().allow(''),
     clientName: Joi.string(),
     clientDistrict: Joi.string(),
     clientStreet: Joi.string(),

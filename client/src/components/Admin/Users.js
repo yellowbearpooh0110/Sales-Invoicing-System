@@ -117,6 +117,7 @@ const Users = connect(mapStateToProps)((props) => {
   return (
     <>
       <DataGrid
+        title="Users"
         rows={users}
         columns={columns}
         onEditClick={handleEditClick}

@@ -1,15 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import {
+  Autocomplete,
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  FormControlLabel,
+  Paper,
+  Stack,
   TextField,
+  Typography,
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
@@ -52,6 +60,30 @@ const columns = [
     disablePadding: false,
     label: 'Seat Color',
   },
+  {
+    id: 'withHeadrest',
+    numeric: false,
+    disablePadding: false,
+    label: 'With Headrest',
+  },
+  {
+    id: 'withAdArmrest',
+    numeric: false,
+    disablePadding: false,
+    label: 'With Adjustable Armrests',
+  },
+  {
+    id: 'chairRemark',
+    numeric: false,
+    disablePadding: false,
+    label: 'Special Remarks',
+  },
+  {
+    id: 'QTY',
+    numeric: true,
+    disablePadding: false,
+    label: 'QTY',
+  },
 ];
 
 function mapStateToProps(state) {
@@ -60,17 +92,40 @@ function mapStateToProps(state) {
 }
 
 const Stock = connect(mapStateToProps)((props) => {
+  const theme = useTheme();
   const [stocks, setStocks] = useState([]);
   const [editOpen, setEditOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [id, setID] = useState('');
-  const [name, setName] = useState('');
+
+  const [brands, setBrands] = useState([]);
+  const [models, setModels] = useState([]);
+  const [colors, setColors] = useState([]);
+  const [chairRemarks, setChairRemarks] = useState(['av', 'avas']);
+
+  const [brand, setBrand] = useState();
+  const [model, setModel] = useState();
+  const [frameColor, setFrameColor] = useState();
+  const [backColor, setBackColor] = useState();
+  const [seatColor, setSeatColor] = useState();
+  const [withHeadrest, setWithHeadrest] = useState(true);
+  const [withAdArmrest, setWithAdArmrest] = useState(true);
+  const [chairRemark, setChairRemark] = useState('');
+  const [QTY, setQTY] = useState(0);
 
   const handleEditClick = (event, index) => {
     event.preventDefault();
     if (index < stocks.length && index >= 0) {
       setID(stocks[index].id);
-      setName(stocks[index].name);
+      setBrand(stocks[index].chairBrand);
+      setModel(stocks[index].chairModel);
+      setFrameColor(stocks[index].frameColor);
+      setBackColor(stocks[index].backColor);
+      setSeatColor(stocks[index].seatColor);
+      setWithHeadrest(stocks[index].withHeadrest);
+      setWithAdArmrest(stocks[index].withAdArmrest);
+      setChairRemark(stocks[index].chairRemark);
+      setQTY(stocks[index].QTY);
     }
     setEditOpen(true);
   };
@@ -149,7 +204,17 @@ const Stock = connect(mapStateToProps)((props) => {
   const handleSave = (event) => {
     event.preventDefault();
     axios
-      .put(`/chairstock/${id}`, { name })
+      .put(`/chairstock/${id}`, {
+        chairBrandId: brand ? brand.id : null,
+        chairModelId: model ? model.id : null,
+        frameColorId: frameColor ? frameColor.id : null,
+        backColorId: backColor ? backColor.id : null,
+        seatColorId: seatColor ? seatColor.id : null,
+        withHeadrest,
+        withAdArmrest,
+        chairRemark,
+        QTY,
+      })
       .then((response) => {
         // handle success
         setEditOpen(false);
@@ -176,7 +241,17 @@ const Stock = connect(mapStateToProps)((props) => {
   const handleCreate = (event) => {
     event.preventDefault();
     axios
-      .post(`/chairstock/create`, { name })
+      .post(`/chairstock/create`, {
+        chairBrandId: brand ? brand.id : null,
+        chairModelId: model ? model.id : null,
+        frameColorId: frameColor ? frameColor.id : null,
+        backColorId: backColor ? backColor.id : null,
+        seatColorId: seatColor ? seatColor.id : null,
+        withHeadrest,
+        withAdArmrest,
+        chairRemark,
+        QTY,
+      })
       .then((response) => {
         // handle success
         setCreateOpen(false);
@@ -198,6 +273,70 @@ const Stock = connect(mapStateToProps)((props) => {
       .then(function () {
         // always executed
       });
+  };
+
+  const getBrands = (cancelToken) => {
+    axios
+      .get('/chairbrand', { cancelToken })
+      .then((response) => {
+        // handle success
+        setBrands(response.data);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
+  const getModels = (cancelToken) => {
+    axios
+      .get('/chairmodel', { cancelToken })
+      .then((response) => {
+        // handle success
+        setModels(response.data);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
+  const getColors = (cancelToken) => {
+    axios
+      .get('/productcolor', { cancelToken })
+      .then((response) => {
+        // handle success
+        setColors(response.data);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
+  const getChairRemarks = (cancelToken) => {
+    // axios
+    //   .get('/chairremark', { cancelToken })
+    //   .then((response) => {
+    //     // handle success
+    //     setChairRemarks(response.data.map((item) => item.detail));
+    //   })
+    //   .catch(function (error) {
+    //     // handle error
+    //     console.log(error);
+    //   })
+    //   .then(function () {
+    //     // always executed
+    //   });
   };
 
   const getStocks = (cancelToken) => {
@@ -224,7 +363,30 @@ const Stock = connect(mapStateToProps)((props) => {
 
   return (
     <>
+      <Button
+        variant="outlined"
+        startIcon={<AddIcon />}
+        onClick={() => {
+          getBrands();
+          getModels();
+          getColors();
+          getChairRemarks();
+          setBrand(null);
+          setModel(null);
+          setFrameColor(null);
+          setBackColor(null);
+          setSeatColor(null);
+          setWithHeadrest(false);
+          setWithAdArmrest(false);
+          setChairRemark('');
+          setQTY(0);
+          setCreateOpen(true);
+        }}
+      >
+        Add New Stock
+      </Button>
       <DataGrid
+        title="Chair Stocks"
         rows={stocks.map(
           (
             {
@@ -256,32 +418,149 @@ const Stock = connect(mapStateToProps)((props) => {
         onRemoveClick={handleRemoveClick}
         onBulkRemoveClick={handleBulkRemoveClick}
       ></DataGrid>
-      <Button
-        variant="outlined"
-        startIcon={<AddIcon />}
-        onClick={() => {
-          setName('');
-          setCreateOpen(true);
-        }}
+      <Dialog
+        fullWidth
+        fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
+        maxWidth="sm"
+        open={editOpen}
       >
-        Add New Stock
-      </Button>
-      <Dialog open={editOpen}>
         <DialogTitle>Edit ChairStock</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Please Edit the ChairStock and Click Save button.
-          </DialogContentText>
-          <TextField
-            margin="dense"
-            label="Name"
-            fullWidth
-            variant="standard"
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-            }}
-          />
+          <Stack spacing={2}>
+            <Paper
+              sx={{
+                mt: '5px',
+                p: '10px',
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Typography sx={{ flexBasis: '100%', minWidth: '100%' }}>
+                Chair Features
+              </Typography>
+              {[
+                {
+                  value: brand,
+                  values: brands,
+                  setValue: setBrand,
+                  label: 'ChairBrand',
+                  width: '48%',
+                },
+                {
+                  value: model,
+                  values: models,
+                  setValue: setModel,
+                  label: 'ChairModel',
+                  width: '48%',
+                },
+                {
+                  value: frameColor,
+                  values: colors,
+                  setValue: setFrameColor,
+                  label: 'ChairFrameColor',
+                  width: '30%',
+                },
+                {
+                  value: backColor,
+                  values: colors,
+                  setValue: setBackColor,
+                  label: 'ChairBackColor',
+                  width: '30%',
+                },
+                {
+                  value: seatColor,
+                  values: colors,
+                  setValue: setSeatColor,
+                  label: 'ChairSeatColor',
+                  width: '30%',
+                },
+              ].map(({ value, values, setValue, label, width }, index) => (
+                <Autocomplete
+                  key={index}
+                  disablePortal
+                  value={value ? value : null}
+                  onChange={(event, newValue) => {
+                    event.preventDefault();
+                    setValue(newValue);
+                  }}
+                  options={values}
+                  getOptionLabel={(option) => option.name}
+                  sx={{ flexBasis: width, minWidth: width }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      margin="dense"
+                      label={label}
+                      variant="outlined"
+                      size="small"
+                    />
+                  )}
+                />
+              ))}
+              <Autocomplete
+                disablePortal
+                freeSolo
+                value={chairRemark}
+                onChange={(event, newValue) => {
+                  event.preventDefault();
+                  setChairRemark(newValue);
+                }}
+                options={chairRemarks}
+                fullWidth
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Chair Remark"
+                    margin="dense"
+                    variant="outlined"
+                    size="small"
+                    onChange={(event) => {
+                      event.preventDefault();
+                      setChairRemark(event.target.value);
+                    }}
+                  />
+                )}
+              />
+              <FormControlLabel
+                sx={{ flexBasis: '45%', minWidth: '45%' }}
+                control={
+                  <Checkbox
+                    checked={withHeadrest}
+                    onChange={() => {
+                      setWithHeadrest(!withHeadrest);
+                    }}
+                  />
+                }
+                label="With Headrest"
+              />
+              <FormControlLabel
+                sx={{ flexBasis: '45%', minWidth: '45%' }}
+                control={
+                  <Checkbox
+                    checked={withAdArmrest}
+                    onChange={() => {
+                      setWithAdArmrest(!withAdArmrest);
+                    }}
+                  />
+                }
+                label="With Adjustable Armrests"
+              />
+            </Paper>
+            <TextField
+              margin="dense"
+              label="QTY"
+              fullWidth
+              margin="dense"
+              variant="outlined"
+              size="small"
+              value={QTY}
+              type="number"
+              onChange={(e) => {
+                setQTY(e.target.value);
+              }}
+            />
+          </Stack>
         </DialogContent>
         <DialogActions>
           <Button
@@ -294,32 +573,149 @@ const Stock = connect(mapStateToProps)((props) => {
           <Button onClick={handleSave}>Save</Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={createOpen}>
-        <DialogTitle>Edit ChairStock</DialogTitle>
+      <Dialog
+        fullWidth
+        fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
+        maxWidth="sm"
+        open={createOpen}
+      >
+        <DialogTitle>Create ChairStock</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Please Input ChairStock Name and Click Save button.
-          </DialogContentText>
-          <TextField
-            margin="dense"
-            label="Brand"
-            fullWidth
-            variant="standard"
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-            }}
-          />
-          <TextField
-            margin="dense"
-            label="Model"
-            fullWidth
-            variant="standard"
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-            }}
-          />
+          <Stack spacing={2}>
+            <Paper
+              sx={{
+                mt: '5px',
+                p: '10px',
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Typography sx={{ flexBasis: '100%', minWidth: '100%' }}>
+                Chair Features
+              </Typography>
+              {[
+                {
+                  value: brand,
+                  values: brands,
+                  setValue: setBrand,
+                  label: 'ChairBrand',
+                  width: '48%',
+                },
+                {
+                  value: model,
+                  values: models,
+                  setValue: setModel,
+                  label: 'ChairModel',
+                  width: '48%',
+                },
+                {
+                  value: frameColor,
+                  values: colors,
+                  setValue: setFrameColor,
+                  label: 'ChairFrameColor',
+                  width: '30%',
+                },
+                {
+                  value: backColor,
+                  values: colors,
+                  setValue: setBackColor,
+                  label: 'ChairBackColor',
+                  width: '30%',
+                },
+                {
+                  value: seatColor,
+                  values: colors,
+                  setValue: setSeatColor,
+                  label: 'ChairSeatColor',
+                  width: '30%',
+                },
+              ].map(({ value, values, setValue, label, width }, index) => (
+                <Autocomplete
+                  key={index}
+                  disablePortal
+                  value={value ? value : null}
+                  onChange={(event, newValue) => {
+                    event.preventDefault();
+                    setValue(newValue);
+                  }}
+                  options={values}
+                  getOptionLabel={(option) => option.name}
+                  sx={{ flexBasis: width, minWidth: width }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      margin="dense"
+                      label={label}
+                      variant="outlined"
+                      size="small"
+                    />
+                  )}
+                />
+              ))}
+              <Autocomplete
+                disablePortal
+                freeSolo
+                value={chairRemark}
+                onChange={(event, newValue) => {
+                  event.preventDefault();
+                  setChairRemark(newValue);
+                }}
+                options={chairRemarks}
+                fullWidth
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Chair Remark"
+                    margin="dense"
+                    variant="outlined"
+                    size="small"
+                    onChange={(event) => {
+                      event.preventDefault();
+                      setChairRemark(event.target.value);
+                    }}
+                  />
+                )}
+              />
+              <FormControlLabel
+                sx={{ flexBasis: '45%', minWidth: '45%' }}
+                control={
+                  <Checkbox
+                    checked={withHeadrest}
+                    onChange={() => {
+                      setWithHeadrest(!withHeadrest);
+                    }}
+                  />
+                }
+                label="With Headrest"
+              />
+              <FormControlLabel
+                sx={{ flexBasis: '45%', minWidth: '45%' }}
+                control={
+                  <Checkbox
+                    checked={withAdArmrest}
+                    onChange={() => {
+                      setWithAdArmrest(!withAdArmrest);
+                    }}
+                  />
+                }
+                label="With Adjustable Armrests"
+              />
+            </Paper>
+            <TextField
+              margin="dense"
+              label="QTY"
+              fullWidth
+              margin="dense"
+              variant="outlined"
+              size="small"
+              value={QTY}
+              type="number"
+              onChange={(e) => {
+                setQTY(e.target.value);
+              }}
+            />
+          </Stack>
         </DialogContent>
         <DialogActions>
           <Button

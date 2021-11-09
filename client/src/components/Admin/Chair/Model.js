@@ -201,6 +201,7 @@ const Model = connect(mapStateToProps)((props) => {
   return (
     <>
       <DataGrid
+        title="Chair Models"
         rows={models.map(({ id, ...restProps }, index) => ({
           id: index,
           ...restProps,

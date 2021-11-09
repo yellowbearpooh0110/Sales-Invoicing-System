@@ -117,7 +117,7 @@ EnhancedTableHead.propTypes = {
 };
 
 const EnhancedTableToolbar = (props) => {
-  const { numSelected, onBulkRemoveClick } = props;
+  const { title, numSelected, onBulkRemoveClick } = props;
 
   return (
     <Toolbar
@@ -149,7 +149,7 @@ const EnhancedTableToolbar = (props) => {
           id="tableTitle"
           component="div"
         >
-          Users
+          {title}
         </Typography>
       )}
 
@@ -177,6 +177,7 @@ EnhancedTableToolbar.propTypes = {
 
 const DataGrid = (props) => {
   const {
+    title,
     columns,
     rows,
     onEditClick,
@@ -255,6 +256,7 @@ const DataGrid = (props) => {
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
         <EnhancedTableToolbar
+          title={title}
           numSelected={selected.length}
           onBulkRemoveClick={(event) => {
             event.preventDefault();
