@@ -4,7 +4,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Provider } from 'react-redux';
 import axios from 'axios';
 
-import { Invoice, SignIn } from 'components/Guest';
+import { ChairInvoice, SignIn } from 'components/Guest';
 import Admin from 'components/Admin';
 import Standard from 'components/Standard';
 import { AdminRoute, GuestRoute, PrivateRoute } from 'components/Common/Routes';
@@ -38,8 +38,8 @@ const App = () => {
               <Route path="/" exact>
                 <Redirect to="/signin" />
               </Route>
-              <Route path="/chairinvoice/:id" component={Invoice} />
-              <GuestRoute path="/signin" component={SignIn} />
+              <Route path="/chairinvoice/:id" exact component={ChairInvoice} />
+              <GuestRoute path="/signin" exact component={SignIn} />
               <AdminRoute path="/admin" component={Admin} />
               <PrivateRoute path="/user" component={Standard} />
             </Switch>

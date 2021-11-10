@@ -89,7 +89,7 @@ export default connect(mapStateToProps)((props) => {
   const [laminateInfo, setLaminateInfo] = useState('');
   const [bambooInfo, setBambooInfo] = useState('');
   const [deskRemark, setDeskRemark] = useState('');
-  const [QTY, setQTY] = useState(0);
+  const [QTY, setQTY] = useState(1);
 
   const handleEditClick = (event, index) => {
     event.preventDefault();
@@ -117,6 +117,7 @@ export default connect(mapStateToProps)((props) => {
       setClientFloor(orders[index].clientFloor);
       setClientUnit(orders[index].clientUnit);
       setRemark(orders[index].clientRemark);
+      setQTY(orders[index].QTY);
       setEditOpen(true);
     }
   };
@@ -214,6 +215,8 @@ export default connect(mapStateToProps)((props) => {
         clientBlock,
         clientFloor,
         clientUnit,
+        remark,
+        QTY,
       })
       .then((response) => {
         // handle success
@@ -260,6 +263,8 @@ export default connect(mapStateToProps)((props) => {
         clientBlock,
         clientFloor,
         clientUnit,
+        remark,
+        QTY,
       })
       .then((response) => {
         // handle success
@@ -381,6 +386,8 @@ export default connect(mapStateToProps)((props) => {
           setClientBlock('');
           setClientFloor('');
           setClientUnit('');
+          setRemark('');
+          setQTY(1);
           setCreateOpen(true);
         }}
       >

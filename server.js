@@ -4,6 +4,7 @@ const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const errorHandler = require('server/middleware/error-handler');
+const crypto = require('crypto');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());

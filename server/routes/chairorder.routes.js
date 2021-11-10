@@ -11,6 +11,7 @@ router.post('/create', authorize(), createSchema, create);
 router.get('/', admin(), getAll);
 router.get('/current', authorize(), getCurrent);
 router.get('/:id', authorize(), getById);
+router.get('/chairinvoice/:token', getByToken);
 router.put('/:id', admin(), createSchema, update);
 router.delete('/:id', admin(), _delete);
 router.delete('/', admin(), bulkDeleteSchema, _bulkDelete);
@@ -31,9 +32,10 @@ function createSchema(req, res, next) {
     clientDistrict: Joi.string().allow(''),
     clientStreet: Joi.string().allow(''),
     clientBlock: Joi.string().allow(''),
-    clientFloor: Joi.number(),
-    clientUnit: Joi.number(),
+    clientFloor: Joi.string().allow(''),
+    clientUnit: Joi.string().allow(''),
     clientRemark: Joi.string(),
+    QTY: Joi.number(),
   });
   validateRequest(req, next, schema);
 }
@@ -69,6 +71,14 @@ function getCurrent(req, res, next) {
 }
 
 function getById(req, res, next) {
+  chairorderController
+    .getById(req.params.id)
+    .then((chairorder) => res.json(chairorder))
+    .catch(next);
+}
+
+function getByToken(req, res, next) {
+  req.params.token;
   chairorderController
     .getById(req.params.id)
     .then((chairorder) => res.json(chairorder))

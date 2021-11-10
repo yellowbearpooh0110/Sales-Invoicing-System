@@ -17,15 +17,36 @@ function model(sequelize) {
       autoIncrement: true,
       unique: true,
     },
-    clientName: { type: DataTypes.STRING, allowNull: false },
-    clientDistrict: { type: DataTypes.STRING, allowNull: false },
-    clientStreet: { type: DataTypes.STRING, allowNull: false },
-    clientBlock: { type: DataTypes.STRING, allowNull: false },
-    clientFloor: { type: DataTypes.STRING, allowNull: false },
-    clientUnit: { type: DataTypes.STRING, allowNull: false },
-    orderDate: { type: DataTypes.DATE },
-    finishDate: { type: DataTypes.DATE },
-    clientRemark: { type: DataTypes.STRING, defaultValue: '' },
+    clientName: { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
+    clientDistrict: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
+    },
+    clientStreet: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
+    },
+    clientBlock: { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
+    clientFloor: { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
+    clientUnit: { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
+    clientPhone: { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
+    deliveryDate: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    clientRemark: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
+    },
+    QTY: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1,
+    },
   };
 
   const DeskOrder = sequelize.define('DeskOrder', attributes);

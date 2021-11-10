@@ -9,18 +9,23 @@ import {
   DialogContent,
   DialogTitle,
   FormControlLabel,
+  IconButton,
   Paper,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
+import {
+  Add as AddIcon,
+  PictureAsPdf as PictureAdPdfIcon,
+} from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
 import DataGrid from 'components/Common/DataGrid';
+import { Link } from 'react-router-dom';
 
 const columns = [
   {
@@ -94,7 +99,19 @@ export default connect(mapStateToProps)((props) => {
   const [withHeadrest, setWithHeadrest] = useState(true);
   const [withAdArmrest, setWithAdArmrest] = useState(true);
   const [chairRemark, setChairRemark] = useState('');
-  const [QTY, setQTY] = useState(0);
+  const [QTY, setQTY] = useState(1);
+
+  const extraLink = (id) => {
+    return (
+      <IconButton
+        component={Link}
+        to={`/chairinvoice/${orders[id].id}`}
+        target="_blank"
+      >
+        <PictureAdPdfIcon />
+      </IconButton>
+    );
+  };
 
   const handleEditClick = (event, index) => {
     event.preventDefault();
@@ -119,6 +136,7 @@ export default connect(mapStateToProps)((props) => {
       setClientFloor(orders[index].clientFloor);
       setClientUnit(orders[index].clientUnit);
       setRemark(orders[index].clientRemark);
+      setQTY(orders[index].QTY);
       setEditOpen(true);
     }
   };
@@ -212,6 +230,8 @@ export default connect(mapStateToProps)((props) => {
         clientBlock,
         clientFloor,
         clientUnit,
+        remark,
+        QTY,
       })
       .then((response) => {
         // handle success
@@ -254,6 +274,8 @@ export default connect(mapStateToProps)((props) => {
         clientBlock,
         clientFloor,
         clientUnit,
+        remark,
+        QTY,
       })
       .then((response) => {
         // handle success
@@ -388,6 +410,8 @@ export default connect(mapStateToProps)((props) => {
           setClientBlock('');
           setClientFloor('');
           setClientUnit('');
+          setRemark('');
+          setQTY(1);
           setCreateOpen(true);
         }}
       >
@@ -424,6 +448,7 @@ export default connect(mapStateToProps)((props) => {
           })
         )}
         columns={columns}
+        extraLink={extraLink}
         onEditClick={handleEditClick}
         onRemoveClick={handleRemoveClick}
         onBulkRemoveClick={handleBulkRemoveClick}
@@ -600,21 +625,21 @@ export default connect(mapStateToProps)((props) => {
                   label: 'Block',
                   value: clientBlock,
                   setValue: setClientBlock,
-                  type: 'number',
+                  type: 'text',
                   width: '30%',
                 },
                 {
                   label: 'Floor',
                   value: clientFloor,
                   setValue: setClientFloor,
-                  type: 'number',
+                  type: 'text',
                   width: '30%',
                 },
                 {
                   label: 'Unit',
                   value: clientUnit,
                   setValue: setClientUnit,
-                  type: 'number',
+                  type: 'text',
                   width: '30%',
                 },
                 {
@@ -838,21 +863,21 @@ export default connect(mapStateToProps)((props) => {
                   label: 'Block',
                   value: clientBlock,
                   setValue: setClientBlock,
-                  type: 'number',
+                  type: 'text',
                   width: '30%',
                 },
                 {
                   label: 'Floor',
                   value: clientFloor,
                   setValue: setClientFloor,
-                  type: 'number',
+                  type: 'text',
                   width: '30%',
                 },
                 {
                   label: 'Unit',
                   value: clientUnit,
                   setValue: setClientUnit,
-                  type: 'number',
+                  type: 'text',
                   width: '30%',
                 },
                 {

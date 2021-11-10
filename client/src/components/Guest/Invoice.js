@@ -93,7 +93,6 @@ export default () => {
 
   return (
     <Box id="divToPrint" className={classes.root}>
-      <Button onClick={printDocument}>aaa</Button>
       <Typography className={classes.title}>Invoice</Typography>
       <Typography>Date: October 15, 2021</Typography>
       <Typography>No: 20211127</Typography>

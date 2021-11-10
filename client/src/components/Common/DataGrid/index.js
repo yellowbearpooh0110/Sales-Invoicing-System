@@ -183,6 +183,7 @@ const DataGrid = (props) => {
     onEditClick,
     onRemoveClick,
     onBulkRemoveClick,
+    extraLink,
   } = props;
 
   const [order, setOrder] = useState('asc');
@@ -321,6 +322,7 @@ const DataGrid = (props) => {
                         </TableCell>
                       ))}
                       <TableCell align="center">
+                        {extraLink && extraLink(row.id)}
                         <IconButton
                           onClick={(e) => {
                             onEditClick(e, row.id);
