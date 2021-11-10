@@ -200,6 +200,16 @@ const Brand = connect(mapStateToProps)((props) => {
 
   return (
     <>
+      <Button
+        variant="outlined"
+        startIcon={<AddIcon />}
+        onClick={() => {
+          setName('');
+          setCreateOpen(true);
+        }}
+      >
+        Add New Brand
+      </Button>
       <DataGrid
         title="Chair Brands"
         rows={brands.map(({ id, ...restProps }, index) => ({
@@ -211,16 +221,6 @@ const Brand = connect(mapStateToProps)((props) => {
         onRemoveClick={handleRemoveClick}
         onBulkRemoveClick={handleBulkRemoveClick}
       ></DataGrid>
-      <Button
-        variant="outlined"
-        startIcon={<AddIcon />}
-        onClick={() => {
-          setName('');
-          setCreateOpen(true);
-        }}
-      >
-        Add New Brand
-      </Button>
       <Dialog open={editOpen}>
         <DialogTitle>Edit ChairBrand</DialogTitle>
         <DialogContent>

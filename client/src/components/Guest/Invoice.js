@@ -52,6 +52,9 @@ const StyledTableCell = styled(TableCell)(() => ({
 
 const useInvoiceStyles = makeStyles({
   root: {
+    '@media print': {
+      size: 'A4 portrait',
+    },
     padding: 10,
     '& *': {
       fontFamily: 'Microsoft Sans Serif',
@@ -77,8 +80,20 @@ const useInvoiceStyles = makeStyles({
 
 export default () => {
   const classes = useInvoiceStyles();
+  const printDocument = () => {
+    // const input = document.getElementById('divToPrint');
+    // html2canvas(input).then((canvas) => {
+    //   const imgData = canvas.toDataURL('image/png');
+    //   const pdf = new jsPDF();
+    //   pdf.addImage(imgData, 'JPEG', 0, 0);
+    //   // pdf.output('dataurlnewwindow');
+    //   pdf.save('download.pdf');
+    // });
+  };
+
   return (
-    <Box className={classes.root}>
+    <Box id="divToPrint" className={classes.root}>
+      <Button onClick={printDocument}>aaa</Button>
       <Typography className={classes.title}>Invoice</Typography>
       <Typography>Date: October 15, 2021</Typography>
       <Typography>No: 20211127</Typography>

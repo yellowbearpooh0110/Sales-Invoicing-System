@@ -200,16 +200,6 @@ export default connect(mapStateToProps)((props) => {
 
   return (
     <>
-      <DataGrid
-        rows={models.map(({ id, ...restProps }, index) => ({
-          id: index,
-          ...restProps,
-        }))}
-        columns={columns}
-        onEditClick={handleEditClick}
-        onRemoveClick={handleRemoveClick}
-        onBulkRemoveClick={handleBulkRemoveClick}
-      ></DataGrid>
       <Button
         variant="outlined"
         startIcon={<AddIcon />}
@@ -220,6 +210,16 @@ export default connect(mapStateToProps)((props) => {
       >
         Add New Model
       </Button>
+      <DataGrid
+        rows={models.map(({ id, ...restProps }, index) => ({
+          id: index,
+          ...restProps,
+        }))}
+        columns={columns}
+        onEditClick={handleEditClick}
+        onRemoveClick={handleRemoveClick}
+        onBulkRemoveClick={handleBulkRemoveClick}
+      ></DataGrid>
       <Dialog open={editOpen}>
         <DialogTitle>Edit ChairModel</DialogTitle>
         <DialogContent>

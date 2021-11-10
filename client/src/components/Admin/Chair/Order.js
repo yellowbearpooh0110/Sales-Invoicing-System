@@ -53,6 +53,12 @@ const columns = [
     disablePadding: false,
     label: 'Order Date',
   },
+  {
+    id: 'QTY',
+    numeric: true,
+    disablePadding: false,
+    label: 'QTY',
+  },
 ];
 
 function mapStateToProps(state) {
@@ -88,6 +94,7 @@ export default connect(mapStateToProps)((props) => {
   const [withHeadrest, setWithHeadrest] = useState(true);
   const [withAdArmrest, setWithAdArmrest] = useState(true);
   const [chairRemark, setChairRemark] = useState('');
+  const [QTY, setQTY] = useState(0);
 
   const handleEditClick = (event, index) => {
     event.preventDefault();
@@ -633,6 +640,19 @@ export default connect(mapStateToProps)((props) => {
                 />
               ))}
             </Paper>
+            <TextField
+              margin="dense"
+              label="QTY"
+              fullWidth
+              margin="dense"
+              variant="outlined"
+              size="small"
+              value={QTY}
+              type="number"
+              onChange={(e) => {
+                setQTY(e.target.value);
+              }}
+            />
           </Stack>
         </DialogContent>
         <DialogActions>
@@ -858,6 +878,19 @@ export default connect(mapStateToProps)((props) => {
                 />
               ))}
             </Paper>
+            <TextField
+              margin="dense"
+              label="QTY"
+              fullWidth
+              margin="dense"
+              variant="outlined"
+              size="small"
+              value={QTY}
+              type="number"
+              onChange={(e) => {
+                setQTY(e.target.value);
+              }}
+            />
           </Stack>
         </DialogContent>
         <DialogActions>

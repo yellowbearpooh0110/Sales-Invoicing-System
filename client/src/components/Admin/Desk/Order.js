@@ -6,7 +6,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Paper,
   Stack,
@@ -46,6 +45,12 @@ const columns = [
     disablePadding: false,
     label: 'Salesman Email',
   },
+  {
+    id: 'QTY',
+    numeric: true,
+    disablePadding: false,
+    label: 'QTY',
+  },
 ];
 
 function mapStateToProps(state) {
@@ -84,6 +89,7 @@ export default connect(mapStateToProps)((props) => {
   const [laminateInfo, setLaminateInfo] = useState('');
   const [bambooInfo, setBambooInfo] = useState('');
   const [deskRemark, setDeskRemark] = useState('');
+  const [QTY, setQTY] = useState(0);
 
   const handleEditClick = (event, index) => {
     event.preventDefault();
@@ -350,6 +356,36 @@ export default connect(mapStateToProps)((props) => {
 
   return (
     <>
+      <Button
+        variant="outlined"
+        startIcon={<AddIcon />}
+        onClick={() => {
+          getModels();
+          getColors();
+          getDeskRemarks();
+          setModel(null);
+          setColor(null);
+          setArmSize('');
+          setFeetSize('');
+          setBeam('');
+          setAkInfo('');
+          setWoodInfo_1('');
+          setWoodInfo_2('');
+          setMelamineInfo('');
+          setLaminateInfo('');
+          setBambooInfo('');
+          setDeskRemark('');
+          setClientName('');
+          setClientDistrict('');
+          setClientStreet('');
+          setClientBlock('');
+          setClientFloor('');
+          setClientUnit('');
+          setCreateOpen(true);
+        }}
+      >
+        Add New Order
+      </Button>
       <DataGrid
         title="Desk Orders"
         rows={orders.map(
@@ -385,36 +421,6 @@ export default connect(mapStateToProps)((props) => {
         onRemoveClick={handleRemoveClick}
         onBulkRemoveClick={handleBulkRemoveClick}
       ></DataGrid>
-      <Button
-        variant="outlined"
-        startIcon={<AddIcon />}
-        onClick={() => {
-          getModels();
-          getColors();
-          getDeskRemarks();
-          setModel(null);
-          setColor(null);
-          setArmSize('');
-          setFeetSize('');
-          setBeam('');
-          setAkInfo('');
-          setWoodInfo_1('');
-          setWoodInfo_2('');
-          setMelamineInfo('');
-          setLaminateInfo('');
-          setBambooInfo('');
-          setDeskRemark('');
-          setClientName('');
-          setClientDistrict('');
-          setClientStreet('');
-          setClientBlock('');
-          setClientFloor('');
-          setClientUnit('');
-          setCreateOpen(true);
-        }}
-      >
-        Add New Order
-      </Button>
       <Dialog
         fullWidth
         fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
@@ -661,6 +667,19 @@ export default connect(mapStateToProps)((props) => {
                 />
               ))}
             </Paper>
+            <TextField
+              margin="dense"
+              label="QTY"
+              fullWidth
+              margin="dense"
+              variant="outlined"
+              size="small"
+              value={QTY}
+              type="number"
+              onChange={(e) => {
+                setQTY(e.target.value);
+              }}
+            />
           </Stack>
         </DialogContent>
         <DialogActions>
@@ -920,6 +939,19 @@ export default connect(mapStateToProps)((props) => {
                 />
               ))}
             </Paper>
+            <TextField
+              margin="dense"
+              label="QTY"
+              fullWidth
+              margin="dense"
+              variant="outlined"
+              size="small"
+              value={QTY}
+              type="number"
+              onChange={(e) => {
+                setQTY(e.target.value);
+              }}
+            />
           </Stack>
         </DialogContent>
         <DialogActions>

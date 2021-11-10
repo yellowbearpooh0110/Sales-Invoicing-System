@@ -200,6 +200,16 @@ export default connect(mapStateToProps)((props) => {
 
   return (
     <>
+      <Button
+        variant="outlined"
+        startIcon={<AddIcon />}
+        onClick={() => {
+          setName('');
+          setCreateOpen(true);
+        }}
+      >
+        Add New Color
+      </Button>
       <DataGrid
         title="Colors"
         rows={colors.map(({ id, ...restProps }, index) => ({
@@ -211,16 +221,6 @@ export default connect(mapStateToProps)((props) => {
         onRemoveClick={handleRemoveClick}
         onBulkRemoveClick={handleBulkRemoveClick}
       ></DataGrid>
-      <Button
-        variant="outlined"
-        startIcon={<AddIcon />}
-        onClick={() => {
-          setName('');
-          setCreateOpen(true);
-        }}
-      >
-        Add New Color
-      </Button>
       <Dialog open={editOpen}>
         <DialogTitle>Edit ChairColor</DialogTitle>
         <DialogContent>

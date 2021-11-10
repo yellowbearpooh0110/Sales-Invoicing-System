@@ -200,6 +200,16 @@ const Model = connect(mapStateToProps)((props) => {
 
   return (
     <>
+      <Button
+        variant="outlined"
+        startIcon={<AddIcon />}
+        onClick={() => {
+          setName('');
+          setCreateOpen(true);
+        }}
+      >
+        Add New Model
+      </Button>
       <DataGrid
         title="Chair Models"
         rows={models.map(({ id, ...restProps }, index) => ({
@@ -211,16 +221,6 @@ const Model = connect(mapStateToProps)((props) => {
         onRemoveClick={handleRemoveClick}
         onBulkRemoveClick={handleBulkRemoveClick}
       ></DataGrid>
-      <Button
-        variant="outlined"
-        startIcon={<AddIcon />}
-        onClick={() => {
-          setName('');
-          setCreateOpen(true);
-        }}
-      >
-        Add New Model
-      </Button>
       <Dialog open={editOpen}>
         <DialogTitle>Edit ChairModel</DialogTitle>
         <DialogContent>
