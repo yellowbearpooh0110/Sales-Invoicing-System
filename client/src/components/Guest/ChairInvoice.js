@@ -175,9 +175,10 @@ export default () => {
               <Text>Client's Name: {order.clientName}</Text>
               <Text>{order.clientUnit}</Text>
               <Text>{order.clientFloor}</Text>
-              <Text>{order.clientStreet}</Text>
+              <Text>{order.clientBlock}</Text>
               <Text>{order.clientStreet}</Text>
               <Text>{order.clientDistrict}</Text>
+              <Text>Phone: {order.clientPhone}</Text>
             </View>
           </View>
           <View style={styles.table}>

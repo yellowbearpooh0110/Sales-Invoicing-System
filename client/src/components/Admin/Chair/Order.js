@@ -17,7 +17,9 @@ import {
 } from '@mui/material';
 import {
   Add as AddIcon,
-  PictureAsPdf as PictureAdPdfIcon,
+  Email as EmailIcon,
+  PictureAsPdf as PictureAsPdfIcon,
+  WhatsApp as WhatsAppIcon,
 } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -84,6 +86,7 @@ export default connect(mapStateToProps)((props) => {
   const [chairRemarks, setChairRemarks] = useState(['av', 'avas']);
 
   const [clientName, setClientName] = useState('');
+  const [clientPhone, setClientPhone] = useState('');
   const [clientDistrict, setClientDistrict] = useState('');
   const [clientStreet, setClientStreet] = useState('');
   const [clientBlock, setClientBlock] = useState('');
@@ -101,17 +104,41 @@ export default connect(mapStateToProps)((props) => {
   const [chairRemark, setChairRemark] = useState('');
   const [QTY, setQTY] = useState(1);
 
-  const extraLink = (id) => {
-    return (
-      <IconButton
-        component={Link}
-        to={`/chairinvoice/${orders[id].id}`}
-        target="_blank"
-      >
-        <PictureAdPdfIcon />
-      </IconButton>
-    );
-  };
+  const extraLinks = [
+    (id) => {
+      return (
+        <IconButton
+          component={Link}
+          to={`/chairinvoice/${orders[id].id}`}
+          target="_blank"
+        >
+          <PictureAsPdfIcon />
+        </IconButton>
+      );
+    },
+    (id) => {
+      return (
+        <IconButton
+          component={Link}
+          to={`/chairinvoice/${orders[id].id}`}
+          target="_blank"
+        >
+          <EmailIcon />
+        </IconButton>
+      );
+    },
+    (id) => {
+      return (
+        <IconButton
+          component={Link}
+          to={`/chairinvoice/${orders[id].id}`}
+          target="_blank"
+        >
+          <WhatsAppIcon />
+        </IconButton>
+      );
+    },
+  ];
 
   const handleEditClick = (event, index) => {
     event.preventDefault();
@@ -129,9 +156,10 @@ export default connect(mapStateToProps)((props) => {
       setWithHeadrest(orders[index].stock.withHeadrest);
       setWithAdArmrest(orders[index].stock.withAdArmrest);
       setChairRemark(orders[index].stock.chairRemark);
+      setClientName(orders[index].clientName);
+      setClientPhone(orders[index].clientPhone);
       setClientDistrict(orders[index].clientDistrict);
       setClientStreet(orders[index].clientStreet);
-      setClientName(orders[index].clientName);
       setClientBlock(orders[index].clientBlock);
       setClientFloor(orders[index].clientFloor);
       setClientUnit(orders[index].clientUnit);
@@ -225,6 +253,7 @@ export default connect(mapStateToProps)((props) => {
         withAdArmrest,
         chairRemark,
         clientName,
+        clientPhone,
         clientDistrict,
         clientStreet,
         clientBlock,
@@ -269,6 +298,7 @@ export default connect(mapStateToProps)((props) => {
         withAdArmrest,
         chairRemark,
         clientName,
+        clientPhone,
         clientDistrict,
         clientStreet,
         clientBlock,
@@ -405,6 +435,7 @@ export default connect(mapStateToProps)((props) => {
           setWithAdArmrest(false);
           setChairRemark('');
           setClientName('');
+          setClientPhone('');
           setClientDistrict('');
           setClientStreet('');
           setClientBlock('');
@@ -448,7 +479,7 @@ export default connect(mapStateToProps)((props) => {
           })
         )}
         columns={columns}
-        extraLink={extraLink}
+        extraLinks={extraLinks}
         onEditClick={handleEditClick}
         onRemoveClick={handleRemoveClick}
         onBulkRemoveClick={handleBulkRemoveClick}
@@ -606,6 +637,13 @@ export default connect(mapStateToProps)((props) => {
                   setValue: setClientName,
                   type: 'text',
                   width: '55%',
+                },
+                {
+                  label: 'Phone',
+                  value: clientPhone,
+                  setValue: setClientPhone,
+                  type: 'text',
+                  width: '40%',
                 },
                 {
                   label: 'District',
@@ -844,6 +882,13 @@ export default connect(mapStateToProps)((props) => {
                   setValue: setClientName,
                   type: 'text',
                   width: '55%',
+                },
+                {
+                  label: 'Phone',
+                  value: clientPhone,
+                  setValue: setClientPhone,
+                  type: 'text',
+                  width: '40%',
                 },
                 {
                   label: 'District',

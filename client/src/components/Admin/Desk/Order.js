@@ -70,6 +70,7 @@ export default connect(mapStateToProps)((props) => {
   const [deskRemarks, setDeskRemarks] = useState(['av', 'avas']);
 
   const [clientName, setClientName] = useState('');
+  const [clientPhone, setClientPhone] = useState('');
   const [clientDistrict, setClientDistrict] = useState('');
   const [clientStreet, setClientStreet] = useState('');
   const [clientBlock, setClientBlock] = useState('');
@@ -110,9 +111,10 @@ export default connect(mapStateToProps)((props) => {
       setLaminateInfo(orders[index].stock.laminateInfo);
       setBambooInfo(orders[index].stock.bambooInfo);
       setDeskRemark(orders[index].stock.deskRemark);
+      setClientName(orders[index].clientName);
+      setClientPhone(orders[index].clientPhone);
       setClientDistrict(orders[index].clientDistrict);
       setClientStreet(orders[index].clientStreet);
-      setClientName(orders[index].clientName);
       setClientBlock(orders[index].clientBlock);
       setClientFloor(orders[index].clientFloor);
       setClientUnit(orders[index].clientUnit);
@@ -381,6 +383,7 @@ export default connect(mapStateToProps)((props) => {
           setBambooInfo('');
           setDeskRemark('');
           setClientName('');
+          setClientPhone('');
           setClientDistrict('');
           setClientStreet('');
           setClientBlock('');
@@ -615,6 +618,13 @@ export default connect(mapStateToProps)((props) => {
                   setValue: setClientName,
                   type: 'text',
                   width: '55%',
+                },
+                {
+                  label: 'Phone',
+                  value: clientPhone,
+                  setValue: setClientPhone,
+                  type: 'text',
+                  width: '40%',
                 },
                 {
                   label: 'District',
@@ -887,6 +897,13 @@ export default connect(mapStateToProps)((props) => {
                   setValue: setClientName,
                   type: 'text',
                   width: '55%',
+                },
+                {
+                  label: 'Phone',
+                  value: clientPhone,
+                  setValue: setClientPhone,
+                  type: 'text',
+                  width: '40%',
                 },
                 {
                   label: 'District',

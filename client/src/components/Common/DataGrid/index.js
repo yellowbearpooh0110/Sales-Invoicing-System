@@ -53,6 +53,7 @@ function stableSort(array, comparator) {
 function EnhancedTableHead(props) {
   const {
     columns,
+    actionSpan,
     onSelectAllClick,
     order,
     orderBy,
@@ -100,7 +101,9 @@ function EnhancedTableHead(props) {
             </TableSortLabel>
           </TableCell>
         ))}
-        <TableCell align="center">Action</TableCell>
+        <TableCell align="center" colSpan={actionSpan}>
+          Action
+        </TableCell>
       </TableRow>
     </TableHead>
   );
@@ -108,6 +111,7 @@ function EnhancedTableHead(props) {
 
 EnhancedTableHead.propTypes = {
   columns: PropTypes.arrayOf(Object).isRequired,
+  actionSpan: PropTypes.number.isRequired,
   numSelected: PropTypes.number.isRequired,
   onRequestSort: PropTypes.func.isRequired,
   onSelectAllClick: PropTypes.func.isRequired,
@@ -183,14 +187,13 @@ const DataGrid = (props) => {
     onEditClick,
     onRemoveClick,
     onBulkRemoveClick,
-    extraLink,
+    extraLinks,
   } = props;
 
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('id');
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
-  const [dense, setDense] = useState(true);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const prevRows = useRef();
@@ -268,10 +271,11 @@ const DataGrid = (props) => {
           <Table
             sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
+            size="small"
           >
             <EnhancedTableHead
               columns={columns}
+              actionSpan={2 + (extraLinks ? extraLinks.length : 0)}
               numSelected={selected.length}
               order={order}
               orderBy={orderBy}
@@ -321,8 +325,11 @@ const DataGrid = (props) => {
                             : row[field.id]}
                         </TableCell>
                       ))}
-                      <TableCell align="center">
-                        {extraLink && extraLink(row.id)}
+                      <TableCell
+                        align="center"
+                        padding="none"
+                        sx={{ maxWidth: 40, width: 40 }}
+                      >
                         <IconButton
                           onClick={(e) => {
                             onEditClick(e, row.id);
@@ -330,6 +337,12 @@ const DataGrid = (props) => {
                         >
                           <EditIcon />
                         </IconButton>
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        padding="none"
+                        sx={{ maxWidth: 40, width: 40 }}
+                      >
                         <IconButton
                           onClick={(e) => {
                             onRemoveClick(e, index);
@@ -338,13 +351,24 @@ const DataGrid = (props) => {
                           <DeleteIcon />
                         </IconButton>
                       </TableCell>
+                      {extraLinks &&
+                        extraLinks.map((item, index) => (
+                          <TableCell
+                            key={index}
+                            align="center"
+                            padding="none"
+                            sx={{ maxWidth: 40, width: 40 }}
+                          >
+                            {item(row.id)}
+                          </TableCell>
+                        ))}
                     </TableRow>
                   );
                 })}
               {emptyRows > 0 && (
                 <TableRow
                   style={{
-                    height: (dense ? 33 : 53) * emptyRows,
+                    height: 33 * emptyRows,
                   }}
                 >
                   <TableCell colSpan={6} />

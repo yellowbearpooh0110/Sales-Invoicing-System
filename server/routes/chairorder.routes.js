@@ -29,6 +29,7 @@ function createSchema(req, res, next) {
     withAdArmrest: Joi.boolean(),
     chairRemark: Joi.string().allow(''),
     clientName: Joi.string().allow(''),
+    clientPhone: Joi.string().allow(''),
     clientDistrict: Joi.string().allow(''),
     clientStreet: Joi.string().allow(''),
     clientBlock: Joi.string().allow(''),

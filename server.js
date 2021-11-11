@@ -1,10 +1,10 @@
 ﻿require('rootpath')();
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const errorHandler = require('server/middleware/error-handler');
-const crypto = require('crypto');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -20,6 +20,7 @@ app.use('/deskstock', require('server/routes/deskstock.routes'));
 app.use('/deskorder', require('server/routes/deskorder.routes'));
 app.use('/productcolor', require('server/routes/productcolor.routes'));
 app.use('/user', require('server/routes/user.routes'));
+app.use('/email', require('server/routes/email.routes'));
 
 // global error handler
 app.use(errorHandler);
