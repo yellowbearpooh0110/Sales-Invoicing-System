@@ -3,19 +3,32 @@ import { connect } from 'react-redux';
 import {
   Autocomplete,
   Button,
+  Box,
   Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Fade,
   FormControlLabel,
+  Menu,
+  MenuItem,
+  Avatar,
+  ListItemIcon,
+  Divider,
   Paper,
+  Popper,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
+import {
+  Add as AddIcon,
+  PersonAdd,
+  Settings,
+  Logout,
+} from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import axios from 'axios';
@@ -97,11 +110,18 @@ const Stock = connect(mapStateToProps)((props) => {
   const [editOpen, setEditOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [id, setID] = useState('');
+  const [filterAnchor, setFilterAnchor] = useState(null);
 
   const [brands, setBrands] = useState([]);
   const [models, setModels] = useState([]);
   const [colors, setColors] = useState([]);
   const [chairRemarks, setChairRemarks] = useState(['av', 'avas']);
+
+  const [filterBrand, setFilterBrand] = useState('');
+  const [filterModel, setFilterModel] = useState('');
+  const [filterFrameColor, setFilterFrameColor] = useState('');
+  const [filterSeatColor, setFilterSeatColor] = useState('');
+  const [filterBackColor, setFilterBackColor] = useState('');
 
   const [brand, setBrand] = useState();
   const [model, setModel] = useState();
@@ -112,6 +132,12 @@ const Stock = connect(mapStateToProps)((props) => {
   const [withAdArmrest, setWithAdArmrest] = useState(true);
   const [chairRemark, setChairRemark] = useState('');
   const [QTY, setQTY] = useState(0);
+
+  const handleFilterClick = (e) => {
+    e.preventDefault();
+    if (filterAnchor === null) setFilterAnchor(e.currentTarget);
+    else setFilterAnchor(null);
+  };
 
   const handleEditClick = (event, index) => {
     event.preventDefault();
@@ -387,37 +413,299 @@ const Stock = connect(mapStateToProps)((props) => {
       </Button>
       <DataGrid
         title="Chair Stocks"
-        rows={stocks.map(
-          (
-            {
-              id,
-              chairBrand,
-              chairModel,
-              frameColor,
-              backColor,
-              seatColor,
-              withHeadrest,
-              withAdArmrest,
-              ...restProps
-            },
-            index
-          ) => ({
-            id: index,
-            chairBrand: chairBrand ? chairBrand.name : null,
-            chairModel: chairModel ? chairModel.name : null,
-            frameColor: frameColor ? frameColor.name : null,
-            backColor: backColor ? backColor.name : null,
-            seatColor: seatColor ? seatColor.name : null,
-            withHeadrest: withHeadrest ? 'Yes' : 'No',
-            withAdArmrest: withAdArmrest ? 'Yes' : 'No',
-            ...restProps,
-          })
-        )}
+        rows={stocks
+          .map(
+            (
+              {
+                id,
+                chairBrand,
+                chairModel,
+                frameColor,
+                backColor,
+                seatColor,
+                withHeadrest,
+                withAdArmrest,
+                ...restProps
+              },
+              index
+            ) => ({
+              id: index,
+              chairBrand: chairBrand ? chairBrand.name : null,
+              chairModel: chairModel ? chairModel.name : null,
+              frameColor: frameColor ? frameColor.name : null,
+              backColor: backColor ? backColor.name : null,
+              seatColor: seatColor ? seatColor.name : null,
+              withHeadrest: withHeadrest ? 'Yes' : 'No',
+              withAdArmrest: withAdArmrest ? 'Yes' : 'No',
+              ...restProps,
+            })
+          )
+          .filter(
+            (item, key) =>
+              item.chairBrand
+                .toLowerCase()
+                .includes(filterBrand.toLowerCase()) &&
+              item.chairModel
+                .toLowerCase()
+                .includes(filterModel.toLowerCase()) &&
+              item.frameColor
+                .toLowerCase()
+                .includes(filterFrameColor.toLowerCase()) &&
+              item.backColor
+                .toLowerCase()
+                .includes(filterBackColor.toLowerCase()) &&
+              item.seatColor
+                .toLowerCase()
+                .includes(filterSeatColor.toLowerCase())
+          )}
         columns={columns}
         onEditClick={handleEditClick}
         onRemoveClick={handleRemoveClick}
         onBulkRemoveClick={handleBulkRemoveClick}
+        onFilterClick={handleFilterClick}
       ></DataGrid>
+
+      <Popper
+        anchorEl={filterAnchor}
+        open={Boolean(filterAnchor)}
+        placement={'bottom-end'}
+        disablePortal={false}
+        transition
+        onClose={() => {
+          setFilterAnchor(null);
+        }}
+      >
+        {({ TransitionProps }) => (
+          <Fade {...TransitionProps} timeout={350}>
+            <Paper
+              sx={{
+                mt: '5px',
+                p: '10px',
+                maxWidth: 400,
+                // maxWidth: '100%',
+              }}
+            >
+              <Box
+                display="flex"
+                flexWrap="wrap"
+                justifyContent="space-between"
+              >
+                {[
+                  {
+                    value: filterBrand,
+                    values: brands,
+                    setValue: setFilterBrand,
+                    label: 'Brand',
+                    width: '48%',
+                  },
+                  {
+                    value: filterModel,
+                    values: models,
+                    setValue: setFilterModel,
+                    label: 'Model',
+                    width: '48%',
+                  },
+                  {
+                    value: filterFrameColor,
+                    values: colors,
+                    setValue: setFilterFrameColor,
+                    label: 'FrameColor',
+                    width: '30%',
+                  },
+                  {
+                    value: filterBackColor,
+                    values: colors,
+                    setValue: setFilterBackColor,
+                    label: 'BackColor',
+                    width: '30%',
+                  },
+                  {
+                    value: filterSeatColor,
+                    values: colors,
+                    setValue: setFilterSeatColor,
+                    label: 'SeatColor',
+                    width: '30%',
+                  },
+                ].map(({ value, values, setValue, label, width }, index) => (
+                  <TextField
+                    key={index}
+                    sx={{ flexBasis: width, minWidth: width }}
+                    value={value}
+                    onChange={(event) => {
+                      event.preventDefault();
+                      setValue(event.target.value);
+                    }}
+                    margin="dense"
+                    label={label}
+                    variant="outlined"
+                    size="small"
+                  />
+                ))}
+              </Box>
+              <Box display="flex" justifyContent="space-between">
+                <Button
+                  onClick={() => {
+                    setFilterBrand('');
+                    setFilterModel('');
+                    setFilterFrameColor('');
+                    setFilterBackColor('');
+                    setFilterSeatColor('');
+                  }}
+                  variant="outlined"
+                >
+                  Clear
+                </Button>
+                <Button
+                  onClick={() => {
+                    setFilterAnchor(null);
+                  }}
+                  variant="outlined"
+                >
+                  OK
+                </Button>
+              </Box>
+            </Paper>
+          </Fade>
+        )}
+
+        {/* <DialogTitle>Filter</DialogTitle>
+        <DialogContent>
+          <Paper
+            sx={{
+              mt: '5px',
+              p: '10px',
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'space-between',
+            }}
+          >
+            {[
+              {
+                value: filterBrand,
+                values: brands,
+                setValue: setFilterBrand,
+                label: 'Brand',
+                width: '48%',
+              },
+              {
+                value: filterModel,
+                values: models,
+                setValue: setFilterModel,
+                label: 'Model',
+                width: '48%',
+              },
+              {
+                value: filterFrameColor,
+                values: colors,
+                setValue: setFilterFrameColor,
+                label: 'FrameColor',
+                width: '30%',
+              },
+              {
+                value: filterBackColor,
+                values: colors,
+                setValue: setFilterBackColor,
+                label: 'BackColor',
+                width: '30%',
+              },
+              {
+                value: filterSeatColor,
+                values: colors,
+                setValue: setFilterSeatColor,
+                label: 'SeatColor',
+                width: '30%',
+              },
+            ].map(({ value, values, setValue, label, width }, index) => (
+              <TextField
+                sx={{ flexBasis: width, minWidth: width }}
+                key={index}
+                value={value}
+                onChange={(event) => {
+                  event.preventDefault();
+                  setValue(event.target.value);
+                }}
+                margin="dense"
+                label={label}
+                variant="outlined"
+                size="small"
+              />
+            ))}
+          </Paper>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setFilterAnchor(null);
+            }}
+          >
+            Clear
+          </Button>
+        </DialogActions> */}
+      </Popper>
+      {/* <Menu
+        anchorEl={filterAnchor}
+        open={Boolean(filterAnchor)}
+        onClose={() => {
+          setFilterAnchor(null);
+        }}
+        onClick={() => {
+          setFilterAnchor(null);
+        }}
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            overflow: 'visible',
+            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+            mt: 1.5,
+            '& .MuiAvatar-root': {
+              width: 32,
+              height: 32,
+              ml: -0.5,
+              mr: 1,
+            },
+            '&:before': {
+              content: '""',
+              display: 'block',
+              position: 'absolute',
+              top: 0,
+              right: 14,
+              width: 10,
+              height: 10,
+              bgcolor: 'background.paper',
+              transform: 'translateY(-50%) rotate(45deg)',
+              zIndex: 0,
+            },
+          },
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        <MenuItem>
+          <Avatar /> Profile
+        </MenuItem>
+        <MenuItem>
+          <Avatar /> My account
+        </MenuItem>
+        <Divider />
+        <MenuItem>
+          <ListItemIcon>
+            <PersonAdd fontSize="small" />
+          </ListItemIcon>
+          Add another account
+        </MenuItem>
+        <MenuItem>
+          <ListItemIcon>
+            <Settings fontSize="small" />
+          </ListItemIcon>
+          Settings
+        </MenuItem>
+        <MenuItem>
+          <ListItemIcon>
+            <Logout fontSize="small" />
+          </ListItemIcon>
+          Logout
+        </MenuItem>
+      </Menu> */}
       <Dialog
         fullWidth
         fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
@@ -444,35 +732,35 @@ const Stock = connect(mapStateToProps)((props) => {
                   value: brand,
                   values: brands,
                   setValue: setBrand,
-                  label: 'ChairBrand',
+                  label: 'Brand',
                   width: '48%',
                 },
                 {
                   value: model,
                   values: models,
                   setValue: setModel,
-                  label: 'ChairModel',
+                  label: 'Model',
                   width: '48%',
                 },
                 {
                   value: frameColor,
                   values: colors,
                   setValue: setFrameColor,
-                  label: 'ChairFrameColor',
+                  label: 'FrameColor',
                   width: '30%',
                 },
                 {
                   value: backColor,
                   values: colors,
                   setValue: setBackColor,
-                  label: 'ChairBackColor',
+                  label: 'BackColor',
                   width: '30%',
                 },
                 {
                   value: seatColor,
                   values: colors,
                   setValue: setSeatColor,
-                  label: 'ChairSeatColor',
+                  label: 'SeatColor',
                   width: '30%',
                 },
               ].map(({ value, values, setValue, label, width }, index) => (
@@ -484,6 +772,7 @@ const Stock = connect(mapStateToProps)((props) => {
                     event.preventDefault();
                     setValue(newValue);
                   }}
+                  freeSolo
                   options={values}
                   getOptionLabel={(option) => option.name}
                   sx={{ flexBasis: width, minWidth: width }}
@@ -599,35 +888,35 @@ const Stock = connect(mapStateToProps)((props) => {
                   value: brand,
                   values: brands,
                   setValue: setBrand,
-                  label: 'ChairBrand',
+                  label: 'Brand',
                   width: '48%',
                 },
                 {
                   value: model,
                   values: models,
                   setValue: setModel,
-                  label: 'ChairModel',
+                  label: 'Model',
                   width: '48%',
                 },
                 {
                   value: frameColor,
                   values: colors,
                   setValue: setFrameColor,
-                  label: 'ChairFrameColor',
+                  label: 'FrameColor',
                   width: '30%',
                 },
                 {
                   value: backColor,
                   values: colors,
                   setValue: setBackColor,
-                  label: 'ChairBackColor',
+                  label: 'BackColor',
                   width: '30%',
                 },
                 {
                   value: seatColor,
                   values: colors,
                   setValue: setSeatColor,
-                  label: 'ChairSeatColor',
+                  label: 'SeatColor',
                   width: '30%',
                 },
               ].map(({ value, values, setValue, label, width }, index) => (

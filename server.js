@@ -5,6 +5,7 @@ const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const errorHandler = require('server/middleware/error-handler');
+require('server/whatsapp/main.js');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -21,6 +22,7 @@ app.use('/deskorder', require('server/routes/deskorder.routes'));
 app.use('/productcolor', require('server/routes/productcolor.routes'));
 app.use('/user', require('server/routes/user.routes'));
 app.use('/email', require('server/routes/email.routes'));
+app.use('/whatsapp', require('server/routes/whatsapp.routes'));
 
 // global error handler
 app.use(errorHandler);

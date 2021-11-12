@@ -121,7 +121,7 @@ EnhancedTableHead.propTypes = {
 };
 
 const EnhancedTableToolbar = (props) => {
-  const { title, numSelected, onBulkRemoveClick } = props;
+  const { title, numSelected, onBulkRemoveClick, onFilterClick } = props;
 
   return (
     <Toolbar
@@ -165,7 +165,7 @@ const EnhancedTableToolbar = (props) => {
         </Tooltip>
       ) : (
         <Tooltip title="Filter list">
-          <IconButton>
+          <IconButton onClick={onFilterClick}>
             <FilterListIcon />
           </IconButton>
         </Tooltip>
@@ -177,6 +177,7 @@ const EnhancedTableToolbar = (props) => {
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
   onBulkRemoveClick: PropTypes.func.isRequired,
+  onFilterClick: PropTypes.func,
 };
 
 const DataGrid = (props) => {
@@ -187,6 +188,7 @@ const DataGrid = (props) => {
     onEditClick,
     onRemoveClick,
     onBulkRemoveClick,
+    onFilterClick,
     extraLinks,
   } = props;
 
@@ -266,6 +268,7 @@ const DataGrid = (props) => {
             event.preventDefault();
             onBulkRemoveClick(selected);
           }}
+          onFilterClick={onFilterClick}
         />
         <TableContainer>
           <Table
@@ -397,6 +400,7 @@ DataGrid.propTypes = {
   onEditClick: PropTypes.func.isRequired,
   onRemoveClick: PropTypes.func.isRequired,
   onBulkRemoveClick: PropTypes.func.isRequired,
+  OnFilterClick: PropTypes.func,
 };
 
 export default DataGrid;
