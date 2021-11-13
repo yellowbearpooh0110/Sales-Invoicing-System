@@ -20,7 +20,9 @@ async function authenticate({ email, password }) {
     throw 'Email or password is incorrect';
 
   // authentication successful
-  const token = jwt.sign({ sub: user.id }, config.secret, { expiresIn: '7d' });
+  const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET, {
+    expiresIn: '7d',
+  });
   return { ...omitPassword(user.get()), token };
 }
 

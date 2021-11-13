@@ -1,5 +1,4 @@
 const jwt = require('express-jwt');
-const { secret } = require('config.json');
 const db = require('server/helper/db');
 
 module.exports = admin;
@@ -7,7 +6,7 @@ module.exports = admin;
 function admin() {
   return [
     // authenticate JWT token and attach decoded token to request as req.user
-    jwt({ secret, algorithms: ['HS256'] }),
+    jwt({ secret: process.env.JWT_SECRET, algorithms: ['HS256'] }),
 
     // attach full user record to request object
     async (req, res, next) => {
