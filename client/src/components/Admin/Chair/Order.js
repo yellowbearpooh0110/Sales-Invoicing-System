@@ -4,15 +4,18 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {
   Autocomplete,
+  Box,
   Button,
   Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Fade,
   FormControlLabel,
   IconButton,
   Paper,
+  Popper,
   Stack,
   TextField,
   Typography,
@@ -86,11 +89,19 @@ export default connect(mapStateToProps)((props) => {
   const [emailOpen, setEmailOpen] = useState(false);
   const whatsAppMessage = useRef(null);
   const emailContent = useRef(null);
+  const [filterAnchor, setFilterAnchor] = useState(null);
+
   const [id, setID] = useState('');
   const [brands, setBrands] = useState([]);
   const [models, setModels] = useState([]);
   const [colors, setColors] = useState([]);
   const [chairRemarks, setChairRemarks] = useState(['av', 'avas']);
+
+  const [filterBrand, setFilterBrand] = useState('');
+  const [filterModel, setFilterModel] = useState('');
+  const [filterFrameColor, setFilterFrameColor] = useState('');
+  const [filterSeatColor, setFilterSeatColor] = useState('');
+  const [filterBackColor, setFilterBackColor] = useState('');
 
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
@@ -111,6 +122,12 @@ export default connect(mapStateToProps)((props) => {
   const [withAdArmrest, setWithAdArmrest] = useState(true);
   const [chairRemark, setChairRemark] = useState('');
   const [QTY, setQTY] = useState(1);
+
+  const handleFilterClick = (e) => {
+    e.preventDefault();
+    if (filterAnchor === null) setFilterAnchor(e.currentTarget);
+    else setFilterAnchor(null);
+  };
 
   const extraLinks = [
     (id) => {
@@ -196,7 +213,7 @@ export default connect(mapStateToProps)((props) => {
         message: whatsAppMessage.current.value,
       })
       .then(() => {
-        setWhatsAppOpen(true);
+        setWhatsAppOpen(false);
       })
       .catch(function (error) {
         // handle error
@@ -220,10 +237,10 @@ export default connect(mapStateToProps)((props) => {
     axios
       .post('email/send', {
         email: clientEmail,
-        message: whatsAppMessage.current.value,
+        message: emailContent.current.value,
       })
       .then(() => {
-        setEmailOpen(true);
+        setEmailOpen(false);
       })
       .catch(function (error) {
         // handle error
@@ -259,8 +276,8 @@ export default connect(mapStateToProps)((props) => {
       setWithAdArmrest(orders[index].stock.withAdArmrest);
       setChairRemark(orders[index].stock.chairRemark);
       setClientName(orders[index].clientName);
-      setClientPhone(orders[index].clientPhone);
       setClientEmail(orders[index].clientEmail);
+      setClientPhone(orders[index].clientPhone);
       setClientDistrict(orders[index].clientDistrict);
       setClientStreet(orders[index].clientStreet);
       setClientBlock(orders[index].clientBlock);
@@ -545,8 +562,8 @@ export default connect(mapStateToProps)((props) => {
           setWithAdArmrest(false);
           setChairRemark('');
           setClientName('');
-          setClientPhone('');
           setClientEmail('');
+          setClientPhone('');
           setClientDistrict('');
           setClientStreet('');
           setClientBlock('');
@@ -561,40 +578,173 @@ export default connect(mapStateToProps)((props) => {
       </Button>
       <DataGrid
         title="Chair Orders"
-        rows={orders.map(
-          (
-            {
-              id,
-              invoiceNum,
-              clientDistrict,
-              clientStreet,
-              clientBlock,
-              clientFloor,
-              clientUnit,
-              salesman,
-              ...restProps
-            },
-            index
-          ) => ({
-            id: index,
-            invoiceNum: 'C_' + invoiceNum,
-            salesmanEmail: salesman.name,
-            clientAddress: [
-              clientDistrict,
-              clientStreet,
-              clientBlock,
-              clientFloor,
-              clientUnit,
-            ].join(', '),
-            ...restProps,
-          })
-        )}
+        rows={orders
+          .map(
+            (
+              {
+                id,
+                invoiceNum,
+                clientDistrict,
+                clientStreet,
+                clientBlock,
+                clientFloor,
+                clientUnit,
+                salesman,
+                ...restProps
+              },
+              index
+            ) => ({
+              id: index,
+              invoiceNum: 'C_' + invoiceNum,
+              salesmanEmail: salesman.name,
+              clientAddress: [
+                clientDistrict,
+                clientStreet,
+                clientBlock,
+                clientFloor,
+                clientUnit,
+              ].join(', '),
+              ...restProps,
+            })
+          )
+          .filter(
+            (item, key) =>
+              (item.stock.chairBrand.name || '')
+                .toLowerCase()
+                .includes(filterBrand.toLowerCase()) &&
+              (item.stock.chairModel.name || '')
+                .toLowerCase()
+                .includes(filterModel.toLowerCase()) &&
+              (item.stock.frameColor.name || '')
+                .toLowerCase()
+                .includes(filterFrameColor.toLowerCase()) &&
+              (item.stock.backColor.name || '')
+                .toLowerCase()
+                .includes(filterBackColor.toLowerCase()) &&
+              (item.stock.seatColor.name || '')
+                .toLowerCase()
+                .includes(filterSeatColor.toLowerCase())
+          )}
         columns={columns}
         extraLinks={extraLinks}
         onEditClick={handleEditClick}
         onRemoveClick={handleRemoveClick}
         onBulkRemoveClick={handleBulkRemoveClick}
-      ></DataGrid>
+        onFilterClick={handleFilterClick}
+      />
+      <Popper
+        anchorEl={filterAnchor}
+        open={Boolean(filterAnchor)}
+        placement={'bottom-end'}
+        disablePortal={false}
+        transition
+        onClose={() => {
+          setFilterAnchor(null);
+        }}
+      >
+        {({ TransitionProps }) => (
+          <Fade {...TransitionProps} timeout={350}>
+            <Paper
+              sx={{
+                mt: '5px',
+                p: '10px',
+                maxWidth: 400,
+                // maxWidth: '100%',
+              }}
+            >
+              <Box
+                display="flex"
+                flexWrap="wrap"
+                justifyContent="space-between"
+              >
+                {[
+                  {
+                    value: filterBrand,
+                    values: brands,
+                    setValue: setFilterBrand,
+                    label: 'Brand',
+                    width: '48%',
+                  },
+                  {
+                    value: filterModel,
+                    values: models,
+                    setValue: setFilterModel,
+                    label: 'Model',
+                    width: '48%',
+                  },
+                  {
+                    value: filterFrameColor,
+                    values: colors,
+                    setValue: setFilterFrameColor,
+                    label: 'FrameColor',
+                    width: '30%',
+                  },
+                  {
+                    value: filterBackColor,
+                    values: colors,
+                    setValue: setFilterBackColor,
+                    label: 'BackColor',
+                    width: '30%',
+                  },
+                  {
+                    value: filterSeatColor,
+                    values: colors,
+                    setValue: setFilterSeatColor,
+                    label: 'SeatColor',
+                    width: '30%',
+                  },
+                ].map(({ value, values, setValue, label, width }, index) => (
+                  <TextField
+                    key={index}
+                    sx={{ flexBasis: width, minWidth: width }}
+                    value={value}
+                    onChange={(event) => {
+                      event.preventDefault();
+                      setValue(event.target.value);
+                    }}
+                    margin="dense"
+                    label={label}
+                    variant="outlined"
+                    size="small"
+                  />
+                ))}
+                <TextField
+                  type="datetime-local"
+                  margin="dense"
+                  label="from"
+                  variant="outlined"
+                  size="small"
+                  onChange={(e) => {
+                    console.log(typeof e.target.value);
+                  }}
+                ></TextField>
+              </Box>
+              <Box display="flex" justifyContent="space-between">
+                <Button
+                  onClick={() => {
+                    setFilterBrand('');
+                    setFilterModel('');
+                    setFilterFrameColor('');
+                    setFilterBackColor('');
+                    setFilterSeatColor('');
+                  }}
+                  variant="outlined"
+                >
+                  Clear
+                </Button>
+                <Button
+                  onClick={() => {
+                    setFilterAnchor(null);
+                  }}
+                  variant="outlined"
+                >
+                  OK
+                </Button>
+              </Box>
+            </Paper>
+          </Fade>
+        )}
+      </Popper>
       <Dialog
         fullWidth
         fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
@@ -841,7 +991,6 @@ export default connect(mapStateToProps)((props) => {
               margin="dense"
               label="QTY"
               fullWidth
-              margin="dense"
               variant="outlined"
               size="small"
               value={QTY}
@@ -1091,8 +1240,8 @@ export default connect(mapStateToProps)((props) => {
                 ) : (
                   <TextField
                     key={index}
-                    margin="dense"
                     label={item.label}
+                    margin="dense"
                     variant="outlined"
                     size="small"
                     value={item.value}
@@ -1106,7 +1255,6 @@ export default connect(mapStateToProps)((props) => {
               )}
             </Paper>
             <TextField
-              margin="dense"
               label="QTY"
               fullWidth
               margin="dense"
@@ -1155,7 +1303,6 @@ export default connect(mapStateToProps)((props) => {
 
             <TextField
               inputRef={whatsAppMessage}
-              margin="dense"
               label="Message"
               fullWidth
               margin="dense"
@@ -1206,7 +1353,6 @@ export default connect(mapStateToProps)((props) => {
 
             <TextField
               inputRef={emailContent}
-              margin="dense"
               label="Message"
               fullWidth
               margin="dense"

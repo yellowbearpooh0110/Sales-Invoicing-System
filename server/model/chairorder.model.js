@@ -32,6 +32,7 @@ function model(sequelize) {
     clientFloor: { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
     clientUnit: { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
     clientPhone: { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
+    clientEmail: { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
     deliveryDate: {
       type: DataTypes.DATE,
       allowNull: false,

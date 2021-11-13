@@ -60,7 +60,11 @@ const FixedSidebar = ({ drawerWidth, handleLogout, lists }) => {
     >
       {lists.map((list, listIndex) => [
         <List key={`list-${listIndex}`}>
-          {list.category ? <Typography>{list.category}</Typography> : null}
+          {list.category ? (
+            <Typography variant="h6" sx={{ pl: '10px' }}>
+              {list.category}
+            </Typography>
+          ) : null}
           {list.content.map((listitem, itemIndex) =>
             listitem.children ? (
               [

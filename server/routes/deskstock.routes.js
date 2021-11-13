@@ -18,8 +18,8 @@ module.exports = router;
 
 function createSchema(req, res, next) {
   const schema = Joi.object({
-    deskModelId: Joi.string().guid(),
-    colorId: Joi.string().guid(),
+    deskModelId: Joi.string().guid().allow(null),
+    colorId: Joi.string().guid().allow(null),
     armSize: Joi.number(),
     feetSize: Joi.number(),
     beam: Joi.string(),

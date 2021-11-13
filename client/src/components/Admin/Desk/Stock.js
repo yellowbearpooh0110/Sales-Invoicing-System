@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import {
   Autocomplete,
+  Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
+  Fade,
   Paper,
+  Popper,
   Stack,
   TextField,
   Typography,
@@ -62,37 +64,37 @@ const columns = [
     id: 'akInfo',
     numeric: false,
     disablePadding: false,
-    label: 'AK Info',
+    label: 'AK',
   },
   {
     id: 'woodInfo_1',
     numeric: false,
     disablePadding: false,
-    label: 'Wood Info 1',
+    label: 'Wood 1',
   },
   {
     id: 'woodInfo_2',
     numeric: false,
     disablePadding: false,
-    label: 'Wood Info 2',
+    label: 'Wood 2',
   },
   {
     id: 'melamineInfo',
     numeric: false,
     disablePadding: false,
-    label: 'Melamine Info',
+    label: 'Melamine',
   },
   {
     id: 'laminateInfo',
     numeric: false,
     disablePadding: false,
-    label: 'Laminate Info',
+    label: 'Laminate',
   },
   {
     id: 'bambooInfo',
     numeric: false,
     disablePadding: false,
-    label: 'Bamboo Info',
+    label: 'Bamboo',
   },
   {
     id: 'deskRemark',
@@ -114,6 +116,8 @@ function mapStateToProps(state) {
 }
 
 const Stock = connect(mapStateToProps)((props) => {
+  const theme = useTheme();
+
   const [stocks, setStocks] = useState([]);
   const [editOpen, setEditOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
@@ -121,6 +125,18 @@ const Stock = connect(mapStateToProps)((props) => {
   const [models, setModels] = useState([]);
   const [colors, setColors] = useState([]);
   const [deskRemarks, setDeskRemarks] = useState(['av', 'avas']);
+
+  const [filterModel, setFilterModel] = useState('');
+  const [filterColor, setFilterColor] = useState('');
+  const [filterBeam, setFilterBeam] = useState('');
+  const [filterAKInfo, setFilterAKInfo] = useState('');
+  const [filterWoodInfo_1, setFilterWoodInfo_1] = useState('');
+  const [filterWoodInfo_2, setFilterWoodInfo_2] = useState('');
+  const [filterMelamineInfo, setFilterMelamineInfo] = useState('');
+  const [filterLaminateInfo, setFilterLaminateInfo] = useState('');
+  const [filterBambooInfo, setFilterBambooInfo] = useState('');
+
+  const [filterAnchor, setFilterAnchor] = useState(null);
 
   const [model, setModel] = useState(null);
   const [color, setColor] = useState(null);
@@ -135,6 +151,12 @@ const Stock = connect(mapStateToProps)((props) => {
   const [bambooInfo, setBambooInfo] = useState('');
   const [deskRemark, setDeskRemark] = useState('');
   const [QTY, setQTY] = useState(0);
+
+  const handleFilterClick = (e) => {
+    e.preventDefault();
+    if (filterAnchor === null) setFilterAnchor(e.currentTarget);
+    else setFilterAnchor(null);
+  };
 
   const handleEditClick = (event, index) => {
     event.preventDefault();
@@ -412,18 +434,174 @@ const Stock = connect(mapStateToProps)((props) => {
       </Button>
       <DataGrid
         title="Desk Stocks"
-        rows={stocks.map(({ id, deskModel, color, ...restProps }, index) => ({
-          id: index,
-          deskModel: deskModel ? deskModel.name : null,
-          color: color ? color.name : null,
-          ...restProps,
-        }))}
+        rows={stocks
+          .map(({ id, deskModel, color, ...restProps }, index) => ({
+            id: index,
+            deskModel: deskModel ? deskModel.name : null,
+            color: color ? color.name : null,
+            ...restProps,
+          }))
+          .filter(
+            (item, key) =>
+              (item.deskModel || '')
+                .toLowerCase()
+                .includes(filterModel.toLowerCase()) &&
+              (item.color || '')
+                .toLowerCase()
+                .includes(filterColor.toLowerCase()) &&
+              (item.beam || '')
+                .toLowerCase()
+                .includes(filterBeam.toLowerCase()) &&
+              (item.akInfo || '')
+                .toLowerCase()
+                .includes(filterAKInfo.toLowerCase()) &&
+              (item.woodInfo_1 || '')
+                .toLowerCase()
+                .includes(filterWoodInfo_1.toLowerCase()) &&
+              (item.woodInfo_2 || '')
+                .toLowerCase()
+                .includes(filterWoodInfo_2.toLowerCase()) &&
+              (item.melamineInfo || '')
+                .toLowerCase()
+                .includes(filterMelamineInfo.toLowerCase()) &&
+              (item.laminateInfo || '')
+                .toLowerCase()
+                .includes(filterLaminateInfo.toLowerCase()) &&
+              (item.bambooInfo || '')
+                .toLowerCase()
+                .includes(filterBambooInfo.toLowerCase())
+          )}
         columns={columns}
         onEditClick={handleEditClick}
         onRemoveClick={handleRemoveClick}
         onBulkRemoveClick={handleBulkRemoveClick}
-      ></DataGrid>
-      <Dialog open={editOpen}>
+        onFilterClick={handleFilterClick}
+      />
+      <Popper
+        anchorEl={filterAnchor}
+        open={Boolean(filterAnchor)}
+        placement={'bottom-end'}
+        disablePortal={false}
+        transition
+        onClose={() => {
+          setFilterAnchor(null);
+        }}
+      >
+        {({ TransitionProps }) => (
+          <Fade {...TransitionProps} timeout={350}>
+            <Paper
+              sx={{
+                mt: '5px',
+                p: '10px',
+                maxWidth: 400,
+                // maxWidth: '100%',
+              }}
+            >
+              <Box
+                display="flex"
+                flexWrap="wrap"
+                justifyContent="space-between"
+              >
+                {[
+                  {
+                    value: filterModel,
+                    setValue: setFilterModel,
+                    label: 'Model',
+                    width: '30%',
+                  },
+                  {
+                    value: filterColor,
+                    setValue: setFilterColor,
+                    label: 'Color',
+                    width: '30%',
+                  },
+                  {
+                    value: filterBeam,
+                    setValue: setFilterBeam,
+                    label: 'Beam',
+                    width: '30%',
+                  },
+                  {
+                    value: filterAKInfo,
+                    setValue: setFilterAKInfo,
+                    label: 'AK',
+                    width: '30%',
+                  },
+                  {
+                    value: filterWoodInfo_1,
+                    setValue: setFilterWoodInfo_1,
+                    label: 'Wood 1',
+                    width: '30%',
+                  },
+                  {
+                    value: filterWoodInfo_2,
+                    setValue: setFilterWoodInfo_2,
+                    label: 'Wood 2',
+                    width: '30%',
+                  },
+                  {
+                    value: filterMelamineInfo,
+                    setValue: setFilterMelamineInfo,
+                    label: 'Melamine',
+                    width: '30%',
+                  },
+                  {
+                    value: filterLaminateInfo,
+                    setValue: setFilterLaminateInfo,
+                    label: 'Laminate',
+                    width: '30%',
+                  },
+                  {
+                    value: filterBambooInfo,
+                    setValue: setFilterBambooInfo,
+                    label: 'Bamboo',
+                    width: '30%',
+                  },
+                ].map(({ value, values, setValue, label, width }, index) => (
+                  <TextField
+                    key={index}
+                    sx={{ flexBasis: width, minWidth: width }}
+                    value={value}
+                    onChange={(event) => {
+                      event.preventDefault();
+                      setValue(event.target.value);
+                    }}
+                    margin="dense"
+                    label={label}
+                    variant="outlined"
+                    size="small"
+                  />
+                ))}
+              </Box>
+              <Box display="flex" justifyContent="space-between">
+                <Button
+                  onClick={() => {
+                    setFilterModel('');
+                    setFilterColor('');
+                  }}
+                  variant="outlined"
+                >
+                  Clear
+                </Button>
+                <Button
+                  onClick={() => {
+                    setFilterAnchor(null);
+                  }}
+                  variant="outlined"
+                >
+                  OK
+                </Button>
+              </Box>
+            </Paper>
+          </Fade>
+        )}
+      </Popper>
+      <Dialog
+        fullWidth
+        fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
+        maxWidth="sm"
+        open={editOpen}
+      >
         <DialogTitle>Edit DeskStock</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
@@ -585,7 +763,6 @@ const Stock = connect(mapStateToProps)((props) => {
               />
             </Paper>
             <TextField
-              margin="dense"
               label="QTY"
               fullWidth
               margin="dense"
@@ -610,7 +787,12 @@ const Stock = connect(mapStateToProps)((props) => {
           <Button onClick={handleSave}>Save</Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={createOpen}>
+      <Dialog
+        fullWidth
+        fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
+        maxWidth="sm"
+        open={createOpen}
+      >
         <DialogTitle>Edit DeskStock</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
@@ -772,7 +954,6 @@ const Stock = connect(mapStateToProps)((props) => {
               />
             </Paper>
             <TextField
-              margin="dense"
               label="QTY"
               fullWidth
               margin="dense"

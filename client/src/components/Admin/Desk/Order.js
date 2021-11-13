@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import ReactDOMServer from 'react-dom/server';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {
   Autocomplete,
@@ -7,16 +9,24 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
   Paper,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
+import {
+  Add as AddIcon,
+  Email as EmailIcon,
+  PictureAsPdf as PictureAsPdfIcon,
+  WhatsApp as WhatsAppIcon,
+} from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
+import MuiPhoneNumber from 'material-ui-phone-number';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import QRCode from 'react-qr-code';
 
 import DataGrid from 'components/Common/DataGrid';
 
@@ -64,12 +74,17 @@ export default connect(mapStateToProps)((props) => {
   const [orders, setOrders] = useState([]);
   const [editOpen, setEditOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
+  const [whatsAppOpen, setWhatsAppOpen] = useState(false);
+  const [emailOpen, setEmailOpen] = useState(false);
+  const whatsAppMessage = useRef(null);
+  const emailContent = useRef(null);
   const [id, setID] = useState('');
   const [models, setModels] = useState([]);
   const [colors, setColors] = useState([]);
   const [deskRemarks, setDeskRemarks] = useState(['av', 'avas']);
 
   const [clientName, setClientName] = useState('');
+  const [clientEmail, setClientEmail] = useState('');
   const [clientPhone, setClientPhone] = useState('');
   const [clientDistrict, setClientDistrict] = useState('');
   const [clientStreet, setClientStreet] = useState('');
@@ -92,6 +107,136 @@ export default connect(mapStateToProps)((props) => {
   const [deskRemark, setDeskRemark] = useState('');
   const [QTY, setQTY] = useState(1);
 
+  const extraLinks = [
+    (id) => {
+      return (
+        <IconButton
+          component={Link}
+          to={`/chairinvoice/${orders[id].id}`}
+          target="_blank"
+        >
+          <PictureAsPdfIcon />
+        </IconButton>
+      );
+    },
+    (id) => {
+      return (
+        <IconButton
+          onClick={() => {
+            setClientEmail(orders[id].clientEmail);
+            setEmailOpen(true);
+          }}
+        >
+          <EmailIcon />
+        </IconButton>
+      );
+    },
+    (id) => {
+      return (
+        <IconButton
+          onClick={() => {
+            axios
+              .get('whatsapp/checkauth')
+              .then(() => {
+                setClientPhone(orders[id].clientPhone);
+                setWhatsAppOpen(true);
+              })
+              .catch(function (error) {
+                // handle error
+                axios
+                  .get('whatsapp/getqr')
+                  .then((response) => {
+                    Swal.fire({
+                      icon: 'info',
+                      title:
+                        'Please signin with this QRCode and Click the button again.',
+                      html: ReactDOMServer.renderToStaticMarkup(
+                        <QRCode
+                          value={`${response.data.qrcode}`}
+                          level="H"
+                        ></QRCode>
+                      ),
+                      allowOutsideClick: false,
+                    });
+                  })
+                  .catch(function (qrerror) {
+                    // handle error
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Error',
+                      text: 'Unable to use WhatsApp Messaging.',
+                      allowOutsideClick: false,
+                    });
+                  })
+                  .then(function () {
+                    // always executed
+                  });
+              })
+              .then(function () {
+                // always executed
+              });
+          }}
+        >
+          <WhatsAppIcon />
+        </IconButton>
+      );
+    },
+  ];
+
+  const handleWhatsAppSend = (event) => {
+    event.preventDefault();
+    axios
+      .post('whatsapp/send', {
+        phone: clientPhone,
+        message: whatsAppMessage.current.value,
+      })
+      .then(() => {
+        setWhatsAppOpen(false);
+      })
+      .catch(function (error) {
+        // handle error
+        setWhatsAppOpen(false);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.response.data.message,
+          allowOutsideClick: false,
+        }).then(() => {
+          setWhatsAppOpen(true);
+        });
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
+  const handleEmailSend = (event) => {
+    event.preventDefault();
+    axios
+      .post('email/send', {
+        email: clientEmail,
+        message: emailContent.current.value,
+      })
+      .then(() => {
+        setEmailOpen(false);
+      })
+      .catch(function (error) {
+        // handle error
+        setEmailOpen(false);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.response.data.message,
+          allowOutsideClick: false,
+        }).then(() => {
+          setEmailOpen(true);
+        });
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
   const handleEditClick = (event, index) => {
     event.preventDefault();
     if (index < orders.length && index >= 0) {
@@ -112,6 +257,7 @@ export default connect(mapStateToProps)((props) => {
       setBambooInfo(orders[index].stock.bambooInfo);
       setDeskRemark(orders[index].stock.deskRemark);
       setClientName(orders[index].clientName);
+      setClientEmail(orders[index].clientEmail);
       setClientPhone(orders[index].clientPhone);
       setClientDistrict(orders[index].clientDistrict);
       setClientStreet(orders[index].clientStreet);
@@ -198,7 +344,7 @@ export default connect(mapStateToProps)((props) => {
   const handleSave = (event) => {
     event.preventDefault();
     axios
-      .put(`/deskstock/${id}`, {
+      .put(`/deskorder/${id}`, {
         deskModelId: model ? model.id : null,
         colorId: color ? color.id : null,
         armSize,
@@ -212,6 +358,8 @@ export default connect(mapStateToProps)((props) => {
         bambooInfo,
         deskRemark,
         clientName,
+        clientEmail,
+        clientPhone,
         clientDistrict,
         clientStreet,
         clientBlock,
@@ -260,6 +408,8 @@ export default connect(mapStateToProps)((props) => {
         bambooInfo,
         deskRemark,
         clientName,
+        clientEmail,
+        clientPhone,
         clientDistrict,
         clientStreet,
         clientBlock,
@@ -383,6 +533,7 @@ export default connect(mapStateToProps)((props) => {
           setBambooInfo('');
           setDeskRemark('');
           setClientName('');
+          setClientEmail('');
           setClientPhone('');
           setClientDistrict('');
           setClientStreet('');
@@ -427,6 +578,7 @@ export default connect(mapStateToProps)((props) => {
           })
         )}
         columns={columns}
+        extraLinks={extraLinks}
         onEditClick={handleEditClick}
         onRemoveClick={handleRemoveClick}
         onBulkRemoveClick={handleBulkRemoveClick}
@@ -617,14 +769,21 @@ export default connect(mapStateToProps)((props) => {
                   value: clientName,
                   setValue: setClientName,
                   type: 'text',
-                  width: '55%',
+                  width: '100%',
+                },
+                {
+                  label: 'Email',
+                  value: clientEmail,
+                  setValue: setClientEmail,
+                  type: 'text',
+                  width: '48%',
                 },
                 {
                   label: 'Phone',
                   value: clientPhone,
                   setValue: setClientPhone,
                   type: 'text',
-                  width: '40%',
+                  width: '48%',
                 },
                 {
                   label: 'District',
@@ -644,21 +803,21 @@ export default connect(mapStateToProps)((props) => {
                   label: 'Block',
                   value: clientBlock,
                   setValue: setClientBlock,
-                  type: 'number',
+                  type: 'text',
                   width: '30%',
                 },
                 {
                   label: 'Floor',
                   value: clientFloor,
                   setValue: setClientFloor,
-                  type: 'number',
+                  type: 'text',
                   width: '30%',
                 },
                 {
                   label: 'Unit',
                   value: clientUnit,
                   setValue: setClientUnit,
-                  type: 'number',
+                  type: 'text',
                   width: '30%',
                 },
                 {
@@ -668,24 +827,39 @@ export default connect(mapStateToProps)((props) => {
                   type: 'text',
                   width: '100%',
                 },
-              ].map((item, index) => (
-                <TextField
-                  key={index}
-                  margin="dense"
-                  label={item.label}
-                  variant="outlined"
-                  size="small"
-                  value={item.value}
-                  type={item.type}
-                  onChange={(e) => {
-                    item.setValue(e.target.value);
-                  }}
-                  sx={{ flexBasis: item.width, minWidth: item.width }}
-                />
-              ))}
+              ].map((item, index) =>
+                item.label === 'Phone' ? (
+                  <MuiPhoneNumber
+                    key={index}
+                    defaultCountry={'hk'}
+                    value={item.value}
+                    onChange={(value) => {
+                      item.setValue(value);
+                    }}
+                    label={item.label}
+                    sx={{ flexBasis: item.width, minWidth: item.width }}
+                    variant="outlined"
+                    margin="dense"
+                    size="small"
+                  />
+                ) : (
+                  <TextField
+                    key={index}
+                    margin="dense"
+                    label={item.label}
+                    variant="outlined"
+                    size="small"
+                    value={item.value}
+                    type={item.type}
+                    onChange={(e) => {
+                      item.setValue(e.target.value);
+                    }}
+                    sx={{ flexBasis: item.width, minWidth: item.width }}
+                  />
+                )
+              )}
             </Paper>
             <TextField
-              margin="dense"
               label="QTY"
               fullWidth
               margin="dense"
@@ -896,14 +1070,21 @@ export default connect(mapStateToProps)((props) => {
                   value: clientName,
                   setValue: setClientName,
                   type: 'text',
-                  width: '55%',
+                  width: '100%',
+                },
+                {
+                  label: 'Email',
+                  value: clientEmail,
+                  setValue: setClientEmail,
+                  type: 'text',
+                  width: '48%',
                 },
                 {
                   label: 'Phone',
                   value: clientPhone,
                   setValue: setClientPhone,
                   type: 'text',
-                  width: '40%',
+                  width: '48%',
                 },
                 {
                   label: 'District',
@@ -923,21 +1104,21 @@ export default connect(mapStateToProps)((props) => {
                   label: 'Block',
                   value: clientBlock,
                   setValue: setClientBlock,
-                  type: 'number',
+                  type: 'text',
                   width: '30%',
                 },
                 {
                   label: 'Floor',
                   value: clientFloor,
                   setValue: setClientFloor,
-                  type: 'number',
+                  type: 'text',
                   width: '30%',
                 },
                 {
                   label: 'Unit',
                   value: clientUnit,
                   setValue: setClientUnit,
-                  type: 'number',
+                  type: 'text',
                   width: '30%',
                 },
                 {
@@ -947,24 +1128,39 @@ export default connect(mapStateToProps)((props) => {
                   type: 'text',
                   width: '100%',
                 },
-              ].map((item, index) => (
-                <TextField
-                  key={index}
-                  margin="dense"
-                  label={item.label}
-                  variant="outlined"
-                  size="small"
-                  value={item.value}
-                  type={item.type}
-                  onChange={(e) => {
-                    item.setValue(e.target.value);
-                  }}
-                  sx={{ flexBasis: item.width, minWidth: item.width }}
-                />
-              ))}
+              ].map((item, index) =>
+                item.label === 'Phone' ? (
+                  <MuiPhoneNumber
+                    key={index}
+                    defaultCountry={'hk'}
+                    value={item.value}
+                    onChange={(value) => {
+                      item.setValue(value);
+                    }}
+                    label={item.label}
+                    sx={{ flexBasis: item.width, minWidth: item.width }}
+                    variant="outlined"
+                    margin="dense"
+                    size="small"
+                  />
+                ) : (
+                  <TextField
+                    key={index}
+                    margin="dense"
+                    label={item.label}
+                    variant="outlined"
+                    size="small"
+                    value={item.value}
+                    type={item.type}
+                    onChange={(e) => {
+                      item.setValue(e.target.value);
+                    }}
+                    sx={{ flexBasis: item.width, minWidth: item.width }}
+                  />
+                )
+              )}
             </Paper>
             <TextField
-              margin="dense"
               label="QTY"
               fullWidth
               margin="dense"
@@ -988,6 +1184,103 @@ export default connect(mapStateToProps)((props) => {
             Cancel
           </Button>
           <Button onClick={handleCreate}>Create</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        fullWidth
+        fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
+        maxWidth="sm"
+        open={whatsAppOpen}
+      >
+        <DialogTitle>Send WhatsApp Message to the Client</DialogTitle>
+        <DialogContent>
+          <Stack spacing={2}>
+            <MuiPhoneNumber
+              margin="dense"
+              variant="outlined"
+              size="small"
+              label="Phone Number"
+              defaultCountry={'hk'}
+              value={clientPhone}
+              InputProps={{
+                readOnly: true,
+              }}
+            />
+
+            <TextField
+              inputRef={whatsAppMessage}
+              label="Message"
+              fullWidth
+              margin="dense"
+              variant="outlined"
+              size="small"
+              defaultValue={`Hello ${clientName},\nThank you for your order! Please find here (payment link URL) for your payment. Once finished, your order will be processed.\nOnce finished, your order will be processed accordingly.`}
+              multiline
+              minRows={4}
+              maxRows={10}
+              // onChange={(e) => {
+              //   setWhatsAppMessage(e.target.value);
+              // }}
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={(event) => {
+              event.preventDefault();
+              setWhatsAppOpen(false);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button onClick={handleWhatsAppSend}>Send</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        fullWidth
+        fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
+        maxWidth="sm"
+        open={emailOpen}
+      >
+        <DialogTitle>Send Email to the Client</DialogTitle>
+        <DialogContent>
+          <Stack spacing={2}>
+            <TextField
+              margin="dense"
+              variant="outlined"
+              size="small"
+              label="Email"
+              type="email"
+              value={clientEmail}
+              InputProps={{
+                readOnly: true,
+              }}
+            />
+
+            <TextField
+              inputRef={emailContent}
+              label="Message"
+              fullWidth
+              margin="dense"
+              variant="outlined"
+              size="small"
+              defaultValue={`Hello ${clientName},\nThank you for your order! Please find here (payment link URL) for your payment. Once finished, your order will be processed.\nOnce finished, your order will be processed accordingly.`}
+              multiline
+              minRows={4}
+              maxRows={10}
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={(event) => {
+              event.preventDefault();
+              setEmailOpen(false);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button onClick={handleEmailSend}>Send</Button>
         </DialogActions>
       </Dialog>
     </>

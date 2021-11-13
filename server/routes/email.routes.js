@@ -6,6 +6,7 @@ const Joi = require('joi');
 var MailConfig = require('server/helper/email');
 var gmailTransport = MailConfig.GmailTransport;
 const authorize = require('server/middleware/authorize');
+const validateRequest = require('server/middleware/validate-request');
 
 module.exports = router;
 
@@ -18,7 +19,7 @@ function sendSchema(req, res, next) {
 }
 
 router.post('/send', authorize(), sendSchema, (req, res, next) => {
-  let email = req.params.email;
+  let email = req.body.email;
   let message = req.body.message;
 
   MailConfig.ViewOption(gmailTransport, hbs);

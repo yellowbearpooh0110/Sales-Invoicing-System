@@ -8,6 +8,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Typography,
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import {
@@ -73,6 +74,11 @@ const FixedSidebar = ({
     >
       {lists.map((list, listIndex) => [
         <List key={`list-${listIndex}`}>
+          {list.category ? (
+            <Typography variant="h6" sx={{ pl: '10px' }}>
+              {list.category}
+            </Typography>
+          ) : null}
           {list.content.map((listitem, itemIndex) =>
             listitem.children ? (
               [

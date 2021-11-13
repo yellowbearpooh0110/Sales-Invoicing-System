@@ -1,5 +1,4 @@
-const db = require('server/helper/db');
-const Sequelize = require('Sequelize');
+const Sequelize = require('sequelize');
 
 module.exports = {
   getAll,

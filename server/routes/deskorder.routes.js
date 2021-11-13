@@ -33,6 +33,7 @@ function createSchema(req, res, next) {
     deskRemark: Joi.string().allow(''),
     clientName: Joi.string().allow(''),
     clientPhone: Joi.string().allow(''),
+    clientEmail: Joi.string().allow(''),
     clientDistrict: Joi.string().allow(''),
     clientStreet: Joi.string().allow(''),
     clientBlock: Joi.string().allow(''),

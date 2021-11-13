@@ -8,27 +8,16 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Fade,
   FormControlLabel,
-  Menu,
-  MenuItem,
-  Avatar,
-  ListItemIcon,
-  Divider,
   Paper,
   Popper,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
-import {
-  Add as AddIcon,
-  PersonAdd,
-  Settings,
-  Logout,
-} from '@mui/icons-material';
+import { Add as AddIcon } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import axios from 'axios';
@@ -142,6 +131,10 @@ const Stock = connect(mapStateToProps)((props) => {
   const handleEditClick = (event, index) => {
     event.preventDefault();
     if (index < stocks.length && index >= 0) {
+      getBrands();
+      getModels();
+      getColors();
+      getChairRemarks();
       setID(stocks[index].id);
       setBrand(stocks[index].chairBrand);
       setModel(stocks[index].chairModel);
@@ -442,19 +435,19 @@ const Stock = connect(mapStateToProps)((props) => {
           )
           .filter(
             (item, key) =>
-              item.chairBrand
+              (item.chairBrand || '')
                 .toLowerCase()
                 .includes(filterBrand.toLowerCase()) &&
-              item.chairModel
+              (item.chairModel || '')
                 .toLowerCase()
                 .includes(filterModel.toLowerCase()) &&
-              item.frameColor
+              (item.frameColor || '')
                 .toLowerCase()
                 .includes(filterFrameColor.toLowerCase()) &&
-              item.backColor
+              (item.backColor || '')
                 .toLowerCase()
                 .includes(filterBackColor.toLowerCase()) &&
-              item.seatColor
+              (item.seatColor || '')
                 .toLowerCase()
                 .includes(filterSeatColor.toLowerCase())
           )}
@@ -464,7 +457,6 @@ const Stock = connect(mapStateToProps)((props) => {
         onBulkRemoveClick={handleBulkRemoveClick}
         onFilterClick={handleFilterClick}
       ></DataGrid>
-
       <Popper
         anchorEl={filterAnchor}
         open={Boolean(filterAnchor)}
@@ -567,145 +559,7 @@ const Stock = connect(mapStateToProps)((props) => {
             </Paper>
           </Fade>
         )}
-
-        {/* <DialogTitle>Filter</DialogTitle>
-        <DialogContent>
-          <Paper
-            sx={{
-              mt: '5px',
-              p: '10px',
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'space-between',
-            }}
-          >
-            {[
-              {
-                value: filterBrand,
-                values: brands,
-                setValue: setFilterBrand,
-                label: 'Brand',
-                width: '48%',
-              },
-              {
-                value: filterModel,
-                values: models,
-                setValue: setFilterModel,
-                label: 'Model',
-                width: '48%',
-              },
-              {
-                value: filterFrameColor,
-                values: colors,
-                setValue: setFilterFrameColor,
-                label: 'FrameColor',
-                width: '30%',
-              },
-              {
-                value: filterBackColor,
-                values: colors,
-                setValue: setFilterBackColor,
-                label: 'BackColor',
-                width: '30%',
-              },
-              {
-                value: filterSeatColor,
-                values: colors,
-                setValue: setFilterSeatColor,
-                label: 'SeatColor',
-                width: '30%',
-              },
-            ].map(({ value, values, setValue, label, width }, index) => (
-              <TextField
-                sx={{ flexBasis: width, minWidth: width }}
-                key={index}
-                value={value}
-                onChange={(event) => {
-                  event.preventDefault();
-                  setValue(event.target.value);
-                }}
-                margin="dense"
-                label={label}
-                variant="outlined"
-                size="small"
-              />
-            ))}
-          </Paper>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => {
-              setFilterAnchor(null);
-            }}
-          >
-            Clear
-          </Button>
-        </DialogActions> */}
       </Popper>
-      {/* <Menu
-        anchorEl={filterAnchor}
-        open={Boolean(filterAnchor)}
-        onClose={() => {
-          setFilterAnchor(null);
-        }}
-        onClick={() => {
-          setFilterAnchor(null);
-        }}
-        PaperProps={{
-          elevation: 0,
-          sx: {
-            overflow: 'visible',
-            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-            mt: 1.5,
-            '& .MuiAvatar-root': {
-              width: 32,
-              height: 32,
-              ml: -0.5,
-              mr: 1,
-            },
-            '&:before': {
-              content: '""',
-              display: 'block',
-              position: 'absolute',
-              top: 0,
-              right: 14,
-              width: 10,
-              height: 10,
-              bgcolor: 'background.paper',
-              transform: 'translateY(-50%) rotate(45deg)',
-              zIndex: 0,
-            },
-          },
-        }}
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-      >
-        <MenuItem>
-          <Avatar /> Profile
-        </MenuItem>
-        <MenuItem>
-          <Avatar /> My account
-        </MenuItem>
-        <Divider />
-        <MenuItem>
-          <ListItemIcon>
-            <PersonAdd fontSize="small" />
-          </ListItemIcon>
-          Add another account
-        </MenuItem>
-        <MenuItem>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          Settings
-        </MenuItem>
-        <MenuItem>
-          <ListItemIcon>
-            <Logout fontSize="small" />
-          </ListItemIcon>
-          Logout
-        </MenuItem>
-      </Menu> */}
       <Dialog
         fullWidth
         fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
@@ -837,7 +691,6 @@ const Stock = connect(mapStateToProps)((props) => {
               />
             </Paper>
             <TextField
-              margin="dense"
               label="QTY"
               fullWidth
               margin="dense"
@@ -992,7 +845,6 @@ const Stock = connect(mapStateToProps)((props) => {
               />
             </Paper>
             <TextField
-              margin="dense"
               label="QTY"
               fullWidth
               margin="dense"

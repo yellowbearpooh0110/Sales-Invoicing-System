@@ -1,5 +1,3 @@
-const db = require('server/helper/db');
-
 module.exports = {
   getAll,
   getById,

@@ -1,5 +1,4 @@
-const db = require('server/helper/db');
-const Sequelize = require('Sequelize');
+const Sequelize = require('sequelize');
 
 module.exports = {
   getAll,
@@ -41,6 +40,7 @@ async function create(params) {
 }
 
 async function update(id, params) {
+  console.log(params);
   const chairStock = await getChairStock(id);
   const { QTY, ...restParams } = params;
   if (
