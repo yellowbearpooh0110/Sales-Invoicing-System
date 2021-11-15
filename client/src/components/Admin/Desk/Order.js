@@ -284,7 +284,7 @@ export default connect(mapStateToProps)((props) => {
       }).then((result) => {
         if (result.isConfirmed) {
           axios
-            .delete(`/deskorder/${orders[index].id}`)
+            .delete(`/deskOrder/${orders[index].id}`)
             .then((response) => {
               // handle success
               getOrders();
@@ -344,7 +344,7 @@ export default connect(mapStateToProps)((props) => {
   const handleSave = (event) => {
     event.preventDefault();
     axios
-      .put(`/deskorder/${id}`, {
+      .put(`/deskOrder/${id}`, {
         deskModelId: model ? model.id : null,
         colorId: color ? color.id : null,
         armSize,
@@ -394,7 +394,7 @@ export default connect(mapStateToProps)((props) => {
   const handleCreate = (event) => {
     event.preventDefault();
     axios
-      .post(`/deskorder/create`, {
+      .post(`/deskOrder/create`, {
         deskModelId: model ? model.id : null,
         colorId: color ? color.id : null,
         armSize,
@@ -443,7 +443,7 @@ export default connect(mapStateToProps)((props) => {
 
   const getModels = (cancelToken) => {
     axios
-      .get('/deskmodel', { cancelToken })
+      .get('/deskModel', { cancelToken })
       .then((response) => {
         // handle success
         setModels(response.data);
@@ -459,7 +459,7 @@ export default connect(mapStateToProps)((props) => {
 
   const getOrders = (cancelToken) => {
     axios
-      .get('/deskorder', { cancelToken })
+      .get('/deskOrder', { cancelToken })
       .then((response) => {
         // handle success
         setOrders(response.data);
@@ -475,7 +475,7 @@ export default connect(mapStateToProps)((props) => {
 
   const getColors = (cancelToken) => {
     axios
-      .get('/productcolor', { cancelToken })
+      .get('/productColor', { cancelToken })
       .then((response) => {
         // handle success
         setColors(response.data);

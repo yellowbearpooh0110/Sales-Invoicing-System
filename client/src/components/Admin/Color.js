@@ -65,7 +65,7 @@ export default connect(mapStateToProps)((props) => {
       }).then((result) => {
         if (result.isConfirmed) {
           axios
-            .delete(`/productcolor/${colors[index].id}`)
+            .delete(`/productColor/${colors[index].id}`)
             .then((response) => {
               // handle success
               getColors();
@@ -100,7 +100,7 @@ export default connect(mapStateToProps)((props) => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete('/productcolor', { data: { ids: selected } })
+          .delete('/productColor', { data: { ids: selected } })
           .then((response) => {
             // handle success
             getColors();
@@ -125,7 +125,7 @@ export default connect(mapStateToProps)((props) => {
   const handleSave = (event) => {
     event.preventDefault();
     axios
-      .put(`/productcolor/${id}`, { name })
+      .put(`/productColor/${id}`, { name })
       .then((response) => {
         // handle success
         setEditOpen(false);
@@ -152,7 +152,7 @@ export default connect(mapStateToProps)((props) => {
   const handleCreate = (event) => {
     event.preventDefault();
     axios
-      .post(`/productcolor/create`, { name })
+      .post(`/productColor/create`, { name })
       .then((response) => {
         // handle success
         setCreateOpen(false);
@@ -178,7 +178,7 @@ export default connect(mapStateToProps)((props) => {
 
   const getColors = (cancelToken) => {
     axios
-      .get('/productcolor', { cancelToken })
+      .get('/productColor', { cancelToken })
       .then((response) => {
         // handle success
         setColors(response.data);

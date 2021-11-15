@@ -131,9 +131,9 @@ async function update(id, params) {
 async function signDelivery(id, signature) {
   const chairOrder = await getChairOrder(id);
   if (chairOrder.finished) throw 'This Order is already finished!';
-  const dirpath = 'server/uploads/signature';
+  const dirpath = 'uploads/signature';
   const filepath = `${dirpath}/${Date.now()}.png`;
-  fs.writeFileSync(filepath, signature, 'base64');
+  fs.writeFileSync(`server/${filepath}`, signature, 'base64');
   Object.assign(chairOrder, { signURL: filepath, finished: true });
   await chairOrder.save();
   return chairOrder.get();

@@ -59,7 +59,7 @@ const Model = connect(mapStateToProps)((props) => {
       }).then((result) => {
         if (result.isConfirmed) {
           axios
-            .delete(`/chairmodel/${models[index].id}`)
+            .delete(`/chairModel/${models[index].id}`)
             .then((response) => {
               // handle success
               getModels();
@@ -94,7 +94,7 @@ const Model = connect(mapStateToProps)((props) => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete('/chairmodel', { data: { ids: selected } })
+          .delete('/chairModel', { data: { ids: selected } })
           .then((response) => {
             // handle success
             getModels();
@@ -119,7 +119,7 @@ const Model = connect(mapStateToProps)((props) => {
   const handleSave = (event) => {
     event.preventDefault();
     axios
-      .put(`/chairmodel/${id}`, { name })
+      .put(`/chairModel/${id}`, { name })
       .then((response) => {
         // handle success
         setEditOpen(false);
@@ -146,7 +146,7 @@ const Model = connect(mapStateToProps)((props) => {
   const handleCreate = (event) => {
     event.preventDefault();
     axios
-      .post(`/chairmodel/create`, { name })
+      .post(`/chairModel/create`, { name })
       .then((response) => {
         // handle success
         setCreateOpen(false);
@@ -172,7 +172,7 @@ const Model = connect(mapStateToProps)((props) => {
 
   const getModels = (cancelToken) => {
     axios
-      .get('/chairmodel', { cancelToken })
+      .get('/chairModel', { cancelToken })
       .then((response) => {
         // handle success
         setModels(response.data);

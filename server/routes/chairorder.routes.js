@@ -9,6 +9,7 @@ const chairorderController = require('server/controller/chairorder.controller');
 
 router.post('/create', authorize(), createSchema, create);
 router.get('/', admin(), getAll);
+router.get('/getDelivery', authorize(), getDelivery);
 router.get('/current', authorize(), getCurrent);
 router.get('/:id', authorize(), getById);
 // router.get('/chairinvoice/:token', getByToken);
@@ -69,7 +70,17 @@ function create(req, res, next) {
 
 function getAll(req, res, next) {
   chairorderController
-    .getAll()
+    .getAll(where)
+    .then((chairorders) => res.json(chairorders))
+    .catch(next);
+}
+
+function getDelivery(req, res, next) {
+  const deliveryDate = new Date(req.params.deliveryDate);
+
+  const where = req.params.deliveryDate;
+  chairorderController
+    .getAll(where)
     .then((chairorders) => res.json(chairorders))
     .catch(next);
 }
@@ -104,9 +115,16 @@ function update(req, res, next) {
 }
 
 function signDelivery(req, res, next) {
+  const host = req.get('host');
+  const protocol = req.protocol;
   chairorderController
     .signDelivery(req.body.id, req.body.signature)
-    .then((chairorder) => res.json(chairorder))
+    .then((chairorder) => {
+      res.json({
+        success: true,
+        url: `${protocol}://${host}/${chairorder.signURL}`,
+      });
+    })
     .catch(next);
 }
 

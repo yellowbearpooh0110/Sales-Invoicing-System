@@ -59,7 +59,7 @@ const Brand = connect(mapStateToProps)((props) => {
       }).then((result) => {
         if (result.isConfirmed) {
           axios
-            .delete(`/chairbrand/${brands[index].id}`)
+            .delete(`/chairBrand/${brands[index].id}`)
             .then((response) => {
               // handle success
               getBrands();
@@ -94,7 +94,7 @@ const Brand = connect(mapStateToProps)((props) => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete('/chairbrand', { data: { ids: selected } })
+          .delete('/chairBrand', { data: { ids: selected } })
           .then((response) => {
             // handle success
             getBrands();
@@ -119,7 +119,7 @@ const Brand = connect(mapStateToProps)((props) => {
   const handleSave = (event) => {
     event.preventDefault();
     axios
-      .put(`/chairbrand/${id}`, { name })
+      .put(`/chairBrand/${id}`, { name })
       .then((response) => {
         // handle success
         setEditOpen(false);
@@ -146,7 +146,7 @@ const Brand = connect(mapStateToProps)((props) => {
   const handleCreate = (event) => {
     event.preventDefault();
     axios
-      .post(`/chairbrand/create`, { name })
+      .post(`/chairBrand/create`, { name })
       .then((response) => {
         // handle success
         setCreateOpen(false);
@@ -172,7 +172,7 @@ const Brand = connect(mapStateToProps)((props) => {
 
   const getBrands = (cancelToken) => {
     axios
-      .get('/chairbrand', { cancelToken })
+      .get('/chairBrand', { cancelToken })
       .then((response) => {
         // handle success
         setBrands(response.data);

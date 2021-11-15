@@ -16,16 +16,17 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use(express.static(path.join(__dirname, 'client', 'build')));
+app.use('/uploads', express.static(path.join(__dirname, 'server', 'uploads')));
 
 // api routes
-router.use('/chairbrand', require('server/routes/chairbrand.routes'));
-router.use('/chairmodel', require('server/routes/chairmodel.routes'));
-router.use('/chairstock', require('server/routes/chairstock.routes'));
-router.use('/chairorder', require('server/routes/chairorder.routes'));
-router.use('/deskmodel', require('server/routes/deskmodel.routes'));
-router.use('/deskstock', require('server/routes/deskstock.routes'));
-router.use('/deskorder', require('server/routes/deskorder.routes'));
-router.use('/productcolor', require('server/routes/productcolor.routes'));
+router.use('/chairBrand', require('server/routes/chairbrand.routes'));
+router.use('/chairModel', require('server/routes/chairmodel.routes'));
+router.use('/chairStock', require('server/routes/chairstock.routes'));
+router.use('/chairOrder', require('server/routes/chairorder.routes'));
+router.use('/deskModel', require('server/routes/deskmodel.routes'));
+router.use('/deskStock', require('server/routes/deskstock.routes'));
+router.use('/deskOrder', require('server/routes/deskorder.routes'));
+router.use('/productColor', require('server/routes/productcolor.routes'));
 router.use('/user', require('server/routes/user.routes'));
 router.use('/email', require('server/routes/email.routes'));
 router.use('/whatsapp', require('server/routes/whatsapp.routes'));

@@ -284,6 +284,7 @@ export default connect(mapStateToProps)((props) => {
       setClientBlock(orders[index].clientBlock);
       setClientFloor(orders[index].clientFloor);
       setClientUnit(orders[index].clientUnit);
+      setDeliveryDate(orders[index].deliveryDate);
       setRemark(orders[index].clientRemark);
       setQTY(orders[index].QTY);
       setEditOpen(true);
@@ -304,7 +305,7 @@ export default connect(mapStateToProps)((props) => {
       }).then((result) => {
         if (result.isConfirmed) {
           axios
-            .delete(`/chairorder/${brands[index].id}`)
+            .delete(`/chairOrder/${brands[index].id}`)
             .then((response) => {
               // handle success
               getOrders();
@@ -339,7 +340,7 @@ export default connect(mapStateToProps)((props) => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete('/chiarstock', { data: { ids: selected } })
+          .delete('/chairOrder', { data: { ids: selected } })
           .then((response) => {
             // handle success
             getOrders();
@@ -362,9 +363,10 @@ export default connect(mapStateToProps)((props) => {
   };
 
   const handleSave = (event) => {
+    console.log(deliveryDate);
     event.preventDefault();
     axios
-      .put(`/chairorder/${id}`, {
+      .put(`/chairOrder/${id}`, {
         chairBrandId: brand ? brand.id : null,
         chairModelId: model ? model.id : null,
         frameColorId: frameColor ? frameColor.id : null,
@@ -410,7 +412,7 @@ export default connect(mapStateToProps)((props) => {
   const handleCreate = (event) => {
     event.preventDefault();
     axios
-      .post(`/chairorder/create`, {
+      .post(`/chairOrder/create`, {
         chairBrandId: brand ? brand.id : null,
         chairModelId: model ? model.id : null,
         frameColorId: frameColor ? frameColor.id : null,
@@ -455,7 +457,7 @@ export default connect(mapStateToProps)((props) => {
 
   const getBrands = (cancelToken) => {
     axios
-      .get('/chairbrand', { cancelToken })
+      .get('/chairBrand', { cancelToken })
       .then((response) => {
         // handle success
         setBrands(response.data);
@@ -471,7 +473,7 @@ export default connect(mapStateToProps)((props) => {
 
   const getModels = (cancelToken) => {
     axios
-      .get('/chairmodel', { cancelToken })
+      .get('/chairModel', { cancelToken })
       .then((response) => {
         // handle success
         setModels(response.data);
@@ -487,7 +489,7 @@ export default connect(mapStateToProps)((props) => {
 
   const getOrders = (cancelToken) => {
     axios
-      .get('/chairorder', { cancelToken })
+      .get('/chairOrder', { cancelToken })
       .then((response) => {
         // handle success
         setOrders(response.data);
@@ -503,7 +505,7 @@ export default connect(mapStateToProps)((props) => {
 
   const getColors = (cancelToken) => {
     axios
-      .get('/productcolor', { cancelToken })
+      .get('/productColor', { cancelToken })
       .then((response) => {
         // handle success
         setColors(response.data);
@@ -570,6 +572,9 @@ export default connect(mapStateToProps)((props) => {
           setClientBlock('');
           setClientFloor('');
           setClientUnit('');
+          const now = new Date();
+          now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+          setDeliveryDate(now.toISOString().split('.')[0]);
           setRemark('');
           setQTY(1);
           setCreateOpen(true);
@@ -955,6 +960,7 @@ export default connect(mapStateToProps)((props) => {
                   setValue: setDeliveryDate,
                   type: 'datetime-local',
                   width: '100%',
+                  InputLabelProps: { shrink: true },
                 },
                 {
                   label: 'Remark',
@@ -963,35 +969,31 @@ export default connect(mapStateToProps)((props) => {
                   type: 'text',
                   width: '100%',
                 },
-              ].map((item, index) =>
-                item.label === 'Phone' ? (
+              ].map(({ setValue, width, ...restProps }, index) =>
+                restProps.label === 'Phone' ? (
                   <MuiPhoneNumber
                     key={index}
                     defaultCountry={'hk'}
-                    value={item.value}
                     onChange={(value) => {
-                      item.setValue(value);
+                      setValue(value);
                     }}
-                    label={item.label}
-                    sx={{ flexBasis: item.width, minWidth: item.width }}
+                    sx={{ flexBasis: width, minWidth: width }}
                     variant="outlined"
                     margin="dense"
                     size="small"
+                    {...restProps}
                   />
                 ) : (
                   <TextField
                     key={index}
                     margin="dense"
-                    label={item.label}
                     variant="outlined"
                     size="small"
-                    value={item.value}
-                    type={item.type}
                     onChange={(e) => {
-                      item.setValue(e.target.value);
+                      setValue(e.target.value);
                     }}
-                    sx={{ flexBasis: item.width, minWidth: item.width }}
-                    placeholder=""
+                    sx={{ flexBasis: width, minWidth: width }}
+                    {...restProps}
                   />
                 )
               )}
@@ -1047,63 +1049,104 @@ export default connect(mapStateToProps)((props) => {
               </Typography>
               {[
                 {
-                  value: brand,
-                  values: brands,
-                  setValue: setBrand,
-                  label: 'Brand',
+                  label: 'Name',
+                  value: clientName,
+                  setValue: setClientName,
+                  type: 'text',
+                  width: '100%',
+                },
+                {
+                  label: 'Phone',
+                  value: clientPhone,
+                  setValue: setClientPhone,
+                  type: 'text',
                   width: '48%',
                 },
                 {
-                  value: model,
-                  values: models,
-                  setValue: setModel,
-                  label: 'Model',
+                  label: 'Email',
+                  value: clientEmail,
+                  setValue: setClientEmail,
+                  type: 'email',
                   width: '48%',
                 },
                 {
-                  value: frameColor,
-                  values: colors,
-                  setValue: setFrameColor,
-                  label: 'FrameColor',
+                  label: 'District',
+                  value: clientDistrict,
+                  setValue: setClientDistrict,
+                  type: 'text',
+                  width: '55%',
+                },
+                {
+                  label: 'Street',
+                  value: clientStreet,
+                  setValue: setClientStreet,
+                  type: 'text',
+                  width: '40%',
+                },
+                {
+                  label: 'Block',
+                  value: clientBlock,
+                  setValue: setClientBlock,
+                  type: 'text',
                   width: '30%',
                 },
                 {
-                  value: backColor,
-                  values: colors,
-                  setValue: setBackColor,
-                  label: 'BackColor',
+                  label: 'Floor',
+                  value: clientFloor,
+                  setValue: setClientFloor,
+                  type: 'text',
                   width: '30%',
                 },
                 {
-                  value: seatColor,
-                  values: colors,
-                  setValue: setSeatColor,
-                  label: 'SeatColor',
+                  label: 'Unit',
+                  value: clientUnit,
+                  setValue: setClientUnit,
+                  type: 'text',
                   width: '30%',
                 },
-              ].map(({ value, values, setValue, label, width }, index) => (
-                <Autocomplete
-                  key={index}
-                  disablePortal
-                  value={value ? value : null}
-                  onChange={(event, newValue) => {
-                    event.preventDefault();
-                    setValue(newValue);
-                  }}
-                  options={values}
-                  getOptionLabel={(option) => option.name}
-                  sx={{ flexBasis: width, minWidth: width }}
-                  renderInput={(params) => (
-                    <TextField
-                      margin="dense"
-                      {...params}
-                      label={label}
-                      variant="outlined"
-                      size="small"
-                    />
-                  )}
-                />
-              ))}
+                {
+                  label: 'Delivery Date',
+                  value: deliveryDate,
+                  setValue: setDeliveryDate,
+                  type: 'datetime-local',
+                  width: '100%',
+                  InputLabelProps: { shrink: true },
+                },
+                {
+                  label: 'Remark',
+                  value: remark,
+                  setValue: setRemark,
+                  type: 'text',
+                  width: '100%',
+                },
+              ].map(({ setValue, width, ...restProps }, index) =>
+                restProps.label === 'Phone' ? (
+                  <MuiPhoneNumber
+                    key={index}
+                    defaultCountry={'hk'}
+                    onChange={(value) => {
+                      setValue(value);
+                    }}
+                    sx={{ flexBasis: width, minWidth: width }}
+                    variant="outlined"
+                    margin="dense"
+                    size="small"
+                    {...restProps}
+                  />
+                ) : (
+                  <TextField
+                    key={index}
+                    margin="dense"
+                    variant="outlined"
+                    size="small"
+                    onChange={(e) => {
+                      setValue(e.target.value);
+                    }}
+                    sx={{ flexBasis: width, minWidth: width }}
+                    {...restProps}
+                  />
+                )
+              )}
               <Autocomplete
                 disablePortal
                 freeSolo

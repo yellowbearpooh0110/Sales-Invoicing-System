@@ -163,7 +163,7 @@ const Stock = connect(mapStateToProps)((props) => {
       }).then((result) => {
         if (result.isConfirmed) {
           axios
-            .delete(`/chairstock/${stocks[index].id}`)
+            .delete(`/chairStock/${stocks[index].id}`)
             .then((response) => {
               // handle success
               getStocks();
@@ -198,7 +198,7 @@ const Stock = connect(mapStateToProps)((props) => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete('/chairstock', { data: { ids: selected } })
+          .delete('/chairStock', { data: { ids: selected } })
           .then((response) => {
             // handle success
             getStocks();
@@ -223,7 +223,7 @@ const Stock = connect(mapStateToProps)((props) => {
   const handleSave = (event) => {
     event.preventDefault();
     axios
-      .put(`/chairstock/${id}`, {
+      .put(`/chairStock/${id}`, {
         chairBrandId: brand ? brand.id : null,
         chairModelId: model ? model.id : null,
         frameColorId: frameColor ? frameColor.id : null,
@@ -260,7 +260,7 @@ const Stock = connect(mapStateToProps)((props) => {
   const handleCreate = (event) => {
     event.preventDefault();
     axios
-      .post(`/chairstock/create`, {
+      .post(`/chairStock/create`, {
         chairBrandId: brand ? brand.id : null,
         chairModelId: model ? model.id : null,
         frameColorId: frameColor ? frameColor.id : null,
@@ -296,7 +296,7 @@ const Stock = connect(mapStateToProps)((props) => {
 
   const getBrands = (cancelToken) => {
     axios
-      .get('/chairbrand', { cancelToken })
+      .get('/chairBrand', { cancelToken })
       .then((response) => {
         // handle success
         setBrands(response.data);
@@ -312,7 +312,7 @@ const Stock = connect(mapStateToProps)((props) => {
 
   const getModels = (cancelToken) => {
     axios
-      .get('/chairmodel', { cancelToken })
+      .get('/chairModel', { cancelToken })
       .then((response) => {
         // handle success
         setModels(response.data);
@@ -328,7 +328,7 @@ const Stock = connect(mapStateToProps)((props) => {
 
   const getColors = (cancelToken) => {
     axios
-      .get('/productcolor', { cancelToken })
+      .get('/productColor', { cancelToken })
       .then((response) => {
         // handle success
         setColors(response.data);
@@ -360,7 +360,7 @@ const Stock = connect(mapStateToProps)((props) => {
 
   const getStocks = (cancelToken) => {
     axios
-      .get('/chairstock', { cancelToken })
+      .get('/chairStock', { cancelToken })
       .then((response) => {
         // handle success
         setStocks(response.data);

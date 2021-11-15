@@ -196,7 +196,7 @@ const Stock = connect(mapStateToProps)((props) => {
       }).then((result) => {
         if (result.isConfirmed) {
           axios
-            .delete(`/deskstock/${stocks[index].id}`)
+            .delete(`/deskStock/${stocks[index].id}`)
             .then((response) => {
               // handle success
               getStocks();
@@ -231,7 +231,7 @@ const Stock = connect(mapStateToProps)((props) => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete('/deskstock', { data: { ids: selected } })
+          .delete('/deskStock', { data: { ids: selected } })
           .then((response) => {
             // handle success
             getStocks();
@@ -256,7 +256,7 @@ const Stock = connect(mapStateToProps)((props) => {
   const handleSave = (event) => {
     event.preventDefault();
     axios
-      .put(`/deskstock/${id}`, {
+      .put(`/deskStock/${id}`, {
         deskModelId: model ? model.id : null,
         colorId: color ? color.id : null,
         armSize,
@@ -297,7 +297,7 @@ const Stock = connect(mapStateToProps)((props) => {
   const handleCreate = (event) => {
     event.preventDefault();
     axios
-      .post(`/deskstock/create`, {
+      .post(`/deskStock/create`, {
         deskModelId: model ? model.id : null,
         colorId: color ? color.id : null,
         armSize,
@@ -337,7 +337,7 @@ const Stock = connect(mapStateToProps)((props) => {
 
   const getModels = (cancelToken) => {
     axios
-      .get('/deskmodel', { cancelToken })
+      .get('/deskModel', { cancelToken })
       .then((response) => {
         // handle success
         setModels(response.data);
@@ -353,7 +353,7 @@ const Stock = connect(mapStateToProps)((props) => {
 
   const getColors = (cancelToken) => {
     axios
-      .get('/productcolor', { cancelToken })
+      .get('/productColor', { cancelToken })
       .then((response) => {
         // handle success
         setColors(response.data);
@@ -385,7 +385,7 @@ const Stock = connect(mapStateToProps)((props) => {
 
   const getStocks = (cancelToken) => {
     axios
-      .get('/deskstock', { cancelToken })
+      .get('/deskStock', { cancelToken })
       .then((response) => {
         // handle success
         setStocks(response.data);

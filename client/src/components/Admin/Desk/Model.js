@@ -65,7 +65,7 @@ export default connect(mapStateToProps)((props) => {
       }).then((result) => {
         if (result.isConfirmed) {
           axios
-            .delete(`/deskmodel/${models[index].id}`)
+            .delete(`/deskModel/${models[index].id}`)
             .then((response) => {
               // handle success
               getModels();
@@ -100,7 +100,7 @@ export default connect(mapStateToProps)((props) => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete('/deskmodel', { data: { ids: selected } })
+          .delete('/deskModel', { data: { ids: selected } })
           .then((response) => {
             // handle success
             getModels();
@@ -125,7 +125,7 @@ export default connect(mapStateToProps)((props) => {
   const handleSave = (event) => {
     event.preventDefault();
     axios
-      .put(`/deskmodel/${id}`, { name })
+      .put(`/deskModel/${id}`, { name })
       .then((response) => {
         // handle success
         setEditOpen(false);
@@ -152,7 +152,7 @@ export default connect(mapStateToProps)((props) => {
   const handleCreate = (event) => {
     event.preventDefault();
     axios
-      .post(`/deskmodel/create`, { name })
+      .post(`/deskModel/create`, { name })
       .then((response) => {
         // handle success
         setCreateOpen(false);
@@ -178,7 +178,7 @@ export default connect(mapStateToProps)((props) => {
 
   const getModels = (cancelToken) => {
     axios
-      .get('/deskmodel', { cancelToken })
+      .get('/deskModel', { cancelToken })
       .then((response) => {
         // handle success
         setModels(response.data);
