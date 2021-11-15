@@ -43,6 +43,21 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: '',
     },
+    signURL: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
+    },
+    purchased: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    finished: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     QTY: {
       type: DataTypes.INTEGER,
       allowNull: false,

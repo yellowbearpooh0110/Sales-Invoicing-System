@@ -10,8 +10,8 @@ import Standard from 'components/Standard';
 import { AdminRoute, GuestRoute, PrivateRoute } from 'components/Common/Routes';
 import store from 'store';
 
-// axios.defaults.baseURL = 'http://localhost:4000/api';
-axios.defaults.baseURL = 'http://97.74.83.170/api';
+axios.defaults.baseURL = 'http://localhost:4000/api';
+// axios.defaults.baseURL = 'http://97.74.83.170/api';
 
 if (store.getState().auth.isLoggedIn)
   axios.defaults.headers.common['Authorization'] = `Bearer ${

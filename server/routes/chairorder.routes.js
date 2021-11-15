@@ -11,8 +11,9 @@ router.post('/create', authorize(), createSchema, create);
 router.get('/', admin(), getAll);
 router.get('/current', authorize(), getCurrent);
 router.get('/:id', authorize(), getById);
-router.get('/chairinvoice/:token', getByToken);
+// router.get('/chairinvoice/:token', getByToken);
 router.put('/:id', admin(), createSchema, update);
+router.post('/sign', authorize(), signSchema, signDelivery);
 router.delete('/:id', admin(), _delete);
 router.delete('/', admin(), bulkDeleteSchema, _bulkDelete);
 
@@ -49,6 +50,14 @@ function bulkDeleteSchema(req, res, next) {
   validateRequest(req, next, schema);
 }
 
+function signSchema(req, res, next) {
+  const schema = Joi.object({
+    id: Joi.string().guid().required(),
+    signature: Joi.string().base64().required(),
+  });
+  validateRequest(req, next, schema);
+}
+
 function create(req, res, next) {
   chairorderController
     .create({ ...req.body, salesmanId: req.user.id })
@@ -79,17 +88,24 @@ function getById(req, res, next) {
     .catch(next);
 }
 
-function getByToken(req, res, next) {
-  req.params.token;
-  chairorderController
-    .getById(req.params.id)
-    .then((chairorder) => res.json(chairorder))
-    .catch(next);
-}
+// function getByToken(req, res, next) {
+//   req.params.token;
+//   chairorderController
+//     .getById(req.params.id)
+//     .then((chairorder) => res.json(chairorder))
+//     .catch(next);
+// }
 
 function update(req, res, next) {
   chairorderController
     .update(req.params.id, req.body)
+    .then((chairorder) => res.json(chairorder))
+    .catch(next);
+}
+
+function signDelivery(req, res, next) {
+  chairorderController
+    .signDelivery(req.body.id, req.body.signature)
     .then((chairorder) => res.json(chairorder))
     .catch(next);
 }

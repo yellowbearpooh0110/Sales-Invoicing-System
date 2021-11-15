@@ -111,6 +111,7 @@ export default connect(mapStateToProps)((props) => {
   const [clientBlock, setClientBlock] = useState('');
   const [clientFloor, setClientFloor] = useState('');
   const [clientUnit, setClientUnit] = useState('');
+  const [deliveryDate, setDeliveryDate] = useState(new Date());
   const [remark, setRemark] = useState('');
 
   const [brand, setBrand] = useState();
@@ -949,6 +950,13 @@ export default connect(mapStateToProps)((props) => {
                   width: '30%',
                 },
                 {
+                  label: 'Delivery Date',
+                  value: deliveryDate,
+                  setValue: setDeliveryDate,
+                  type: 'datetime-local',
+                  width: '100%',
+                },
+                {
                   label: 'Remark',
                   value: remark,
                   setValue: setRemark,
@@ -983,6 +991,7 @@ export default connect(mapStateToProps)((props) => {
                       item.setValue(e.target.value);
                     }}
                     sx={{ flexBasis: item.width, minWidth: item.width }}
+                    placeholder=""
                   />
                 )
               )}

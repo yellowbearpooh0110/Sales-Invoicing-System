@@ -17,12 +17,6 @@ import DataGrid from 'components/Common/DataGrid';
 
 const columns = [
   {
-    id: 'id',
-    numeric: false,
-    disablePadding: false,
-    label: 'Id',
-  },
-  {
     id: 'name',
     numeric: false,
     disablePadding: false,

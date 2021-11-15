@@ -1,8 +1,11 @@
+const fs = require('fs');
+
 module.exports = {
   getAll,
   getById,
   create,
   update,
+  signDelivery,
   delete: _delete,
   bulkDelete: _bulkDelete,
 };
@@ -121,6 +124,17 @@ async function update(id, params) {
     chairStock = await db.ChairStock.create({ QTY: 0, ...stockParams });
   restParams.stockId = chairStock.id;
   Object.assign(chairOrder, restParams);
+  await chairOrder.save();
+  return chairOrder.get();
+}
+
+async function signDelivery(id, signature) {
+  const chairOrder = await getChairOrder(id);
+  if (chairOrder.finished) throw 'This Order is already finished!';
+  const dirpath = 'server/uploads/signature';
+  const filepath = `${dirpath}/${Date.now()}.png`;
+  fs.writeFileSync(filepath, signature, 'base64');
+  Object.assign(chairOrder, { signURL: filepath, finished: true });
   await chairOrder.save();
   return chairOrder.get();
 }
