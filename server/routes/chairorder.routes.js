@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Joi = require('joi');
+const Sequelize = require('sequelize');
 
 const admin = require('server/middleware/admin');
 const authorize = require('server/middleware/authorize');
@@ -54,7 +55,9 @@ function bulkDeleteSchema(req, res, next) {
 function signSchema(req, res, next) {
   const schema = Joi.object({
     id: Joi.string().guid().required(),
-    signature: Joi.string().base64().required(),
+    signature: Joi.string()
+      // .base64({ paddingRequired: false, urlSafe: true })
+      .required(),
   });
   validateRequest(req, next, schema);
 }
@@ -70,18 +73,76 @@ function create(req, res, next) {
 
 function getAll(req, res, next) {
   chairorderController
-    .getAll(where)
-    .then((chairorders) => res.json(chairorders))
+    .getAll()
+    .then((chairorders) =>
+      res.json(
+        chairorders.map((item) => {
+          item.invoiceNum =
+            'C_' + item.salesman.prefix + ('000' + item.invoiceNum).substr(-3);
+          return item;
+        })
+      )
+    )
     .catch(next);
 }
 
 function getDelivery(req, res, next) {
-  const deliveryDate = new Date(req.params.deliveryDate);
+  console.log(req.params);
+  const deliveryDate = new Date(
+    req.query.deliveryDate.replace(/(\d+[/])(\d+[/])/, '$2$1')
+  );
+  const nextDate = new Date(deliveryDate.getTime() + 24 * 60 * 60 * 1000);
 
-  const where = req.params.deliveryDate;
+  const where = {
+    deliveryDate: {
+      [Sequelize.Op.gte]: deliveryDate,
+      [Sequelize.Op.lt]: nextDate,
+    },
+  };
   chairorderController
     .getAll(where)
-    .then((chairorders) => res.json(chairorders))
+    .then((chairorders) =>
+      res.json(
+        chairorders.map(
+          ({
+            id,
+            invoiceNum,
+            clientName,
+            clientPhone,
+            clientEmail,
+            clientDistrict,
+            clientStreet,
+            clientBlock,
+            clientFloor,
+            clientUnit,
+            clientRemark,
+            purchased,
+            finished,
+            QTY,
+            stock,
+            salesman,
+          }) => ({
+            id,
+            clientName,
+            clientPhone,
+            clientEmail,
+            clientDistrict,
+            clientStreet,
+            clientBlock,
+            clientFloor,
+            clientUnit,
+            clientRemark,
+            purchased,
+            finished,
+            QTY,
+            invoiceNum:
+              'C_' + salesman.prefix + ('000' + invoiceNum).substr(-3),
+            model: stock.chairModel ? stock.chairModel.name : null,
+            frameColor: stock.frameColor ? stock.frameColor.name : null,
+          })
+        )
+      )
+    )
     .catch(next);
 }
 

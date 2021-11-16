@@ -50,10 +50,10 @@ const columns = [
     label: 'Client Address',
   },
   {
-    id: 'salesmanEmail',
+deskd    id: 'salesmanName',
     numeric: false,
     disablePadding: false,
-    label: 'Salesman Email',
+    label: 'Salesman Name',
   },
   {
     id: 'QTY',
@@ -553,7 +553,6 @@ export default connect(mapStateToProps)((props) => {
           (
             {
               id,
-              invoiceNum,
               clientDistrict,
               clientStreet,
               clientBlock,
@@ -565,8 +564,10 @@ export default connect(mapStateToProps)((props) => {
             index
           ) => ({
             id: index,
-            invoiceNum: 'D_' + invoiceNum,
-            salesmanEmail: salesman.email,
+            salesmanName: (salesman.firstName || '').concat(
+              ' ',
+              salesman.lastName || ''
+            ),
             clientAddress: [
               clientDistrict,
               clientStreet,

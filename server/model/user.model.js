@@ -13,9 +13,11 @@ function model(sequelize) {
     email: { type: DataTypes.STRING, allowNull: false, unique: true },
     firstName: { type: DataTypes.STRING, allowNull: false },
     lastName: { type: DataTypes.STRING, allowNull: false },
-    avatarUrl: { type: DataTypes.STRING, allowNull: true },
+    avatarURL: { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
     password: { type: DataTypes.STRING, allowNull: false },
-    type: { type: DataTypes.STRING, allowNull: true },
+    type: { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
+    prefix: { type: DataTypes.CHAR(2), allowNull: false, defaultValue: '' },
+    active: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
   };
 
   const options = {

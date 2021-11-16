@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Joi = require('joi');
+const Sequelize = require('sequelize');
 
 const admin = require('server/middleware/admin');
 const authorize = require('server/middleware/authorize');
@@ -9,9 +10,11 @@ const deskorderController = require('server/controller/deskorder.controller');
 
 router.post('/create', authorize(), createSchema, create);
 router.get('/', admin(), getAll);
+router.get('/getDelivery', authorize(), getDelivery);
 router.get('/current', authorize(), getCurrent);
 router.get('/:id', authorize(), getById);
 router.put('/:id', admin(), createSchema, update);
+router.post('/sign', authorize(), signSchema, signDelivery);
 router.delete('/:id', admin(), _delete);
 router.delete('/', admin(), bulkDeleteSchema, _bulkDelete);
 
@@ -52,6 +55,16 @@ function bulkDeleteSchema(req, res, next) {
   validateRequest(req, next, schema);
 }
 
+function signSchema(req, res, next) {
+  const schema = Joi.object({
+    id: Joi.string().guid().required(),
+    signature: Joi.string()
+      // .base64({ paddingRequired: false, urlSafe: true })
+      .required(),
+  });
+  validateRequest(req, next, schema);
+}
+
 function create(req, res, next) {
   deskorderController
     .create({ ...req.body, salesmanId: req.user.id })
@@ -64,7 +77,78 @@ function create(req, res, next) {
 function getAll(req, res, next) {
   deskorderController
     .getAll()
-    .then((deskorders) => res.json(deskorders))
+    .then((deskorders) =>
+      res.json(
+        deskorders.map((item) => {
+          item.invoiceNum =
+            'D_' + item.salesman.prefix + ('000' + item.invoiceNum).substr(-3);
+          return item;
+        })
+      )
+    )
+    .catch(next);
+}
+
+function getDelivery(req, res, next) {
+  console.log(req.params);
+  const deliveryDate = new Date(
+    req.query.deliveryDate.replace(/(\d+[/])(\d+[/])/, '$2$1')
+  );
+  const nextDate = new Date(deliveryDate.getTime() + 24 * 60 * 60 * 1000);
+
+  const where = {
+    deliveryDate: {
+      [Sequelize.Op.gte]: deliveryDate,
+      [Sequelize.Op.lt]: nextDate,
+    },
+  };
+  deskorderController
+    .getAll(where)
+    .then((deskorders) =>
+      res.json(
+        deskorders.map(
+          (
+            {
+              id,
+              invoiceNum,
+              clientName,
+              clientPhone,
+              clientEmail,
+              clientDistrict,
+              clientStreet,
+              clientBlock,
+              clientFloor,
+              clientUnit,
+              clientRemark,
+              purchased,
+              finished,
+              QTY,
+              stock,
+              salesman,
+            },
+            index
+          ) => ({
+            id,
+            clientName,
+            clientPhone,
+            clientEmail,
+            clientDistrict,
+            clientStreet,
+            clientBlock,
+            clientFloor,
+            clientUnit,
+            clientRemark,
+            purchased,
+            finished,
+            QTY,
+            invoiceNum:
+              'D_' + salesman.prefix + ('000' + invoiceNum).substr(-3),
+            model: stock.deskModel ? stock.deskModel.name : null,
+            frameColor: stock.color ? stock.color.name : null,
+          })
+        )
+      )
+    )
     .catch(next);
 }
 
@@ -86,6 +170,20 @@ function update(req, res, next) {
   deskorderController
     .update(req.params.id, req.body)
     .then((deskorder) => res.json(deskorder))
+    .catch(next);
+}
+
+function signDelivery(req, res, next) {
+  const host = req.get('host');
+  const protocol = req.protocol;
+  deskorderController
+    .signDelivery(req.body.id, req.body.signature)
+    .then((chairorder) => {
+      res.json({
+        success: true,
+        url: `${protocol}://${host}/${chairorder.signURL}`,
+      });
+    })
     .catch(next);
 }
 

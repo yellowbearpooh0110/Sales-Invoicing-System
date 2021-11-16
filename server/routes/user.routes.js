@@ -43,10 +43,11 @@ function authenticate(req, res, next) {
 function registerSchema(req, res, next) {
   const schema = Joi.object({
     firstName: Joi.string().required(),
+    prefix: Joi.string().max(2).allow(''),
     lastName: Joi.string().required(),
     email: Joi.string().required(),
     password: Joi.string().min(6).required(),
-    selfieUrl: Joi.string(),
+    avatarURL: Joi.string(),
   });
   validateRequest(req, next, schema);
 }

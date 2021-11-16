@@ -11,7 +11,11 @@ async function getAll(where) {
   return await db.DeskOrder.findAll({
     where,
     include: [
-      { model: db.User, as: 'salesman', attributes: ['email'] },
+      {
+        model: db.User,
+        as: 'salesman',
+        attributes: ['firstName', 'lastName', 'prefix'],
+      },
       {
         model: db.DeskStock,
         as: 'stock',
@@ -128,6 +132,17 @@ async function update(id, params) {
     deskStock = await db.DeskStock.create({ QTY: 0, ...stockParams });
   restParams.stockId = deskStock.id;
   Object.assign(deskOrder, restParams);
+  await deskOrder.save();
+  return deskOrder.get();
+}
+
+async function signDelivery(id, signature) {
+  const deskOrder = await getDeskOrder(id);
+  if (deskOrder.finished) throw 'This Order is already finished!';
+  const dirpath = 'uploads/signature';
+  const filepath = `${dirpath}/${Date.now()}.png`;
+  fs.writeFileSync(`server/${filepath}`, signature, 'base64');
+  Object.assign(deskOrder, { signURL: filepath, finished: true });
   await deskOrder.save();
   return deskOrder.get();
 }

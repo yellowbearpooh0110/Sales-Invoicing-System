@@ -61,7 +61,7 @@ const columns = [
     label: 'Salesman Name',
   },
   {
-    id: 'createdAt',
+    id: 'orderDate',
     numeric: false,
     disablePadding: false,
     label: 'Order Date',
@@ -284,7 +284,12 @@ export default connect(mapStateToProps)((props) => {
       setClientBlock(orders[index].clientBlock);
       setClientFloor(orders[index].clientFloor);
       setClientUnit(orders[index].clientUnit);
-      setDeliveryDate(orders[index].deliveryDate);
+      const deliveryDate = new Date(orders[index].deliveryDate);
+      deliveryDate.setMinutes(
+        deliveryDate.getMinutes() - deliveryDate.getTimezoneOffset()
+      );
+      setDeliveryDate(deliveryDate.toISOString().split('T')[0]);
+      console.log(orders[index].deliveryDate);
       setRemark(orders[index].clientRemark);
       setQTY(orders[index].QTY);
       setEditOpen(true);
@@ -574,7 +579,7 @@ export default connect(mapStateToProps)((props) => {
           setClientUnit('');
           const now = new Date();
           now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-          setDeliveryDate(now.toISOString().split('.')[0]);
+          setDeliveryDate(now.toISOString().split('T')[0]);
           setRemark('');
           setQTY(1);
           setCreateOpen(true);
@@ -589,20 +594,29 @@ export default connect(mapStateToProps)((props) => {
             (
               {
                 id,
-                invoiceNum,
                 clientDistrict,
                 clientStreet,
                 clientBlock,
                 clientFloor,
                 clientUnit,
                 salesman,
+                createdAt,
                 ...restProps
               },
               index
             ) => ({
               id: index,
-              invoiceNum: 'C_' + invoiceNum,
-              salesmanEmail: salesman.name,
+              salesmanName: (salesman.firstName || '').concat(
+                ' ',
+                salesman.lastName || ''
+              ),
+              orderDate: (() => {
+                const createdTime = new Date(createdAt);
+                createdTime.setMinutes(
+                  createdTime.getMinutes() - createdTime.getTimezoneOffset()
+                );
+                return createdTime.toISOString().split('T')[0];
+              })(),
               clientAddress: [
                 clientDistrict,
                 clientStreet,
@@ -958,7 +972,7 @@ export default connect(mapStateToProps)((props) => {
                   label: 'Delivery Date',
                   value: deliveryDate,
                   setValue: setDeliveryDate,
-                  type: 'datetime-local',
+                  type: 'date',
                   width: '100%',
                   InputLabelProps: { shrink: true },
                 },
@@ -1049,104 +1063,63 @@ export default connect(mapStateToProps)((props) => {
               </Typography>
               {[
                 {
-                  label: 'Name',
-                  value: clientName,
-                  setValue: setClientName,
-                  type: 'text',
-                  width: '100%',
-                },
-                {
-                  label: 'Phone',
-                  value: clientPhone,
-                  setValue: setClientPhone,
-                  type: 'text',
+                  value: brand,
+                  values: brands,
+                  setValue: setBrand,
+                  label: 'Brand',
                   width: '48%',
                 },
                 {
-                  label: 'Email',
-                  value: clientEmail,
-                  setValue: setClientEmail,
-                  type: 'email',
+                  value: model,
+                  values: models,
+                  setValue: setModel,
+                  label: 'Model',
                   width: '48%',
                 },
                 {
-                  label: 'District',
-                  value: clientDistrict,
-                  setValue: setClientDistrict,
-                  type: 'text',
-                  width: '55%',
-                },
-                {
-                  label: 'Street',
-                  value: clientStreet,
-                  setValue: setClientStreet,
-                  type: 'text',
-                  width: '40%',
-                },
-                {
-                  label: 'Block',
-                  value: clientBlock,
-                  setValue: setClientBlock,
-                  type: 'text',
+                  value: frameColor,
+                  values: colors,
+                  setValue: setFrameColor,
+                  label: 'FrameColor',
                   width: '30%',
                 },
                 {
-                  label: 'Floor',
-                  value: clientFloor,
-                  setValue: setClientFloor,
-                  type: 'text',
+                  value: backColor,
+                  values: colors,
+                  setValue: setBackColor,
+                  label: 'BackColor',
                   width: '30%',
                 },
                 {
-                  label: 'Unit',
-                  value: clientUnit,
-                  setValue: setClientUnit,
-                  type: 'text',
+                  value: seatColor,
+                  values: colors,
+                  setValue: setSeatColor,
+                  label: 'SeatColor',
                   width: '30%',
                 },
-                {
-                  label: 'Delivery Date',
-                  value: deliveryDate,
-                  setValue: setDeliveryDate,
-                  type: 'datetime-local',
-                  width: '100%',
-                  InputLabelProps: { shrink: true },
-                },
-                {
-                  label: 'Remark',
-                  value: remark,
-                  setValue: setRemark,
-                  type: 'text',
-                  width: '100%',
-                },
-              ].map(({ setValue, width, ...restProps }, index) =>
-                restProps.label === 'Phone' ? (
-                  <MuiPhoneNumber
-                    key={index}
-                    defaultCountry={'hk'}
-                    onChange={(value) => {
-                      setValue(value);
-                    }}
-                    sx={{ flexBasis: width, minWidth: width }}
-                    variant="outlined"
-                    margin="dense"
-                    size="small"
-                    {...restProps}
-                  />
-                ) : (
-                  <TextField
-                    key={index}
-                    margin="dense"
-                    variant="outlined"
-                    size="small"
-                    onChange={(e) => {
-                      setValue(e.target.value);
-                    }}
-                    sx={{ flexBasis: width, minWidth: width }}
-                    {...restProps}
-                  />
-                )
-              )}
+              ].map(({ value, values, setValue, label, width }, index) => (
+                <Autocomplete
+                  key={index}
+                  disablePortal
+                  value={value ? value : null}
+                  onChange={(event, newValue) => {
+                    event.preventDefault();
+                    setValue(newValue);
+                  }}
+                  options={values}
+                  getOptionLabel={(option) => option.name}
+                  sx={{ flexBasis: width, minWidth: width }}
+                  renderInput={(params) => (
+                    <TextField
+                      margin="dense"
+                      {...params}
+                      label={label}
+                      variant="outlined"
+                      size="small"
+                    />
+                  )}
+                />
+              ))}
               <Autocomplete
                 disablePortal
                 freeSolo
@@ -1268,48 +1241,53 @@ export default connect(mapStateToProps)((props) => {
                   width: '30%',
                 },
                 {
+                  label: 'Delivery Date',
+                  value: deliveryDate,
+                  setValue: setDeliveryDate,
+                  type: 'date',
+                  width: '100%',
+                  InputLabelProps: { shrink: true },
+                },
+                {
                   label: 'Remark',
                   value: remark,
                   setValue: setRemark,
                   type: 'text',
                   width: '100%',
                 },
-              ].map((item, index) =>
-                item.label === 'Phone' ? (
+              ].map(({ setValue, width, ...restProps }, index) =>
+                restProps.label === 'Phone' ? (
                   <MuiPhoneNumber
                     key={index}
                     defaultCountry={'hk'}
-                    value={item.value}
                     onChange={(value) => {
-                      item.setValue(value);
+                      setValue(value);
                     }}
-                    label={item.label}
-                    sx={{ flexBasis: item.width, minWidth: item.width }}
+                    sx={{ flexBasis: width, minWidth: width }}
                     variant="outlined"
                     margin="dense"
                     size="small"
+                    {...restProps}
                   />
                 ) : (
                   <TextField
                     key={index}
-                    label={item.label}
                     margin="dense"
                     variant="outlined"
                     size="small"
-                    value={item.value}
-                    type={item.type}
                     onChange={(e) => {
-                      item.setValue(e.target.value);
+                      setValue(e.target.value);
                     }}
-                    sx={{ flexBasis: item.width, minWidth: item.width }}
+                    sx={{ flexBasis: width, minWidth: width }}
+                    {...restProps}
                   />
                 )
               )}
             </Paper>
             <TextField
+              margin="dense"
               label="QTY"
               fullWidth
-              margin="dense"
               variant="outlined"
               size="small"
               value={QTY}
