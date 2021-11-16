@@ -12,7 +12,8 @@ import AppHeader from 'components/Common/AppHeader';
 import { CollapsedSidebar, FixedSidebar } from 'components/Common/Sidebar';
 import { logout } from 'services/auth.service';
 
-import Order from './Order';
+import { ChairOrder } from './Chair';
+import { DeskOrder } from './Desk';
 
 function mapStateToProps(state) {
   const { auth } = state;
@@ -23,10 +24,16 @@ const drawerWidth = 240;
 const drawerHeight = 50;
 
 const menuLists = [
-  { content: [{ path: '/user', icon: <HomeIcon />, label: 'Home' }] },
   {
+    category: 'Chair',
     content: [
-      { path: '/user/order', icon: <BookOnlineIcon />, label: 'Order' },
+      { path: '/user/chair/order', icon: <BookOnlineIcon />, label: 'Order' },
+    ],
+  },
+  {
+    category: 'Desk',
+    content: [
+      { path: '/user/desk/order', icon: <BookOnlineIcon />, label: 'Order' },
     ],
   },
 ];
@@ -67,6 +74,7 @@ const Standard = (props) => {
       <AppHeader
         drawerHeight={drawerHeight}
         handleDrawerToggle={handleDrawerOpen}
+        title="Salesman"
       />
       <Box
         flexBasis={`calc(100% - ${drawerHeight}px)`}
@@ -95,9 +103,9 @@ const Standard = (props) => {
             width: { sm: `calc(100% - ${drawerWidth}px)` },
           }}
         >
-          <Toolbar />
           <Switch>
-            <Route path={`${path}/order`} component={Order} />
+            <Route path={`${path}/chair/order`} component={ChairOrder} />
+            <Route path={`${path}/desk/order`} component={DeskOrder} />
           </Switch>
         </Box>
       </Box>

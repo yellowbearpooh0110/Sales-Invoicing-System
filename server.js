@@ -15,9 +15,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
 
-app.use(express.static(path.join(__dirname, 'client', 'build')));
-app.use('/uploads', express.static(path.join(__dirname, 'server', 'uploads')));
-
 // api routes
 router.use('/chairBrand', require('server/routes/chairbrand.routes'));
 router.use('/chairModel', require('server/routes/chairmodel.routes'));
@@ -31,6 +28,12 @@ router.use('/user', require('server/routes/user.routes'));
 router.use('/email', require('server/routes/email.routes'));
 router.use('/whatsapp', require('server/routes/whatsapp.routes'));
 app.use('/api', router);
+
+app.use('/uploads', express.static(path.join(__dirname, 'server', 'uploads')));
+app.use(express.static(path.join(__dirname, 'client', 'build')));
+app.use('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+});
 
 // global error handler
 app.use(errorHandler);

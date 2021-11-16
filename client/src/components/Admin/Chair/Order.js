@@ -284,13 +284,12 @@ export default connect(mapStateToProps)((props) => {
       setClientBlock(orders[index].clientBlock);
       setClientFloor(orders[index].clientFloor);
       setClientUnit(orders[index].clientUnit);
+      setRemark(orders[index].clientRemark);
       const deliveryDate = new Date(orders[index].deliveryDate);
       deliveryDate.setMinutes(
         deliveryDate.getMinutes() - deliveryDate.getTimezoneOffset()
       );
       setDeliveryDate(deliveryDate.toISOString().split('T')[0]);
-      console.log(orders[index].deliveryDate);
-      setRemark(orders[index].clientRemark);
       setQTY(orders[index].QTY);
       setEditOpen(true);
     }
@@ -368,7 +367,6 @@ export default connect(mapStateToProps)((props) => {
   };
 
   const handleSave = (event) => {
-    console.log(deliveryDate);
     event.preventDefault();
     axios
       .put(`/chairOrder/${id}`, {
@@ -388,6 +386,7 @@ export default connect(mapStateToProps)((props) => {
         clientBlock,
         clientFloor,
         clientUnit,
+        deliveryDate,
         remark,
         QTY,
       })
@@ -434,6 +433,7 @@ export default connect(mapStateToProps)((props) => {
         clientBlock,
         clientFloor,
         clientUnit,
+        deliveryDate,
         remark,
         QTY,
       })
@@ -548,11 +548,6 @@ export default connect(mapStateToProps)((props) => {
 
   return (
     <>
-      {/* <QRCode
-        value="1@WqKray91MFh6WpBbt+fmkZ10s4kUgYijnvOS69tvn9i6dLFq5uF3dAUadAfV0shEthkeh16Fa1leJA==,rElul5x1Om6Yg+PKk41cu/AZlOsfEDrmPsAvw9YGkk4=,zN1+AM3t4qUKXUIV4b/YSg=="
-        size={256}
-        level="H"
-      ></QRCode> */}
       <Button
         variant="outlined"
         startIcon={<AddIcon />}

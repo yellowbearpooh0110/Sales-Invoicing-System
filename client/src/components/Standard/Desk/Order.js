@@ -473,7 +473,7 @@ export default connect(mapStateToProps)((props) => {
 
   const getOrders = (cancelToken) => {
     axios
-      .get('/deskOrder', { cancelToken })
+      .get('/deskOrder/current', { cancelToken })
       .then((response) => {
         // handle success
         setOrders(response.data);

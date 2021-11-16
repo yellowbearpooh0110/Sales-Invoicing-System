@@ -40,6 +40,7 @@ function createSchema(req, res, next) {
     clientFloor: Joi.string().allow(''),
     clientUnit: Joi.string().allow(''),
     clientRemark: Joi.string(),
+    deliveryDate: Joi.date(),
     QTY: Joi.number(),
   });
   validateRequest(req, next, schema);
@@ -54,7 +55,7 @@ function bulkDeleteSchema(req, res, next) {
 
 function signSchema(req, res, next) {
   const schema = Joi.object({
-    id: Joi.string().guid().required(),
+    orderId: Joi.string().guid().required(),
     signature: Joi.string()
       // .base64({ paddingRequired: false, urlSafe: true })
       .required(),
@@ -179,7 +180,7 @@ function signDelivery(req, res, next) {
   const host = req.get('host');
   const protocol = req.protocol;
   chairorderController
-    .signDelivery(req.body.id, req.body.signature)
+    .signDelivery(req.body.orderId, req.body.signature)
     .then((chairorder) => {
       res.json({
         success: true,

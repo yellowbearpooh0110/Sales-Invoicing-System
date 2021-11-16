@@ -9,6 +9,7 @@ const AppHeader = ({
   auth,
   drawerHeight,
   handleDrawerToggle,
+  title,
   ...rest
 }) => (
   <AppBar
@@ -30,7 +31,7 @@ const AppHeader = ({
         <MenuIcon />
       </IconButton>
       <Typography variant="h6" noWrap component="div">
-        Standard
+        {title}
       </Typography>
     </Toolbar>
   </AppBar>
@@ -40,6 +41,7 @@ AppHeader.propTypes = {
   auth: PropTypes.object.isRequired,
   drawerHeight: PropTypes.number.isRequired,
   handleDrawerToggle: PropTypes.func.isRequired,
+  title: PropTypes.string,
 };
 
 const mapStateToProps = (state) => ({

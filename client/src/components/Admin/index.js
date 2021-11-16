@@ -99,6 +99,7 @@ const Admin = (props) => {
       <AppHeader
         drawerHeight={drawerHeight}
         handleDrawerToggle={handleDrawerOpen}
+        title="Administrator"
       />
       <Box
         flexBasis={`calc(100% - ${drawerHeight}px)`}

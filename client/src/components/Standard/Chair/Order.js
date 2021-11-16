@@ -4,13 +4,18 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {
   Autocomplete,
+  Box,
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Fade,
+  FormControlLabel,
   IconButton,
   Paper,
+  Popper,
   Stack,
   TextField,
   Typography,
@@ -21,8 +26,8 @@ import {
   PictureAsPdf as PictureAsPdfIcon,
   WhatsApp as WhatsAppIcon,
 } from '@mui/icons-material';
-import { useTheme } from '@mui/material/styles';
 import MuiPhoneNumber from 'material-ui-phone-number';
+import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -41,13 +46,13 @@ const columns = [
     id: 'clientName',
     numeric: false,
     disablePadding: false,
-    label: 'Client Name',
+    label: ' Name',
   },
   {
     id: 'clientAddress',
     numeric: false,
     disablePadding: false,
-    label: 'Client Address',
+    label: ' Address',
   },
   {
     id: 'salesmanName',
@@ -84,10 +89,19 @@ export default connect(mapStateToProps)((props) => {
   const [emailOpen, setEmailOpen] = useState(false);
   const whatsAppMessage = useRef(null);
   const emailContent = useRef(null);
+  const [filterAnchor, setFilterAnchor] = useState(null);
+
   const [id, setID] = useState('');
+  const [brands, setBrands] = useState([]);
   const [models, setModels] = useState([]);
   const [colors, setColors] = useState([]);
-  const [deskRemarks, setDeskRemarks] = useState(['av', 'avas']);
+  const [chairRemarks, setChairRemarks] = useState(['av', 'avas']);
+
+  const [filterBrand, setFilterBrand] = useState('');
+  const [filterModel, setFilterModel] = useState('');
+  const [filterFrameColor, setFilterFrameColor] = useState('');
+  const [filterSeatColor, setFilterSeatColor] = useState('');
+  const [filterBackColor, setFilterBackColor] = useState('');
 
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
@@ -100,19 +114,21 @@ export default connect(mapStateToProps)((props) => {
   const [deliveryDate, setDeliveryDate] = useState(new Date());
   const [remark, setRemark] = useState('');
 
-  const [model, setModel] = useState(null);
-  const [color, setColor] = useState(null);
-  const [armSize, setArmSize] = useState('');
-  const [feetSize, setFeetSize] = useState('');
-  const [beam, setBeam] = useState('');
-  const [akInfo, setAkInfo] = useState('');
-  const [woodInfo_1, setWoodInfo_1] = useState('');
-  const [woodInfo_2, setWoodInfo_2] = useState('');
-  const [melamineInfo, setMelamineInfo] = useState('');
-  const [laminateInfo, setLaminateInfo] = useState('');
-  const [bambooInfo, setBambooInfo] = useState('');
-  const [deskRemark, setDeskRemark] = useState('');
+  const [brand, setBrand] = useState();
+  const [model, setModel] = useState();
+  const [frameColor, setFrameColor] = useState();
+  const [backColor, setBackColor] = useState();
+  const [seatColor, setSeatColor] = useState();
+  const [withHeadrest, setWithHeadrest] = useState(true);
+  const [withAdArmrest, setWithAdArmrest] = useState(true);
+  const [chairRemark, setChairRemark] = useState('');
   const [QTY, setQTY] = useState(1);
+
+  const handleFilterClick = (e) => {
+    e.preventDefault();
+    if (filterAnchor === null) setFilterAnchor(e.currentTarget);
+    else setFilterAnchor(null);
+  };
 
   const extraLinks = [
     (id) => {
@@ -247,22 +263,19 @@ export default connect(mapStateToProps)((props) => {
   const handleEditClick = (event, index) => {
     event.preventDefault();
     if (index < orders.length && index >= 0) {
+      getBrands();
       getModels();
       getColors();
-      getDeskRemarks();
+      getChairRemarks();
       setID(orders[index].id);
-      setModel(orders[index].stock.deskModel);
-      setColor(orders[index].stock.color);
-      setArmSize(orders[index].stock.armSize);
-      setFeetSize(orders[index].stock.feetSize);
-      setBeam(orders[index].stock.beam);
-      setAkInfo(orders[index].stock.akInfo);
-      setWoodInfo_1(orders[index].stock.woodInfo_1);
-      setWoodInfo_2(orders[index].stock.woodInfo_2);
-      setMelamineInfo(orders[index].stock.melamineInfo);
-      setLaminateInfo(orders[index].stock.laminateInfo);
-      setBambooInfo(orders[index].stock.bambooInfo);
-      setDeskRemark(orders[index].stock.deskRemark);
+      setBrand(orders[index].stock.chairBrand);
+      setModel(orders[index].stock.chairModel);
+      setFrameColor(orders[index].stock.frameColor);
+      setBackColor(orders[index].stock.backColor);
+      setSeatColor(orders[index].stock.seatColor);
+      setWithHeadrest(orders[index].stock.withHeadrest);
+      setWithAdArmrest(orders[index].stock.withAdArmrest);
+      setChairRemark(orders[index].stock.chairRemark);
       setClientName(orders[index].clientName);
       setClientEmail(orders[index].clientEmail);
       setClientPhone(orders[index].clientPhone);
@@ -287,7 +300,7 @@ export default connect(mapStateToProps)((props) => {
     if (index < orders.length && index >= 0) {
       Swal.fire({
         title: 'Are you sure?',
-        text: 'This action will remove current DeskStock permanently.',
+        text: 'This action will remove current ChairOrder permanently.',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Yes, Remove!',
@@ -296,7 +309,7 @@ export default connect(mapStateToProps)((props) => {
       }).then((result) => {
         if (result.isConfirmed) {
           axios
-            .delete(`/deskOrder/${orders[index].id}`)
+            .delete(`/chairOrder/${brands[index].id}`)
             .then((response) => {
               // handle success
               getOrders();
@@ -331,7 +344,7 @@ export default connect(mapStateToProps)((props) => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete('/chiarstock', { data: { ids: selected } })
+          .delete('/chairOrder', { data: { ids: selected } })
           .then((response) => {
             // handle success
             getOrders();
@@ -356,22 +369,18 @@ export default connect(mapStateToProps)((props) => {
   const handleSave = (event) => {
     event.preventDefault();
     axios
-      .put(`/deskOrder/${id}`, {
-        deskModelId: model ? model.id : null,
-        colorId: color ? color.id : null,
-        armSize,
-        feetSize,
-        beam,
-        akInfo,
-        woodInfo_1,
-        woodInfo_2,
-        melamineInfo,
-        laminateInfo,
-        bambooInfo,
-        deskRemark,
+      .put(`/chairOrder/${id}`, {
+        chairBrandId: brand ? brand.id : null,
+        chairModelId: model ? model.id : null,
+        frameColorId: frameColor ? frameColor.id : null,
+        backColorId: backColor ? backColor.id : null,
+        seatColorId: seatColor ? seatColor.id : null,
+        withHeadrest,
+        withAdArmrest,
+        chairRemark,
         clientName,
-        clientEmail,
         clientPhone,
+        clientEmail,
         clientDistrict,
         clientStreet,
         clientBlock,
@@ -407,22 +416,18 @@ export default connect(mapStateToProps)((props) => {
   const handleCreate = (event) => {
     event.preventDefault();
     axios
-      .post(`/deskOrder/create`, {
-        deskModelId: model ? model.id : null,
-        colorId: color ? color.id : null,
-        armSize,
-        feetSize,
-        beam,
-        akInfo,
-        woodInfo_1,
-        woodInfo_2,
-        melamineInfo,
-        laminateInfo,
-        bambooInfo,
-        deskRemark,
+      .post(`/chairOrder/create`, {
+        chairBrandId: brand ? brand.id : null,
+        chairModelId: model ? model.id : null,
+        frameColorId: frameColor ? frameColor.id : null,
+        backColorId: backColor ? backColor.id : null,
+        seatColorId: seatColor ? seatColor.id : null,
+        withHeadrest,
+        withAdArmrest,
+        chairRemark,
         clientName,
-        clientEmail,
         clientPhone,
+        clientEmail,
         clientDistrict,
         clientStreet,
         clientBlock,
@@ -455,9 +460,25 @@ export default connect(mapStateToProps)((props) => {
       });
   };
 
+  const getBrands = (cancelToken) => {
+    axios
+      .get('/chairBrand', { cancelToken })
+      .then((response) => {
+        // handle success
+        setBrands(response.data);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
   const getModels = (cancelToken) => {
     axios
-      .get('/deskModel', { cancelToken })
+      .get('/chairModel', { cancelToken })
       .then((response) => {
         // handle success
         setModels(response.data);
@@ -473,7 +494,7 @@ export default connect(mapStateToProps)((props) => {
 
   const getOrders = (cancelToken) => {
     axios
-      .get('/deskOrder', { cancelToken })
+      .get('/chairOrder/current', { cancelToken })
       .then((response) => {
         // handle success
         setOrders(response.data);
@@ -503,12 +524,12 @@ export default connect(mapStateToProps)((props) => {
       });
   };
 
-  const getDeskRemarks = (cancelToken) => {
+  const getChairRemarks = (cancelToken) => {
     // axios
-    //   .get('/deskremark', { cancelToken })
+    //   .get('/chairremark', { cancelToken })
     //   .then((response) => {
     //     // handle success
-    //     setDeskRemarks(response.data.map((item) => item.detail));
+    //     setChairRemarks(response.data.map((item) => item.detail));
     //   })
     //   .catch(function (error) {
     //     // handle error
@@ -531,21 +552,18 @@ export default connect(mapStateToProps)((props) => {
         variant="outlined"
         startIcon={<AddIcon />}
         onClick={() => {
+          getBrands();
           getModels();
           getColors();
-          getDeskRemarks();
+          getChairRemarks();
+          setBrand(null);
           setModel(null);
-          setColor(null);
-          setArmSize('');
-          setFeetSize('');
-          setBeam('');
-          setAkInfo('');
-          setWoodInfo_1('');
-          setWoodInfo_2('');
-          setMelamineInfo('');
-          setLaminateInfo('');
-          setBambooInfo('');
-          setDeskRemark('');
+          setFrameColor(null);
+          setBackColor(null);
+          setSeatColor(null);
+          setWithHeadrest(false);
+          setWithAdArmrest(false);
+          setChairRemark('');
           setClientName('');
           setClientEmail('');
           setClientPhone('');
@@ -565,57 +583,190 @@ export default connect(mapStateToProps)((props) => {
         Add New Order
       </Button>
       <DataGrid
-        title="Desk Orders"
-        rows={orders.map(
-          (
-            {
-              id,
-              clientDistrict,
-              clientStreet,
-              clientBlock,
-              clientFloor,
-              clientUnit,
-              salesman,
-              createdAt,
-              ...restProps
-            },
-            index
-          ) => ({
-            id: index,
-            salesmanName: (salesman.firstName || '').concat(
-              ' ',
-              salesman.lastName || ''
-            ),
-            orderDate: (() => {
-              const createdTime = new Date(createdAt);
-              createdTime.setMinutes(
-                createdTime.getMinutes() - createdTime.getTimezoneOffset()
-              );
-              return createdTime.toISOString().split('T')[0];
-            })(),
-            clientAddress: [
-              clientDistrict,
-              clientStreet,
-              clientBlock,
-              clientFloor,
-              clientUnit,
-            ].join(', '),
-            ...restProps,
-          })
-        )}
+        title="Chair Orders"
+        rows={orders
+          .map(
+            (
+              {
+                id,
+                clientDistrict,
+                clientStreet,
+                clientBlock,
+                clientFloor,
+                clientUnit,
+                salesman,
+                createdAt,
+                ...restProps
+              },
+              index
+            ) => ({
+              id: index,
+              salesmanName: (salesman.firstName || '').concat(
+                ' ',
+                salesman.lastName || ''
+              ),
+              orderDate: (() => {
+                const createdTime = new Date(createdAt);
+                createdTime.setMinutes(
+                  createdTime.getMinutes() - createdTime.getTimezoneOffset()
+                );
+                return createdTime.toISOString().split('T')[0];
+              })(),
+              clientAddress: [
+                clientDistrict,
+                clientStreet,
+                clientBlock,
+                clientFloor,
+                clientUnit,
+              ].join(', '),
+              ...restProps,
+            })
+          )
+          .filter(
+            (item, key) =>
+              (item.stock.chairBrand.name || '')
+                .toLowerCase()
+                .includes(filterBrand.toLowerCase()) &&
+              (item.stock.chairModel.name || '')
+                .toLowerCase()
+                .includes(filterModel.toLowerCase()) &&
+              (item.stock.frameColor.name || '')
+                .toLowerCase()
+                .includes(filterFrameColor.toLowerCase()) &&
+              (item.stock.backColor.name || '')
+                .toLowerCase()
+                .includes(filterBackColor.toLowerCase()) &&
+              (item.stock.seatColor.name || '')
+                .toLowerCase()
+                .includes(filterSeatColor.toLowerCase())
+          )}
         columns={columns}
         extraLinks={extraLinks}
         onEditClick={handleEditClick}
         onRemoveClick={handleRemoveClick}
         onBulkRemoveClick={handleBulkRemoveClick}
-      ></DataGrid>
+        onFilterClick={handleFilterClick}
+      />
+      <Popper
+        anchorEl={filterAnchor}
+        open={Boolean(filterAnchor)}
+        placement={'bottom-end'}
+        disablePortal={false}
+        transition
+        onClose={() => {
+          setFilterAnchor(null);
+        }}
+      >
+        {({ TransitionProps }) => (
+          <Fade {...TransitionProps} timeout={350}>
+            <Paper
+              sx={{
+                mt: '5px',
+                p: '10px',
+                maxWidth: 400,
+                // maxWidth: '100%',
+              }}
+            >
+              <Box
+                display="flex"
+                flexWrap="wrap"
+                justifyContent="space-between"
+              >
+                {[
+                  {
+                    value: filterBrand,
+                    values: brands,
+                    setValue: setFilterBrand,
+                    label: 'Brand',
+                    width: '48%',
+                  },
+                  {
+                    value: filterModel,
+                    values: models,
+                    setValue: setFilterModel,
+                    label: 'Model',
+                    width: '48%',
+                  },
+                  {
+                    value: filterFrameColor,
+                    values: colors,
+                    setValue: setFilterFrameColor,
+                    label: 'FrameColor',
+                    width: '30%',
+                  },
+                  {
+                    value: filterBackColor,
+                    values: colors,
+                    setValue: setFilterBackColor,
+                    label: 'BackColor',
+                    width: '30%',
+                  },
+                  {
+                    value: filterSeatColor,
+                    values: colors,
+                    setValue: setFilterSeatColor,
+                    label: 'SeatColor',
+                    width: '30%',
+                  },
+                ].map(({ value, values, setValue, label, width }, index) => (
+                  <TextField
+                    key={index}
+                    sx={{ flexBasis: width, minWidth: width }}
+                    value={value}
+                    onChange={(event) => {
+                      event.preventDefault();
+                      setValue(event.target.value);
+                    }}
+                    margin="dense"
+                    label={label}
+                    variant="outlined"
+                    size="small"
+                  />
+                ))}
+                <TextField
+                  type="datetime-local"
+                  margin="dense"
+                  label="from"
+                  variant="outlined"
+                  size="small"
+                  onChange={(e) => {
+                    console.log(typeof e.target.value);
+                  }}
+                ></TextField>
+              </Box>
+              <Box display="flex" justifyContent="space-between">
+                <Button
+                  onClick={() => {
+                    setFilterBrand('');
+                    setFilterModel('');
+                    setFilterFrameColor('');
+                    setFilterBackColor('');
+                    setFilterSeatColor('');
+                  }}
+                  variant="outlined"
+                >
+                  Clear
+                </Button>
+                <Button
+                  onClick={() => {
+                    setFilterAnchor(null);
+                  }}
+                  variant="outlined"
+                >
+                  OK
+                </Button>
+              </Box>
+            </Paper>
+          </Fade>
+        )}
+      </Popper>
       <Dialog
         fullWidth
         fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
         maxWidth="sm"
         open={editOpen}
       >
-        <DialogTitle>Edit DeskOrder</DialogTitle>
+        <DialogTitle>Edit ChairOrder</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
             <Paper
@@ -631,22 +782,43 @@ export default connect(mapStateToProps)((props) => {
                 variant="h6"
                 sx={{ flexBasis: '100%', minWidth: '100%' }}
               >
-                Desk Features
+                Chair Features
               </Typography>
               {[
+                {
+                  value: brand,
+                  values: brands,
+                  setValue: setBrand,
+                  label: 'Brand',
+                  width: '48%',
+                },
                 {
                   value: model,
                   values: models,
                   setValue: setModel,
-                  label: 'DeskModel',
+                  label: 'Model',
                   width: '48%',
                 },
                 {
-                  value: color,
+                  value: frameColor,
                   values: colors,
-                  setValue: setColor,
-                  label: 'DeskColor',
-                  width: '48%',
+                  setValue: setFrameColor,
+                  label: 'FrameColor',
+                  width: '30%',
+                },
+                {
+                  value: backColor,
+                  values: colors,
+                  setValue: setBackColor,
+                  label: 'BackColor',
+                  width: '30%',
+                },
+                {
+                  value: seatColor,
+                  values: colors,
+                  setValue: setSeatColor,
+                  label: 'SeatColor',
+                  width: '30%',
                 },
               ].map(({ value, values, setValue, label, width }, index) => (
                 <Autocomplete
@@ -662,117 +834,62 @@ export default connect(mapStateToProps)((props) => {
                   sx={{ flexBasis: width, minWidth: width }}
                   renderInput={(params) => (
                     <TextField
+                      margin="dense"
                       {...params}
                       label={label}
-                      margin="dense"
                       variant="outlined"
                       size="small"
                     />
                   )}
                 />
               ))}
-              {[
-                {
-                  label: 'Arm Size',
-                  value: armSize,
-                  setValue: setArmSize,
-                  type: 'number',
-                  width: '30%',
-                },
-                {
-                  label: 'Feet Size',
-                  value: feetSize,
-                  setValue: setFeetSize,
-                  type: 'number',
-                  width: '30%',
-                },
-                {
-                  label: 'Beam',
-                  value: beam,
-                  setValue: setBeam,
-                  type: 'text',
-                  width: '30%',
-                },
-                {
-                  label: 'AK Info',
-                  value: akInfo,
-                  setValue: setAkInfo,
-                  type: 'text',
-                  width: '48%',
-                },
-                {
-                  label: 'Wood Info 1',
-                  value: woodInfo_1,
-                  setValue: setWoodInfo_1,
-                  type: 'text',
-                  width: '48%',
-                },
-                {
-                  label: 'Wood Info 2',
-                  value: woodInfo_2,
-                  setValue: setWoodInfo_2,
-                  type: 'text',
-                  width: '48%',
-                },
-                {
-                  label: 'Melamine Info',
-                  value: melamineInfo,
-                  setValue: setMelamineInfo,
-                  type: 'text',
-                  width: '48%',
-                },
-                {
-                  label: 'Laminate Info',
-                  value: laminateInfo,
-                  setValue: setLaminateInfo,
-                  type: 'text',
-                  width: '48%',
-                },
-                {
-                  label: 'Bamboo Info',
-                  value: bambooInfo,
-                  setValue: setBambooInfo,
-                  type: 'text',
-                  width: '48%',
-                },
-              ].map(({ label, value, setValue, type, width }, index) => (
-                <TextField
-                  key={index}
-                  label={label}
-                  sx={{ flexBasis: width, minWidth: width }}
-                  margin="dense"
-                  variant="outlined"
-                  size="small"
-                  value={value}
-                  type={type}
-                  onChange={(e) => {
-                    setValue(e.target.value);
-                  }}
-                />
-              ))}
               <Autocomplete
                 disablePortal
                 freeSolo
-                value={deskRemark}
+                value={chairRemark}
                 onChange={(event, newValue) => {
                   event.preventDefault();
-                  setDeskRemark(newValue);
+                  setChairRemark(newValue);
                 }}
-                options={deskRemarks}
+                options={chairRemarks}
                 fullWidth
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Desk Remark"
-                    margin="dense"
+                    label="Chair Remark"
                     variant="outlined"
+                    margin="dense"
                     size="small"
                     onChange={(event) => {
                       event.preventDefault();
-                      setDeskRemark(event.target.value);
+                      setChairRemark(event.target.value);
                     }}
                   />
                 )}
+              />
+              <FormControlLabel
+                sx={{ flexBasis: '45%', minWidth: '45%' }}
+                control={
+                  <Checkbox
+                    checked={withHeadrest}
+                    onChange={() => {
+                      setWithHeadrest(!withHeadrest);
+                    }}
+                  />
+                }
+                label="With Headrest"
+              />
+              <FormControlLabel
+                sx={{ flexBasis: '45%', minWidth: '45%' }}
+                control={
+                  <Checkbox
+                    checked={withAdArmrest}
+                    onChange={() => {
+                      setWithAdArmrest(!withAdArmrest);
+                    }}
+                  />
+                }
+                label="With Adjustable Armrests"
               />
             </Paper>
             <Paper
@@ -798,17 +915,17 @@ export default connect(mapStateToProps)((props) => {
                   width: '100%',
                 },
                 {
-                  label: 'Email',
-                  value: clientEmail,
-                  setValue: setClientEmail,
-                  type: 'text',
-                  width: '48%',
-                },
-                {
                   label: 'Phone',
                   value: clientPhone,
                   setValue: setClientPhone,
                   type: 'text',
+                  width: '48%',
+                },
+                {
+                  label: 'Email',
+                  value: clientEmail,
+                  setValue: setClientEmail,
+                  type: 'email',
                   width: '48%',
                 },
                 {
@@ -861,42 +978,39 @@ export default connect(mapStateToProps)((props) => {
                   type: 'text',
                   width: '100%',
                 },
-              ].map((item, index) =>
-                item.label === 'Phone' ? (
+              ].map(({ setValue, width, ...restProps }, index) =>
+                restProps.label === 'Phone' ? (
                   <MuiPhoneNumber
                     key={index}
                     defaultCountry={'hk'}
-                    value={item.value}
                     onChange={(value) => {
-                      item.setValue(value);
+                      setValue(value);
                     }}
-                    label={item.label}
-                    sx={{ flexBasis: item.width, minWidth: item.width }}
+                    sx={{ flexBasis: width, minWidth: width }}
                     variant="outlined"
                     margin="dense"
                     size="small"
+                    {...restProps}
                   />
                 ) : (
                   <TextField
                     key={index}
                     margin="dense"
-                    label={item.label}
                     variant="outlined"
                     size="small"
-                    value={item.value}
-                    type={item.type}
                     onChange={(e) => {
-                      item.setValue(e.target.value);
+                      setValue(e.target.value);
                     }}
-                    sx={{ flexBasis: item.width, minWidth: item.width }}
+                    sx={{ flexBasis: width, minWidth: width }}
+                    {...restProps}
                   />
                 )
               )}
             </Paper>
             <TextField
+              margin="dense"
               label="QTY"
               fullWidth
-              margin="dense"
               variant="outlined"
               size="small"
               value={QTY}
@@ -924,7 +1038,7 @@ export default connect(mapStateToProps)((props) => {
         maxWidth="sm"
         open={createOpen}
       >
-        <DialogTitle>Create DeskOrder</DialogTitle>
+        <DialogTitle>Create ChairOrder</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
             <Paper
@@ -940,22 +1054,43 @@ export default connect(mapStateToProps)((props) => {
                 variant="h6"
                 sx={{ flexBasis: '100%', minWidth: '100%' }}
               >
-                Desk Features
+                Chair Features
               </Typography>
               {[
+                {
+                  value: brand,
+                  values: brands,
+                  setValue: setBrand,
+                  label: 'Brand',
+                  width: '48%',
+                },
                 {
                   value: model,
                   values: models,
                   setValue: setModel,
-                  label: 'DeskModel',
+                  label: 'Model',
                   width: '48%',
                 },
                 {
-                  value: color,
+                  value: frameColor,
                   values: colors,
-                  setValue: setColor,
-                  label: 'DeskColor',
-                  width: '48%',
+                  setValue: setFrameColor,
+                  label: 'FrameColor',
+                  width: '30%',
+                },
+                {
+                  value: backColor,
+                  values: colors,
+                  setValue: setBackColor,
+                  label: 'BackColor',
+                  width: '30%',
+                },
+                {
+                  value: seatColor,
+                  values: colors,
+                  setValue: setSeatColor,
+                  label: 'SeatColor',
+                  width: '30%',
                 },
               ].map(({ value, values, setValue, label, width }, index) => (
                 <Autocomplete
@@ -971,117 +1106,62 @@ export default connect(mapStateToProps)((props) => {
                   sx={{ flexBasis: width, minWidth: width }}
                   renderInput={(params) => (
                     <TextField
+                      margin="dense"
                       {...params}
                       label={label}
-                      margin="dense"
                       variant="outlined"
                       size="small"
                     />
                   )}
                 />
               ))}
-              {[
-                {
-                  label: 'Arm Size',
-                  value: armSize,
-                  setValue: setArmSize,
-                  type: 'number',
-                  width: '30%',
-                },
-                {
-                  label: 'Feet Size',
-                  value: feetSize,
-                  setValue: setFeetSize,
-                  type: 'number',
-                  width: '30%',
-                },
-                {
-                  label: 'Beam',
-                  value: beam,
-                  setValue: setBeam,
-                  type: 'text',
-                  width: '30%',
-                },
-                {
-                  label: 'AK Info',
-                  value: akInfo,
-                  setValue: setAkInfo,
-                  type: 'text',
-                  width: '48%',
-                },
-                {
-                  label: 'Wood Info 1',
-                  value: woodInfo_1,
-                  setValue: setWoodInfo_1,
-                  type: 'text',
-                  width: '48%',
-                },
-                {
-                  label: 'Wood Info 2',
-                  value: woodInfo_2,
-                  setValue: setWoodInfo_2,
-                  type: 'text',
-                  width: '48%',
-                },
-                {
-                  label: 'Melamine Info',
-                  value: melamineInfo,
-                  setValue: setMelamineInfo,
-                  type: 'text',
-                  width: '48%',
-                },
-                {
-                  label: 'Laminate Info',
-                  value: laminateInfo,
-                  setValue: setLaminateInfo,
-                  type: 'text',
-                  width: '48%',
-                },
-                {
-                  label: 'Bamboo Info',
-                  value: bambooInfo,
-                  setValue: setBambooInfo,
-                  type: 'text',
-                  width: '48%',
-                },
-              ].map(({ label, value, setValue, type, width }, index) => (
-                <TextField
-                  key={index}
-                  label={label}
-                  sx={{ flexBasis: width, minWidth: width }}
-                  margin="dense"
-                  variant="outlined"
-                  size="small"
-                  value={value}
-                  type={type}
-                  onChange={(e) => {
-                    setValue(e.target.value);
-                  }}
-                />
-              ))}
               <Autocomplete
                 disablePortal
                 freeSolo
-                value={deskRemark}
+                value={chairRemark}
                 onChange={(event, newValue) => {
                   event.preventDefault();
-                  setDeskRemark(newValue);
+                  setChairRemark(newValue);
                 }}
-                options={deskRemarks}
+                options={chairRemarks}
                 fullWidth
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Desk Remark"
-                    margin="dense"
+                    label="Chair Remark"
                     variant="outlined"
+                    margin="dense"
                     size="small"
                     onChange={(event) => {
                       event.preventDefault();
-                      setDeskRemark(event.target.value);
+                      setChairRemark(event.target.value);
                     }}
                   />
                 )}
+              />
+              <FormControlLabel
+                sx={{ flexBasis: '45%', minWidth: '45%' }}
+                control={
+                  <Checkbox
+                    checked={withHeadrest}
+                    onChange={() => {
+                      setWithHeadrest(!withHeadrest);
+                    }}
+                  />
+                }
+                label="With Headrest"
+              />
+              <FormControlLabel
+                sx={{ flexBasis: '45%', minWidth: '45%' }}
+                control={
+                  <Checkbox
+                    checked={withAdArmrest}
+                    onChange={() => {
+                      setWithAdArmrest(!withAdArmrest);
+                    }}
+                  />
+                }
+                label="With Adjustable Armrests"
               />
             </Paper>
             <Paper
@@ -1107,17 +1187,17 @@ export default connect(mapStateToProps)((props) => {
                   width: '100%',
                 },
                 {
-                  label: 'Email',
-                  value: clientEmail,
-                  setValue: setClientEmail,
-                  type: 'text',
-                  width: '48%',
-                },
-                {
                   label: 'Phone',
                   value: clientPhone,
                   setValue: setClientPhone,
                   type: 'text',
+                  width: '48%',
+                },
+                {
+                  label: 'Email',
+                  value: clientEmail,
+                  setValue: setClientEmail,
+                  type: 'email',
                   width: '48%',
                 },
                 {
@@ -1170,42 +1250,39 @@ export default connect(mapStateToProps)((props) => {
                   type: 'text',
                   width: '100%',
                 },
-              ].map((item, index) =>
-                item.label === 'Phone' ? (
+              ].map(({ setValue, width, ...restProps }, index) =>
+                restProps.label === 'Phone' ? (
                   <MuiPhoneNumber
                     key={index}
                     defaultCountry={'hk'}
-                    value={item.value}
                     onChange={(value) => {
-                      item.setValue(value);
+                      setValue(value);
                     }}
-                    label={item.label}
-                    sx={{ flexBasis: item.width, minWidth: item.width }}
+                    sx={{ flexBasis: width, minWidth: width }}
                     variant="outlined"
                     margin="dense"
                     size="small"
+                    {...restProps}
                   />
                 ) : (
                   <TextField
                     key={index}
                     margin="dense"
-                    label={item.label}
                     variant="outlined"
                     size="small"
-                    value={item.value}
-                    type={item.type}
                     onChange={(e) => {
-                      item.setValue(e.target.value);
+                      setValue(e.target.value);
                     }}
-                    sx={{ flexBasis: item.width, minWidth: item.width }}
+                    sx={{ flexBasis: width, minWidth: width }}
+                    {...restProps}
                   />
                 )
               )}
             </Paper>
             <TextField
+              margin="dense"
               label="QTY"
               fullWidth
-              margin="dense"
               variant="outlined"
               size="small"
               value={QTY}
