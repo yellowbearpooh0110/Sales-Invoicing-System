@@ -45,25 +45,31 @@ const columns = [
     id: 'clientName',
     numeric: false,
     disablePadding: false,
-    label: 'Client Name',
+    label: 'Client',
   },
   {
     id: 'clientAddress',
     numeric: false,
     disablePadding: false,
-    label: 'Client Address',
+    label: 'Address',
   },
   {
     id: 'salesmanName',
     numeric: false,
     disablePadding: false,
-    label: 'Salesman Name',
+    label: 'Salesman',
   },
   {
     id: 'orderDate',
     numeric: false,
     disablePadding: false,
-    label: 'Order Date',
+    label: 'Order',
+  },
+  {
+    id: 'deliveryDate',
+    numeric: false,
+    disablePadding: false,
+    label: 'Delivery',
   },
   {
     id: 'isPreOrder',
@@ -88,6 +94,20 @@ const columns = [
     numeric: false,
     disablePadding: false,
     label: 'Finished',
+  },
+  {
+    id: 'invoicePDF',
+    nonSort: true,
+    numeric: false,
+    disablePadding: false,
+    label: 'Invoice',
+  },
+  {
+    id: 'contact',
+    nonSort: true,
+    numeric: false,
+    disablePadding: false,
+    label: 'Contact',
   },
 ];
 
@@ -136,82 +156,6 @@ export default connect(mapStateToProps)((props) => {
   const [deskRemark, setDeskRemark] = useState('');
   const [unitPrice, setUnitPrice] = useState(1000);
   const [QTY, setQTY] = useState(1);
-
-  const extraLinks = [
-    (id) => {
-      return (
-        <IconButton
-          component={Link}
-          to={`/deskinvoice/${orders[id].id}`}
-          target="_blank"
-        >
-          <PictureAsPdfIcon />
-        </IconButton>
-      );
-    },
-    (id) => {
-      return (
-        <IconButton
-          onClick={() => {
-            setClientEmail(orders[id].clientEmail);
-            setEmailOpen(true);
-          }}
-        >
-          <EmailIcon />
-        </IconButton>
-      );
-    },
-    (id) => {
-      return (
-        <IconButton
-          onClick={() => {
-            axios
-              .get('whatsapp/checkauth')
-              .then(() => {
-                setClientPhone(orders[id].clientPhone);
-                setWhatsAppOpen(true);
-              })
-              .catch(function (error) {
-                // handle error
-                axios
-                  .get('whatsapp/getqr')
-                  .then((response) => {
-                    Swal.fire({
-                      icon: 'info',
-                      title:
-                        'Please signin with this QRCode and Click the button again.',
-                      html: ReactDOMServer.renderToStaticMarkup(
-                        <QRCode
-                          value={`${response.data.qrcode}`}
-                          level="H"
-                        ></QRCode>
-                      ),
-                      allowOutsideClick: false,
-                    });
-                  })
-                  .catch(function (qrerror) {
-                    // handle error
-                    Swal.fire({
-                      icon: 'error',
-                      title: 'Error',
-                      text: 'Unable to use WhatsApp Messaging.',
-                      allowOutsideClick: false,
-                    });
-                  })
-                  .then(function () {
-                    // always executed
-                  });
-              })
-              .then(function () {
-                // always executed
-              });
-          }}
-        >
-          <WhatsAppIcon />
-        </IconButton>
-      );
-    },
-  ];
 
   const handleWhatsAppSend = (event) => {
     event.preventDefault();
@@ -601,6 +545,7 @@ export default connect(mapStateToProps)((props) => {
               clientUnit,
               salesman,
               createdAt,
+              deliveryDate,
               isPreOrder,
               paid,
               finished,
@@ -616,6 +561,13 @@ export default connect(mapStateToProps)((props) => {
             isPreOrder: isPreOrder ? 'Yes' : 'No',
             orderDate: (() => {
               const createdTime = new Date(createdAt);
+              createdTime.setMinutes(
+                createdTime.getMinutes() - createdTime.getTimezoneOffset()
+              );
+              return createdTime.toISOString().split('T')[0];
+            })(),
+            deliveryDate: (() => {
+              const createdTime = new Date(deliveryDate);
               createdTime.setMinutes(
                 createdTime.getMinutes() - createdTime.getTimezoneOffset()
               );
@@ -684,11 +636,77 @@ export default connect(mapStateToProps)((props) => {
                 }}
               />
             ),
+            invoicePDF: (
+              <IconButton
+                component={Link}
+                to={`/deskinvoice/${id}`}
+                target="_blank"
+              >
+                <PictureAsPdfIcon />
+              </IconButton>
+            ),
+            contact: (
+              <>
+                <IconButton
+                  onClick={() => {
+                    setClientEmail(restProps.clientEmail);
+                    setEmailOpen(true);
+                  }}
+                >
+                  <EmailIcon />
+                </IconButton>
+                <IconButton
+                  onClick={() => {
+                    axios
+                      .get('whatsapp/checkauth')
+                      .then(() => {
+                        setClientPhone(restProps.clientPhone);
+                        setWhatsAppOpen(true);
+                      })
+                      .catch(function (error) {
+                        // handle error
+                        axios
+                          .get('whatsapp/getqr')
+                          .then((response) => {
+                            Swal.fire({
+                              icon: 'info',
+                              title:
+                                'Please signin with this QRCode and Click the button again.',
+                              html: ReactDOMServer.renderToStaticMarkup(
+                                <QRCode
+                                  value={`${response.data.qrcode}`}
+                                  level="H"
+                                ></QRCode>
+                              ),
+                              allowOutsideClick: false,
+                            });
+                          })
+                          .catch(function (qrerror) {
+                            // handle error
+                            Swal.fire({
+                              icon: 'error',
+                              title: 'Error',
+                              text: 'Unable to use WhatsApp Messaging.',
+                              allowOutsideClick: false,
+                            });
+                          })
+                          .then(function () {
+                            // always executed
+                          });
+                      })
+                      .then(function () {
+                        // always executed
+                      });
+                  }}
+                >
+                  <WhatsAppIcon />
+                </IconButton>
+              </>
+            ),
             ...restProps,
           })
         )}
         columns={columns}
-        extraLinks={extraLinks}
         onEditClick={handleEditClick}
         onRemoveClick={handleRemoveClick}
         onBulkRemoveClick={handleBulkRemoveClick}

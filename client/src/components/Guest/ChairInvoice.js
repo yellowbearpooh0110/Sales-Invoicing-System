@@ -251,7 +251,13 @@ export default () => {
                 cells: [
                   { content: order.QTY, width: '15%' },
                   {
-                    content: `${order.stock.chairBrand.name}, ${order.stock.chairModel.name}, ${order.stock.frameColor.name}-F, ${order.stock.backColor.name}-B, ${order.stock.seatColor.name}-S, ${order.stock.chairRemark}`,
+                    content: `${
+                      (order.stock.chairBrand || { name: '' }).name
+                    }, ${(order.stock.chairModel || { name: '' }).name}, ${
+                      (order.stock.frameColor || { name: '' }).name
+                    }-F, ${(order.stock.backColor || { name: '' }).name}-B, ${
+                      (order.stock.seatColor || { name: '' }).name
+                    }-S, ${order.stock.chairRemark}`,
                     width: '55%',
                   },
                   { content: `${order.unitPrice} HKD`, width: '15%' },
