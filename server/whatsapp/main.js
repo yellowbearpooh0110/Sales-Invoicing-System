@@ -57,4 +57,4 @@ client.on('message', (msg) => {
   }
 });
 
-client.initialize();
+// client.initialize();
