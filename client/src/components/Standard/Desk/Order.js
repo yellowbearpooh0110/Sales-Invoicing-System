@@ -586,7 +586,7 @@ export default connect(mapStateToProps)((props) => {
           setCreateOpen(true);
         }}
       >
-        Add New Order
+        New Order
       </Button>
       <DataGrid
         title="Desk Orders"
@@ -1051,7 +1051,7 @@ export default connect(mapStateToProps)((props) => {
         maxWidth="sm"
         open={createOpen}
       >
-        <DialogTitle>Create DeskOrder</DialogTitle>
+        <DialogTitle>New Order</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
             <Paper

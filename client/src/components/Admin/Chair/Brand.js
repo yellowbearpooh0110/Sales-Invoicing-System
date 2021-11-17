@@ -203,7 +203,7 @@ const Brand = connect(mapStateToProps)((props) => {
           setCreateOpen(true);
         }}
       >
-        Add New Brand
+        New Brand
       </Button>
       <DataGrid
         title="Chair Brands"
@@ -217,7 +217,7 @@ const Brand = connect(mapStateToProps)((props) => {
         onBulkRemoveClick={handleBulkRemoveClick}
       ></DataGrid>
       <Dialog open={editOpen}>
-        <DialogTitle>Edit ChairBrand</DialogTitle>
+        <DialogTitle>Edit Brand</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Please Edit the ChairBrand and Click Save button.
@@ -246,7 +246,7 @@ const Brand = connect(mapStateToProps)((props) => {
         </DialogActions>
       </Dialog>
       <Dialog open={createOpen}>
-        <DialogTitle>Edit ChairBrand</DialogTitle>
+        <DialogTitle>New Brand</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Please Input ChairBrand Name and Click Save button.

@@ -202,7 +202,7 @@ const Model = connect(mapStateToProps)((props) => {
           setCreateOpen(true);
         }}
       >
-        Add New Model
+        New Model
       </Button>
       <DataGrid
         title="Chair Models"
@@ -216,7 +216,7 @@ const Model = connect(mapStateToProps)((props) => {
         onBulkRemoveClick={handleBulkRemoveClick}
       ></DataGrid>
       <Dialog open={editOpen}>
-        <DialogTitle>Edit ChairModel</DialogTitle>
+        <DialogTitle>Edit Model</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Please Edit the ChairModel and Click Save button.
@@ -245,7 +245,7 @@ const Model = connect(mapStateToProps)((props) => {
         </DialogActions>
       </Dialog>
       <Dialog open={createOpen}>
-        <DialogTitle>Edit ChairModel</DialogTitle>
+        <DialogTitle>New Model</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Please Input ChairModel Name and Click Save button.

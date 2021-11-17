@@ -394,7 +394,7 @@ const Stock = connect(mapStateToProps)((props) => {
           setCreateOpen(true);
         }}
       >
-        Add New Stock
+        New Stock
       </Button>
       <DataGrid
         title="Chair Stocks"
@@ -458,6 +458,7 @@ const Stock = connect(mapStateToProps)((props) => {
         onClose={() => {
           setFilterAnchor(null);
         }}
+        sx={{ zIndex: 1 }}
       >
         {({ TransitionProps }) => (
           <Fade {...TransitionProps} timeout={350}>
@@ -558,7 +559,7 @@ const Stock = connect(mapStateToProps)((props) => {
         maxWidth="sm"
         open={editOpen}
       >
-        <DialogTitle>Edit ChairStock</DialogTitle>
+        <DialogTitle>Edit Stock</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
             <Paper
@@ -735,7 +736,7 @@ const Stock = connect(mapStateToProps)((props) => {
         maxWidth="sm"
         open={createOpen}
       >
-        <DialogTitle>Create ChairStock</DialogTitle>
+        <DialogTitle>New Stock</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
             <Paper

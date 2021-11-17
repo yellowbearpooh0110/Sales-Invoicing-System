@@ -202,7 +202,7 @@ export default connect(mapStateToProps)((props) => {
           setCreateOpen(true);
         }}
       >
-        Add New Model
+        New Model
       </Button>
       <DataGrid
         rows={models.map(({ id, ...restProps }, index) => ({
@@ -215,7 +215,7 @@ export default connect(mapStateToProps)((props) => {
         onBulkRemoveClick={handleBulkRemoveClick}
       ></DataGrid>
       <Dialog open={editOpen}>
-        <DialogTitle>Edit ChairModel</DialogTitle>
+        <DialogTitle>Edit Model</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Please Edit the ChairModel and Click Save button.
@@ -244,7 +244,7 @@ export default connect(mapStateToProps)((props) => {
         </DialogActions>
       </Dialog>
       <Dialog open={createOpen}>
-        <DialogTitle>Edit ChairModel</DialogTitle>
+        <DialogTitle>New Model</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Please Input ChairModel Name and Click Save button.

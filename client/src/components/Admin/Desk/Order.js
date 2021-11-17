@@ -530,7 +530,7 @@ export default connect(mapStateToProps)((props) => {
           setCreateOpen(true);
         }}
       >
-        Add New Order
+        New Order
       </Button>
       <DataGrid
         title="Desk Orders"
@@ -717,7 +717,7 @@ export default connect(mapStateToProps)((props) => {
         maxWidth="sm"
         open={editOpen}
       >
-        <DialogTitle>Edit DeskOrder</DialogTitle>
+        <DialogTitle>Edit Order</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
             <Paper
@@ -877,7 +877,7 @@ export default connect(mapStateToProps)((props) => {
                 )}
               />
               <FormControlLabel
-                sx={{ flexBasis: '40%', minWidth: '40%', marginLeft: 0 }}
+                sx={{ flexBasis: '48%', minWidth: '48%', marginLeft: 0 }}
                 control={
                   <TextField
                     label="Unit Price"
@@ -899,7 +899,7 @@ export default connect(mapStateToProps)((props) => {
                 display="flex"
                 justifyContent="center"
                 alignItems="center"
-                sx={{ flexBasis: '100%', minWidth: '100%' }}
+                sx={{ flexBasis: '48%', minWidth: '48%', mt: '5px' }}
               >
                 <IconButton
                   onClick={() => {
@@ -1067,7 +1067,7 @@ export default connect(mapStateToProps)((props) => {
         maxWidth="sm"
         open={createOpen}
       >
-        <DialogTitle>Create DeskOrder</DialogTitle>
+        <DialogTitle>New Order</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
             <Paper
@@ -1227,7 +1227,7 @@ export default connect(mapStateToProps)((props) => {
                 )}
               />
               <FormControlLabel
-                sx={{ flexBasis: '40%', minWidth: '40%', marginLeft: 0 }}
+                sx={{ flexBasis: '48%', minWidth: '48%', marginLeft: 0 }}
                 control={
                   <TextField
                     label="Unit Price"
@@ -1249,7 +1249,7 @@ export default connect(mapStateToProps)((props) => {
                 display="flex"
                 justifyContent="center"
                 alignItems="center"
-                sx={{ flexBasis: '100%', minWidth: '100%' }}
+                sx={{ flexBasis: '48%', minWidth: '48%', mt: '5px' }}
               >
                 <IconButton
                   onClick={() => {
@@ -1265,7 +1265,7 @@ export default connect(mapStateToProps)((props) => {
                   size="small"
                   value={QTY}
                   type="number"
-                  sx={{ width: '80px', mx: '5px' }}
+                  sx={{ width: '80px' }}
                   onChange={(e) => {
                     if (e.target.value > 1) setQTY(e.target.value);
                     else setQTY(1);

@@ -422,7 +422,7 @@ const Stock = connect(mapStateToProps)((props) => {
           setCreateOpen(true);
         }}
       >
-        Add New Stock
+        New Stock
       </Button>
       <DataGrid
         title="Desk Stocks"
@@ -601,7 +601,7 @@ const Stock = connect(mapStateToProps)((props) => {
         maxWidth="sm"
         open={editOpen}
       >
-        <DialogTitle>Edit DeskStock</DialogTitle>
+        <DialogTitle>Edit Stock</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
             <Paper
@@ -814,7 +814,7 @@ const Stock = connect(mapStateToProps)((props) => {
         maxWidth="sm"
         open={createOpen}
       >
-        <DialogTitle>Edit DeskStock</DialogTitle>
+        <DialogTitle>New Stock</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
             <Paper

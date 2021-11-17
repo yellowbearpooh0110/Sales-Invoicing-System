@@ -202,7 +202,7 @@ export default connect(mapStateToProps)((props) => {
           setCreateOpen(true);
         }}
       >
-        Add New Color
+        New Color
       </Button>
       <DataGrid
         title="Colors"
@@ -216,7 +216,7 @@ export default connect(mapStateToProps)((props) => {
         onBulkRemoveClick={handleBulkRemoveClick}
       ></DataGrid>
       <Dialog open={editOpen}>
-        <DialogTitle>Edit ChairColor</DialogTitle>
+        <DialogTitle>New Color</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Please Edit the ChairColor and Click Save button.
@@ -245,10 +245,10 @@ export default connect(mapStateToProps)((props) => {
         </DialogActions>
       </Dialog>
       <Dialog open={createOpen}>
-        <DialogTitle>Edit ChairColor</DialogTitle>
+        <DialogTitle>Edit Color</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Please Input ChairColor Name and Click Save button.
+            Please Input Color Name and Click Save button.
           </DialogContentText>
           <TextField
             autoFocus

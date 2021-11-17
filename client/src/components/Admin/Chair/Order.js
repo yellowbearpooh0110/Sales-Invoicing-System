@@ -546,7 +546,7 @@ export default connect(mapStateToProps)((props) => {
           setCreateOpen(true);
         }}
       >
-        Add New Order
+        New Order
       </Button>
       <DataGrid
         title="Chair Orders"
@@ -756,6 +756,7 @@ export default connect(mapStateToProps)((props) => {
         onClose={() => {
           setFilterAnchor(null);
         }}
+        style={{ zIndex: 1 }}
       >
         {({ TransitionProps }) => (
           <Fade {...TransitionProps} timeout={350}>
@@ -765,13 +766,15 @@ export default connect(mapStateToProps)((props) => {
                 p: '10px',
                 maxWidth: 400,
                 // maxWidth: '100%',
-                userSelect: 'default',
               }}
             >
               <Box
                 display="flex"
                 flexWrap="wrap"
                 justifyContent="space-between"
+                sx={{
+                  zIndex: 100,
+                }}
               >
                 {[
                   {
@@ -812,7 +815,7 @@ export default connect(mapStateToProps)((props) => {
                 ].map(({ value, values, setValue, label, width }, index) => (
                   <TextField
                     key={index}
-                    sx={{ flexBasis: width, minWidth: width }}
+                    sx={{ flexBasis: width, minWidth: width, zIndex: 100 }}
                     value={value}
                     onChange={(event) => {
                       event.preventDefault();
@@ -868,7 +871,7 @@ export default connect(mapStateToProps)((props) => {
         maxWidth="sm"
         open={editOpen}
       >
-        <DialogTitle>Edit ChairOrder</DialogTitle>
+        <DialogTitle>Edit Order</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
             <Paper
@@ -994,7 +997,7 @@ export default connect(mapStateToProps)((props) => {
                 label="With Adjustable Armrests"
               />
               <FormControlLabel
-                sx={{ flexBasis: '40%', minWidth: '40%', marginLeft: 0 }}
+                sx={{ flexBasis: '48%', minWidth: '48%', marginLeft: 0 }}
                 control={
                   <TextField
                     label="Unit Price"
@@ -1016,7 +1019,7 @@ export default connect(mapStateToProps)((props) => {
                 display="flex"
                 justifyContent="center"
                 alignItems="center"
-                sx={{ flexBasis: '100%', minWidth: '100%' }}
+                sx={{ flexBasis: '48%', minWidth: '48%', mt: '5px' }}
               >
                 <IconButton
                   onClick={() => {
@@ -1181,7 +1184,7 @@ export default connect(mapStateToProps)((props) => {
         maxWidth="sm"
         open={createOpen}
       >
-        <DialogTitle>Create ChairOrder</DialogTitle>
+        <DialogTitle>New Order</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
             <Paper
@@ -1307,7 +1310,7 @@ export default connect(mapStateToProps)((props) => {
                 label="With Adjustable Armrests"
               />
               <FormControlLabel
-                sx={{ flexBasis: '40%', minWidth: '40%', marginLeft: 0 }}
+                sx={{ flexBasis: '48%', minWidth: '48%', marginLeft: 0 }}
                 control={
                   <TextField
                     label="Unit Price"
@@ -1329,7 +1332,7 @@ export default connect(mapStateToProps)((props) => {
                 display="flex"
                 justifyContent="center"
                 alignItems="center"
-                sx={{ flexBasis: '100%', minWidth: '100%' }}
+                sx={{ flexBasis: '48%', minWidth: '48%', mt: '5px' }}
               >
                 <IconButton
                   onClick={() => {
