@@ -114,6 +114,7 @@ function getDelivery(req, res, next) {
       [Sequelize.Op.gte]: deliveryDate,
       [Sequelize.Op.lt]: nextDate,
     },
+    paid: true,
   };
   deskorderController
     .getAll(where)

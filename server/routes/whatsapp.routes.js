@@ -20,17 +20,14 @@ router.get('/checkauth', async (req, res, next) => {
   client
     .getState()
     .then((data) => {
-      console.log(data);
       res.send(data);
     })
     .catch((err) => {
       if (err) {
-        next(err);
         try {
           fs.unlinkSync('server/whatsapp/session.json');
-        } catch (err) {
-          console.log(err);
-        }
+        } catch {}
+        next(err);
       }
     });
 });
