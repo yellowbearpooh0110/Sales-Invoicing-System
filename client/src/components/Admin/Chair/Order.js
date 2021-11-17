@@ -658,7 +658,6 @@ export default connect(mapStateToProps)((props) => {
                       })
                       .catch(function (error) {
                         // handle error
-                        setWhatsAppOpen(false);
                         Swal.fire({
                           icon: 'error',
                           title: 'Error',
@@ -687,7 +686,6 @@ export default connect(mapStateToProps)((props) => {
                       })
                       .catch(function (error) {
                         // handle error
-                        setWhatsAppOpen(false);
                         Swal.fire({
                           icon: 'error',
                           title: 'Error',

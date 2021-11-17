@@ -6,6 +6,7 @@ import {
   BookOnline as BookOnlineIcon,
   BlurOn as BlurOnIcon,
   ColorLens as ColorLensIcon,
+  PeopleAlt as PeopleAltIcon,
   Storefront as StorefrontIcon,
 } from '@mui/icons-material';
 import Swal from 'sweetalert2';
@@ -59,6 +60,10 @@ const menuLists = [
     content: [
       { path: '/admin/color', icon: <ColorLensIcon />, label: 'Color' },
     ],
+  },
+  {
+    category: 'User',
+    content: [{ path: '/admin/user', icon: <PeopleAltIcon />, label: 'Users' }],
   },
 ];
 

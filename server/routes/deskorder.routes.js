@@ -4,6 +4,7 @@ const Joi = require('joi');
 const Sequelize = require('sequelize');
 
 const admin = require('server/middleware/admin');
+const salesman = require('server/middleware/salesman');
 const authorize = require('server/middleware/authorize');
 const validateRequest = require('server/middleware/validate-request');
 const deskorderController = require('server/controller/deskorder.controller');
@@ -11,42 +12,42 @@ const deskorderController = require('server/controller/deskorder.controller');
 router.post('/create', authorize(), createSchema, create);
 router.get('/', admin(), getAll);
 router.get('/getDelivery', authorize(), getDelivery);
-router.get('/current', authorize(), getCurrent);
+router.get('/current', salesman(), getCurrent);
 router.get('/:id', authorize(), getById);
 router.put('/withoutStock/:id', admin(), updateSchema, updateWithoutStock);
-router.put('/:id', admin(), createSchema, update);
+router.put('/:id', salesman(), createSchema, update);
 router.post('/sign', authorize(), signSchema, signDelivery);
-router.delete('/:id', admin(), _delete);
-router.delete('/', admin(), bulkDeleteSchema, _bulkDelete);
+router.delete('/:id', salesman(), _delete);
+router.delete('/', salesman(), bulkDeleteSchema, _bulkDelete);
 
 module.exports = router;
 
 function createSchema(req, res, next) {
   const schema = Joi.object({
-    deskModelId: Joi.string().guid(),
-    colorId: Joi.string().guid(),
-    armSize: Joi.number(),
-    feetSize: Joi.number(),
-    beam: Joi.string().allow(''),
-    akInfo: Joi.string().allow(''),
-    woodInfo_1: Joi.string().allow(''),
-    woodInfo_2: Joi.string().allow(''),
-    melamineInfo: Joi.string().allow(''),
-    laminateInfo: Joi.string().allow(''),
-    bambooInfo: Joi.string().allow(''),
-    deskRemark: Joi.string().allow(''),
-    clientName: Joi.string().allow(''),
-    clientPhone: Joi.string().allow(''),
-    clientEmail: Joi.string().allow(''),
-    clientDistrict: Joi.string().allow(''),
-    clientStreet: Joi.string().allow(''),
-    clientBlock: Joi.string().allow(''),
-    clientFloor: Joi.string().allow(''),
-    clientUnit: Joi.string().allow(''),
-    clientRemark: Joi.string().allow(''),
-    deliveryDate: Joi.date(),
+    deskModelId: Joi.string().guid().required(),
+    colorId: Joi.string().guid().required(),
+    armSize: Joi.number().required(),
+    feetSize: Joi.number().required(),
+    beam: Joi.string().allow('').required(),
+    akInfo: Joi.string().allow('').required(),
+    woodInfo_1: Joi.string().allow('').required(),
+    woodInfo_2: Joi.string().allow('').required(),
+    melamineInfo: Joi.string().allow('').required(),
+    laminateInfo: Joi.string().allow('').required(),
+    bambooInfo: Joi.string().allow('').required(),
+    deskRemark: Joi.string().allow('').required(),
+    clientName: Joi.string().allow('').required(),
+    clientPhone: Joi.string().allow('').required(),
+    clientEmail: Joi.string().allow('').required(),
+    clientDistrict: Joi.string().allow('').required(),
+    clientStreet: Joi.string().allow('').required(),
+    clientBlock: Joi.string().allow('').required(),
+    clientFloor: Joi.string().allow('').required(),
+    clientUnit: Joi.string().allow('').required(),
+    clientRemark: Joi.string().allow('').required(),
+    deliveryDate: Joi.date().required(),
     unitPrice: Joi.number().required(),
-    QTY: Joi.number(),
+    QTY: Joi.number().integer().min(1).required(),
   });
   validateRequest(req, next, schema);
 }

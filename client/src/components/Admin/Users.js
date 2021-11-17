@@ -2,11 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import {
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
   TextField,
 } from '@mui/material';
 import axios from 'axios';
@@ -15,12 +21,6 @@ import Swal from 'sweetalert2';
 import DataGrid from 'components/Common/DataGrid';
 
 const columns = [
-  {
-    id: 'id',
-    numeric: true,
-    disablePadding: false,
-    label: 'Id',
-  },
   {
     id: 'email',
     numeric: false,
@@ -40,16 +40,16 @@ const columns = [
     label: 'Last Name',
   },
   {
-    id: 'passportNo',
+    id: 'type',
     numeric: false,
     disablePadding: true,
-    label: 'Passport',
+    label: 'Type',
   },
   {
-    id: 'selfieUrl',
+    id: 'isActive',
     numeric: false,
     disablePadding: true,
-    label: 'Selfie',
+    label: 'Active',
   },
 ];
 
@@ -60,41 +60,65 @@ function mapStateToProps(state) {
 
 const Users = connect(mapStateToProps)((props) => {
   const [users, setUsers] = useState([]);
-  const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+
+  const [id, setID] = useState('');
   const [email, setEmail] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [passport, setPassport] = useState('');
-  const [selfie, setSelfie] = useState('');
+  const [type, setType] = useState('');
+  const [isActive, setIsActive] = useState('');
 
   const handleEditClick = (event, index) => {
     if (index < users.length && index >= 0) {
+      setID(users[index].id);
       setEmail(users[index].email);
       setFirstName(users[index].firstName);
       setLastName(users[index].lastName);
-      setPassport(users[index].passportNo);
-      setSelfie(users[index].selfieUrl);
+      setType(users[index].type);
+      setIsActive(users[index].isActive);
     }
-    setOpen(true);
+    setEditOpen(true);
   };
 
   const handleClose = () => {
-    setOpen(false);
+    setEditOpen(false);
   };
 
   const handleSave = () => {
-    Swal.fire({
-      icon: 'success',
-      title: 'Success',
-      text: 'User information updated successfully.',
-      allowOutsideClick: false,
-    });
-    setOpen(false);
+    axios
+      .put(`/user/${id}`, {
+        email,
+        firstName,
+        lastName,
+        type,
+      })
+      .then((response) => {
+        // handle success
+        setEditOpen(false);
+        getUsers();
+      })
+      .catch(function (error) {
+        // handle error
+        setEditOpen(false);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.response.data.message,
+          allowOutsideClick: false,
+        }).then(() => {
+          setEditOpen(true);
+        });
+        console.log(error);
+      })
+      .then(function () {
+        // always executed
+      });
   };
 
   const getUsers = (cancelToken) => {
     axios
-      .get('/users', { cancelToken: cancelToken })
+      .get('/user', { cancelToken: cancelToken })
       .then((response) => {
         // handle success
         setUsers(response.data);
@@ -118,72 +142,103 @@ const Users = connect(mapStateToProps)((props) => {
     <>
       <DataGrid
         title="Users"
-        rows={users}
+        rows={users.map(({ id, isActive, ...restProps }, index) => ({
+          id: index,
+          isActive: (
+            <Checkbox
+              checked={isActive}
+              onClick={(event) => {
+                event.stopPropagation();
+                event.preventDefault();
+                axios
+                  .put(`/user/${id}`, {
+                    isActive: !isActive,
+                  })
+                  .then(() => {
+                    getUsers();
+                  })
+                  .catch(function (error) {
+                    // handle error
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Error',
+                      text: error.response.data.message,
+                      allowOutsideClick: false,
+                    });
+                  })
+                  .then(function () {
+                    // always executed
+                  });
+              }}
+            />
+          ),
+          ...restProps,
+        }))}
         columns={columns}
         onEditClick={handleEditClick}
       ></DataGrid>
-      <Dialog open={open}>
+      <Dialog open={editOpen}>
         <DialogTitle>Edit User</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Please Edit the User information and Click Save button.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Email Address"
-            type="email"
-            fullWidth
-            variant="standard"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
-          />
-          <TextField
-            margin="dense"
-            label="First Name"
-            type=""
-            fullWidth
-            variant="standard"
-            value={firstName}
-            onChange={(e) => {
-              setFirstName(e.target.value);
-            }}
-          />
-          <TextField
-            margin="dense"
-            label="Last Name"
-            type=""
-            fullWidth
-            variant="standard"
-            value={lastName}
-            onChange={(e) => {
-              setLastName(e.target.value);
-            }}
-          />
-          <TextField
-            margin="dense"
-            label="Passport"
-            type=""
-            fullWidth
-            variant="standard"
-            value={passport}
-            onChange={(e) => {
-              setPassport(e.target.value);
-            }}
-          />
-          <TextField
-            margin="dense"
-            label="Selfie"
-            type=""
-            fullWidth
-            variant="standard"
-            value={selfie}
-            onChange={(e) => {
-              setSelfie(e.target.value);
-            }}
-          />
+          <Stack spacing={2}>
+            <DialogContentText>
+              Please Edit the User information and Click Save button.
+            </DialogContentText>
+            {[
+              {
+                value: email,
+                setValue: setEmail,
+                label: 'Email',
+                width: '100%',
+              },
+              {
+                value: firstName,
+                setValue: setFirstName,
+                label: 'First Name',
+                width: '100%',
+              },
+              {
+                value: lastName,
+                setValue: setLastName,
+                label: 'Last Name',
+                width: '100%',
+              },
+            ].map(({ value, values, setValue, label, width }, index) => (
+              <TextField
+                key={index}
+                sx={{ flexBasis: width, minWidth: width }}
+                value={value}
+                onChange={(event) => {
+                  event.preventDefault();
+                  setValue(event.target.value);
+                }}
+                margin="dense"
+                label={label}
+                variant="outlined"
+                size="small"
+              />
+            ))}
+            <FormControl>
+              <InputLabel id="user-type-select-label">Type</InputLabel>
+              <Select
+                labelId="user-type-select-label"
+                id="user-type-select"
+                value={type}
+                label="Type"
+                margin="dense"
+                variant="outlined"
+                size="small"
+                onChange={(event) => {
+                  event.preventDefault();
+                  setType(event.target.value);
+                }}
+              >
+                <MenuItem value="admin">Admin</MenuItem>
+                <MenuItem value="salesman">Salesman</MenuItem>
+                <MenuItem value="driver">Driver</MenuItem>
+              </Select>
+            </FormControl>
+          </Stack>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>

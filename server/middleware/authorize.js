@@ -14,7 +14,8 @@ function authorize() {
       const user = await db.User.findByPk(req.user.sub);
 
       // check user still exists
-      if (!user) return res.status(401).json({ message: 'Unauthorized' });
+      if (!user || !user.isActive)
+        return res.status(401).json({ message: 'You are unauthorized!' });
 
       // authorization successful
       req.user = user.get();

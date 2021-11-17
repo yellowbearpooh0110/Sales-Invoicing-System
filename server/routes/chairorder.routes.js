@@ -4,6 +4,7 @@ const Joi = require('joi');
 const Sequelize = require('sequelize');
 
 const admin = require('server/middleware/admin');
+const salesman = require('server/middleware/salesman');
 const authorize = require('server/middleware/authorize');
 const validateRequest = require('server/middleware/validate-request');
 const chairorderController = require('server/controller/chairorder.controller');
@@ -11,14 +12,14 @@ const chairorderController = require('server/controller/chairorder.controller');
 router.post('/create', authorize(), createSchema, create);
 router.get('/', admin(), getAll);
 router.get('/getDelivery', authorize(), getDelivery);
-router.get('/current', authorize(), getCurrent);
+router.get('/current', salesman(), getCurrent);
 router.get('/:id', authorize(), getById);
 // router.get('/chairinvoice/:token', getByToken);
 router.put('/withoutStock/:id', admin(), updateSchema, updateWithoutStock);
-router.put('/:id', admin(), createSchema, update);
+router.put('/:id', salesman(), createSchema, update);
 router.post('/sign', authorize(), signSchema, signDelivery);
-router.delete('/:id', admin(), _delete);
-router.delete('/', admin(), bulkDeleteSchema, _bulkDelete);
+router.delete('/:id', salesman(), _delete);
+router.delete('/', salesman(), bulkDeleteSchema, _bulkDelete);
 
 module.exports = router;
 
@@ -43,7 +44,7 @@ function createSchema(req, res, next) {
     clientRemark: Joi.string().allow('').required(),
     deliveryDate: Joi.date().required(),
     unitPrice: Joi.number().required(),
-    QTY: Joi.number().required(),
+    QTY: Joi.number().integer().min(1).required(),
   });
   validateRequest(req, next, schema);
 }

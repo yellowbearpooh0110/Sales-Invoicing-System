@@ -24,6 +24,7 @@ import {
   Add as AddIcon,
   Email as EmailIcon,
   PictureAsPdf as PictureAsPdfIcon,
+  Remove as RemoveIcon,
   WhatsApp as WhatsAppIcon,
 } from '@mui/icons-material';
 import MuiPhoneNumber from 'material-ui-phone-number';
@@ -67,10 +68,28 @@ const columns = [
     label: 'Order Date',
   },
   {
+    id: 'isPreOrder',
+    numeric: false,
+    disablePadding: false,
+    label: 'PreOrder',
+  },
+  {
     id: 'QTY',
     numeric: true,
     disablePadding: false,
     label: 'QTY',
+  },
+  {
+    id: 'paid',
+    numeric: false,
+    disablePadding: false,
+    label: 'Paid',
+  },
+  {
+    id: 'finished',
+    numeric: false,
+    disablePadding: false,
+    label: 'Finished',
   },
 ];
 
@@ -122,6 +141,7 @@ export default connect(mapStateToProps)((props) => {
   const [withHeadrest, setWithHeadrest] = useState(true);
   const [withAdArmrest, setWithAdArmrest] = useState(true);
   const [chairRemark, setChairRemark] = useState('');
+  const [unitPrice, setUnitPrice] = useState(1000);
   const [QTY, setQTY] = useState(1);
 
   const handleFilterClick = (e) => {
@@ -263,10 +283,6 @@ export default connect(mapStateToProps)((props) => {
   const handleEditClick = (event, index) => {
     event.preventDefault();
     if (index < orders.length && index >= 0) {
-      getBrands();
-      getModels();
-      getColors();
-      getChairRemarks();
       setID(orders[index].id);
       setBrand(orders[index].stock.chairBrand);
       setModel(orders[index].stock.chairModel);
@@ -290,6 +306,7 @@ export default connect(mapStateToProps)((props) => {
         deliveryDate.getMinutes() - deliveryDate.getTimezoneOffset()
       );
       setDeliveryDate(deliveryDate.toISOString().split('T')[0]);
+      setUnitPrice(orders[index].unitPrice);
       setQTY(orders[index].QTY);
       setEditOpen(true);
     }
@@ -387,7 +404,8 @@ export default connect(mapStateToProps)((props) => {
         clientFloor,
         clientUnit,
         deliveryDate,
-        remark,
+        clientRemark: remark,
+        unitPrice,
         QTY,
       })
       .then((response) => {
@@ -434,7 +452,8 @@ export default connect(mapStateToProps)((props) => {
         clientFloor,
         clientUnit,
         deliveryDate,
-        remark,
+        clientRemark: remark,
+        unitPrice,
         QTY,
       })
       .then((response) => {
@@ -542,6 +561,10 @@ export default connect(mapStateToProps)((props) => {
 
   useEffect(() => {
     const source = axios.CancelToken.source();
+    getBrands(source.token);
+    getModels(source.token);
+    getColors(source.token);
+    getChairRemarks(source.token);
     getOrders(source.token);
     return () => source.cancel('Brand Component got unmounted');
   }, []);
@@ -552,10 +575,6 @@ export default connect(mapStateToProps)((props) => {
         variant="outlined"
         startIcon={<AddIcon />}
         onClick={() => {
-          getBrands();
-          getModels();
-          getColors();
-          getChairRemarks();
           setBrand(null);
           setModel(null);
           setFrameColor(null);
@@ -576,6 +595,7 @@ export default connect(mapStateToProps)((props) => {
           now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
           setDeliveryDate(now.toISOString().split('T')[0]);
           setRemark('');
+          setUnitPrice(1000);
           setQTY(1);
           setCreateOpen(true);
         }}
@@ -595,7 +615,10 @@ export default connect(mapStateToProps)((props) => {
                 clientFloor,
                 clientUnit,
                 salesman,
+                isPreOrder,
                 createdAt,
+                paid,
+                finished,
                 ...restProps
               },
               index
@@ -619,24 +642,83 @@ export default connect(mapStateToProps)((props) => {
                 clientFloor,
                 clientUnit,
               ].join(', '),
+              isPreOrder: isPreOrder ? 'Yes' : 'No',
+              paid: (
+                <Checkbox
+                  checked={paid}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    axios
+                      .put(`/chairOrder/withoutStock/${id}`, {
+                        paid: !paid,
+                      })
+                      .then(() => {
+                        getOrders();
+                      })
+                      .catch(function (error) {
+                        // handle error
+                        setWhatsAppOpen(false);
+                        Swal.fire({
+                          icon: 'error',
+                          title: 'Error',
+                          text: error.response.data.message,
+                          allowOutsideClick: false,
+                        });
+                      })
+                      .then(function () {
+                        // always executed
+                      });
+                  }}
+                />
+              ),
+              finished: (
+                <Checkbox
+                  checked={finished}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    axios
+                      .put(`/chairOrder/withoutStock/${id}`, {
+                        finished: !finished,
+                      })
+                      .then(() => {
+                        getOrders();
+                      })
+                      .catch(function (error) {
+                        // handle error
+                        setWhatsAppOpen(false);
+                        Swal.fire({
+                          icon: 'error',
+                          title: 'Error',
+                          text: error.response.data.message,
+                          allowOutsideClick: false,
+                        });
+                      })
+                      .then(function () {
+                        // always executed
+                      });
+                  }}
+                />
+              ),
               ...restProps,
             })
           )
           .filter(
             (item, key) =>
-              (item.stock.chairBrand.name || '')
+              (item.stock.chairBrand || { name: '' }).name
                 .toLowerCase()
                 .includes(filterBrand.toLowerCase()) &&
-              (item.stock.chairModel.name || '')
+              (item.stock.chairModel || { name: '' }).name
                 .toLowerCase()
                 .includes(filterModel.toLowerCase()) &&
-              (item.stock.frameColor.name || '')
+              (item.stock.frameColor || { name: '' }).name
                 .toLowerCase()
                 .includes(filterFrameColor.toLowerCase()) &&
-              (item.stock.backColor.name || '')
+              (item.stock.backColor || { name: '' }).name
                 .toLowerCase()
                 .includes(filterBackColor.toLowerCase()) &&
-              (item.stock.seatColor.name || '')
+              (item.stock.seatColor || { name: '' }).name
                 .toLowerCase()
                 .includes(filterSeatColor.toLowerCase())
           )}
@@ -868,7 +950,7 @@ export default connect(mapStateToProps)((props) => {
                 )}
               />
               <FormControlLabel
-                sx={{ flexBasis: '45%', minWidth: '45%' }}
+                sx={{ flexBasis: '45%', minWidth: '45%', marginLeft: 0 }}
                 control={
                   <Checkbox
                     checked={withHeadrest}
@@ -880,7 +962,7 @@ export default connect(mapStateToProps)((props) => {
                 label="With Headrest"
               />
               <FormControlLabel
-                sx={{ flexBasis: '45%', minWidth: '45%' }}
+                sx={{ flexBasis: '45%', minWidth: '45%', marginLeft: 0 }}
                 control={
                   <Checkbox
                     checked={withAdArmrest}
@@ -891,6 +973,59 @@ export default connect(mapStateToProps)((props) => {
                 }
                 label="With Adjustable Armrests"
               />
+              <FormControlLabel
+                sx={{ flexBasis: '40%', minWidth: '40%', marginLeft: 0 }}
+                control={
+                  <TextField
+                    label="Unit Price"
+                    variant="outlined"
+                    margin="dense"
+                    size="small"
+                    type="number"
+                    sx={{ width: '130px', m: '10px 5px 0 0' }}
+                    value={unitPrice}
+                    onChange={(e) => {
+                      if (e.target.value >= 0) setUnitPrice(e.target.value);
+                      else setUnitPrice(0);
+                    }}
+                  />
+                }
+                label="HKD"
+              />
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                sx={{ flexBasis: '100%', minWidth: '100%' }}
+              >
+                <IconButton
+                  onClick={() => {
+                    setQTY(QTY > 2 ? QTY - 1 : 1);
+                  }}
+                >
+                  <RemoveIcon />
+                </IconButton>
+                <TextField
+                  margin="dense"
+                  label="QTY"
+                  variant="outlined"
+                  size="small"
+                  value={QTY}
+                  type="number"
+                  sx={{ width: '80px', mx: '5px' }}
+                  onChange={(e) => {
+                    if (e.target.value > 1) setQTY(e.target.value);
+                    else setQTY(1);
+                  }}
+                />
+                <IconButton
+                  onClick={() => {
+                    setQTY(QTY + 1);
+                  }}
+                >
+                  <AddIcon />
+                </IconButton>
+              </Box>
             </Paper>
             <Paper
               sx={{
@@ -1007,18 +1142,6 @@ export default connect(mapStateToProps)((props) => {
                 )
               )}
             </Paper>
-            <TextField
-              margin="dense"
-              label="QTY"
-              fullWidth
-              variant="outlined"
-              size="small"
-              value={QTY}
-              type="number"
-              onChange={(e) => {
-                setQTY(e.target.value);
-              }}
-            />
           </Stack>
         </DialogContent>
         <DialogActions>
@@ -1163,6 +1286,59 @@ export default connect(mapStateToProps)((props) => {
                 }
                 label="With Adjustable Armrests"
               />
+              <FormControlLabel
+                sx={{ flexBasis: '40%', minWidth: '40%', marginLeft: 0 }}
+                control={
+                  <TextField
+                    label="Unit Price"
+                    variant="outlined"
+                    margin="dense"
+                    size="small"
+                    type="number"
+                    sx={{ width: '130px', m: '10px 5px 0 0' }}
+                    value={unitPrice}
+                    onChange={(e) => {
+                      if (e.target.value >= 0) setUnitPrice(e.target.value);
+                      else setUnitPrice(0);
+                    }}
+                  />
+                }
+                label="HKD"
+              />
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                sx={{ flexBasis: '100%', minWidth: '100%' }}
+              >
+                <IconButton
+                  onClick={() => {
+                    setQTY(QTY > 2 ? QTY - 1 : 1);
+                  }}
+                >
+                  <RemoveIcon />
+                </IconButton>
+                <TextField
+                  margin="dense"
+                  label="QTY"
+                  variant="outlined"
+                  size="small"
+                  value={QTY}
+                  type="number"
+                  sx={{ width: '80px', mx: '5px' }}
+                  onChange={(e) => {
+                    if (e.target.value > 1) setQTY(e.target.value);
+                    else setQTY(1);
+                  }}
+                />
+                <IconButton
+                  onClick={() => {
+                    setQTY(QTY + 1);
+                  }}
+                >
+                  <AddIcon />
+                </IconButton>
+              </Box>
             </Paper>
             <Paper
               sx={{
@@ -1279,18 +1455,6 @@ export default connect(mapStateToProps)((props) => {
                 )
               )}
             </Paper>
-            <TextField
-              margin="dense"
-              label="QTY"
-              fullWidth
-              variant="outlined"
-              size="small"
-              value={QTY}
-              type="number"
-              onChange={(e) => {
-                setQTY(e.target.value);
-              }}
-            />
           </Stack>
         </DialogContent>
         <DialogActions>

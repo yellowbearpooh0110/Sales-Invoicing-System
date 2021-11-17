@@ -30,7 +30,7 @@ function createSchema(req, res, next) {
     laminateInfo: Joi.string().required(),
     bambooInfo: Joi.string().required(),
     deskRemark: Joi.string().allow('').required(),
-    QTY: Joi.number().required().required(),
+    QTY: Joi.number().integer().min(0).required(),
   });
   validateRequest(req, next, schema);
 }

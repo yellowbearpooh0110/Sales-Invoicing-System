@@ -84,7 +84,9 @@ function updateSchema(req, res, next) {
     firstName: Joi.string().empty(''),
     lastName: Joi.string().empty(''),
     username: Joi.string().empty(''),
+    type: Joi.string().empty(''),
     password: Joi.string().min(6).empty(''),
+    isActive: Joi.boolean(),
   });
   validateRequest(req, next, schema);
 }

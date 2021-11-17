@@ -26,7 +26,7 @@ function createSchema(req, res, next) {
     withHeadrest: Joi.boolean().required(),
     withAdArmrest: Joi.boolean().required(),
     chairRemark: Joi.string().allow('').required(),
-    QTY: Joi.number().required(),
+    QTY: Joi.number().integer().min(0).required(),
   });
   validateRequest(req, next, schema);
 }

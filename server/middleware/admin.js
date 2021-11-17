@@ -14,8 +14,8 @@ function admin() {
       const user = await db.User.findByPk(req.user.sub);
 
       // check user still exists
-      if (!user || user.type !== 'admin')
-        return res.status(401).json({ message: 'Unauthorized' });
+      if (!user || !user.isActive || user.type !== 'admin')
+        return res.status(401).json({ message: 'You are unauthorized!' });
 
       // authorization successful
       req.user = user.get();
