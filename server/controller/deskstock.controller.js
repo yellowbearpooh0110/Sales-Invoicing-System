@@ -26,8 +26,8 @@ async function getAll() {
       'QTY',
     ],
     include: [
-      { model: db.DeskModel, as: 'deskModel', attributes: ['name'] },
-      { model: db.ProductColor, as: 'color', attributes: ['name'] },
+      { model: db.DeskModel, as: 'deskModel', attributes: ['id', 'name'] },
+      { model: db.ProductColor, as: 'color', attributes: ['id', 'name'] },
     ],
     order: ['createdAt'],
   });
@@ -39,14 +39,23 @@ async function getById(id) {
 
 async function create(params) {
   const { QTY, ...restParams } = params;
-  if (
-    await db.DeskStock.findOne({
-      where: restParams,
-    })
-  )
-    throw 'Identical DeskStock Exists.';
-  // save DeskStock
-  await db.DeskStock.create(params);
+  const nonRegistered = await db.DeskStock.findOne({
+    where: { isRegistered: false, ...restParams },
+  });
+  const registered = await db.DeskStock.findOne({
+    where: { isRegistered: true, ...restParams },
+  });
+  if (registered) throw 'Identical DeskStock Exists.';
+  else {
+    if (nonRegistered) {
+      // set isRegistered as true and save
+      nonRegistered.isRegistered = true;
+      await nonRegistered.save();
+    } else {
+      // save registered DeskStock
+      await db.DeskStock.create({ ...params, isRegistered: true });
+    }
+  }
 }
 
 async function update(id, params) {

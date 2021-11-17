@@ -5,6 +5,7 @@ module.exports = {
   getById,
   create,
   update,
+  updateWithoutStock,
   signDelivery,
   delete: _delete,
   bulkDelete: _bulkDelete,
@@ -64,7 +65,56 @@ async function getAll(where) {
 }
 
 async function getById(id) {
-  return await getChairOrder(id);
+  return await db.ChairOrder.findOne({
+    where: { id: id },
+    include: [
+      {
+        model: db.User,
+        as: 'salesman',
+        attributes: ['firstName', 'lastName', 'prefix'],
+      },
+      {
+        model: db.ChairStock,
+        as: 'stock',
+        attributes: [
+          'id',
+          'chairRemark',
+          'QTY',
+          'withHeadrest',
+          'withAdArmrest',
+        ],
+        include: [
+          {
+            model: db.ChairBrand,
+            as: 'chairBrand',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: db.ChairModel,
+            as: 'chairModel',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: db.ProductColor,
+            as: 'frameColor',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: db.ProductColor,
+            as: 'backColor',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: db.ProductColor,
+            as: 'seatColor',
+            attributes: ['id', 'name'],
+          },
+        ],
+        order: ['createdAt'],
+      },
+    ],
+    order: ['createdAt'],
+  });
 }
 
 async function create(params) {
@@ -93,8 +143,22 @@ async function create(params) {
     where: stockParams,
   });
   if (!chairStock)
-    chairStock = await db.ChairStock.create({ QTY: 0, ...stockParams });
+    chairStock = await db.ChairStock.create({
+      ...stockParams,
+      // isRegistered: false,
+      isRegistered: true,
+      QTY: 0,
+    });
   restParams.stockId = chairStock.id;
+
+  // Check updated ChairStock is registered and its QTY, then determine the ChairOrder is preorder or not
+  if (!chairStock.isRegistered || chairStock.QTY < restParams.QTY)
+    restParams.isPreOrder = true;
+  else {
+    chairStock.QTY -= restParams.QTY;
+    await chairStock.save();
+    restParams.isPreOrder = false;
+  }
   await db.ChairOrder.create(restParams);
 }
 
@@ -121,13 +185,44 @@ async function update(id, params) {
     withAdArmrest,
     chairRemark,
   };
+
+  // Plus the ChairStock QTY if the ChairOrder was not a pre-order
+  if (!chairOrder.isPreOrder) {
+    const formerChairStock = await db.ChairStock.findByPk(chairOrder.stockId);
+    if (formerChairStock) {
+      formerChairStock.QTY += chairOrder.QTY;
+      await formerChairStock.save();
+    }
+  }
+
   let chairStock = await db.ChairStock.findOne({
     where: stockParams,
   });
   if (!chairStock)
-    chairStock = await db.ChairStock.create({ QTY: 0, ...stockParams });
+    chairStock = await db.ChairStock.create({
+      ...stockParams,
+      // isRegistered: false,
+      isRegistered: true,
+      QTY: 0,
+    });
   restParams.stockId = chairStock.id;
+
+  // Check updated ChairStock is registered and its QTY, then determine the ChairOrder is preorder or not
+  if (!chairStock.isRegistered || chairStock.QTY < restParams.QTY)
+    restParams.isPreOrder = true;
+  else {
+    chairStock.QTY -= restParams.QTY;
+    await chairStock.save();
+    restParams.isPreOrder = false;
+  }
   Object.assign(chairOrder, restParams);
+  await chairOrder.save();
+  return chairOrder.get();
+}
+
+async function updateWithoutStock(id, params) {
+  const chairOrder = await getChairOrder(id);
+  Object.assign(chairOrder, params);
   await chairOrder.save();
   return chairOrder.get();
 }

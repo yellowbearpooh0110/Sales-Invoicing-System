@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Swal from 'sweetalert2';
+import LogoTitile from 'images/logo_title.png';
 
 import { login } from 'services/auth.service';
 
@@ -38,9 +39,6 @@ const Copyright = (props) => {
     </Typography>
   );
 };
-
-// "email": "admin@admin.com",
-// "password": "admin41@"
 
 const SignIn = connect(mapStateToProps, { login })((props) => {
   const handleSubmit = (event) => {
@@ -75,6 +73,7 @@ const SignIn = connect(mapStateToProps, { login })((props) => {
           alignItems: 'center',
         }}
       >
+        <img src={LogoTitile} alt="Ergoseating"></img>
         <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
           <LockOutlinedIcon />
         </Avatar>

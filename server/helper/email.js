@@ -30,7 +30,7 @@ module.exports.ViewOption = (transport, hbs) => {
       viewEngine: {
         extname: '.hbs',
         layoutsDir: 'server/view/email/', // location of handlebars templates
-        defaultLayout: 'test',
+        defaultLayout: 'invoice',
       },
       viewPath: 'server/view/email/',
       extName: '.hbs',

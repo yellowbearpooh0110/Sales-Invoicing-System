@@ -1,8 +1,12 @@
+const fs = require('fs');
+
 module.exports = {
   getAll,
   getById,
   create,
   update,
+  updateWithoutStock,
+  signDelivery,
   delete: _delete,
   bulkDelete: _bulkDelete,
 };
@@ -33,16 +37,8 @@ async function getAll(where) {
           'deskRemark',
         ],
         include: [
-          {
-            model: db.DeskModel,
-            as: 'deskModel',
-            attributes: ['id', 'name'],
-          },
-          {
-            model: db.ProductColor,
-            as: 'color',
-            attributes: ['id', 'name'],
-          },
+          { model: db.DeskModel, as: 'deskModel', attributes: ['id', 'name'] },
+          { model: db.ProductColor, as: 'color', attributes: ['id', 'name'] },
         ],
         order: ['createdAt'],
       },
@@ -52,7 +48,39 @@ async function getAll(where) {
 }
 
 async function getById(id) {
-  return await getDeskOrder(id);
+  return await db.DeskOrder.findOne({
+    where: { id: id },
+    include: [
+      {
+        model: db.User,
+        as: 'salesman',
+        attributes: ['firstName', 'lastName', 'prefix'],
+      },
+      {
+        model: db.DeskStock,
+        as: 'stock',
+        attributes: [
+          'id',
+          'armSize',
+          'feetSize',
+          'beam',
+          'akInfo',
+          'woodInfo_1',
+          'woodInfo_2',
+          'melamineInfo',
+          'laminateInfo',
+          'bambooInfo',
+          'deskRemark',
+        ],
+        include: [
+          { model: db.DeskModel, as: 'deskModel', attributes: ['id', 'name'] },
+          { model: db.ProductColor, as: 'color', attributes: ['id', 'name'] },
+        ],
+        order: ['createdAt'],
+      },
+    ],
+    order: ['createdAt'],
+  });
 }
 
 async function create(params) {
@@ -85,13 +113,28 @@ async function create(params) {
     bambooInfo,
     deskRemark,
   };
+
   let deskStock = await db.DeskStock.findOne({
     where: stockParams,
   });
   if (!deskStock)
-    deskStock = await db.DeskStock.create({ QTY: 0, ...stockParams });
+    deskStock = await db.DeskStock.create({
+      ...stockParams,
+      // isRegistered: false,
+      isRegistered: true,
+      QTY: 0,
+    });
   restParams.stockId = deskStock.id;
-  await db.DeskOrder.create(restParams);
+
+  // Check updated DeskStock is registered and its QTY, then determine the DeskOrder is preorder or not
+  if (!deskStock.isRegistered || deskStock.QTY < restParams.QTY)
+    restParams.isPreOrder = true;
+  else {
+    deskStock.QTY -= restParams.QTY;
+    await deskStock.save();
+    restParams.isPreOrder = false;
+  }
+  await db.ChairOrder.create(restParams);
 }
 
 async function update(id, params) {
@@ -125,13 +168,44 @@ async function update(id, params) {
     bambooInfo,
     deskRemark,
   };
+
+  // Plus the DeskStock QTY if the DeskOrder was not a pre-order
+  if (!deskOrder.isPreOrder) {
+    const formerDeskStock = await db.DeskStock.findByPk(deskOrder.stockId);
+    if (formerDeskStock) {
+      formerDeskStock.QTY += deskOrder.QTY;
+      await formerDeskStock.save();
+    }
+  }
+
   let deskStock = await db.DeskStock.findOne({
     where: stockParams,
   });
   if (!deskStock)
-    deskStock = await db.DeskStock.create({ QTY: 0, ...stockParams });
+    deskStock = await db.DeskStock.create({
+      ...stockParams,
+      // isRegistered: false,
+      isRegistered: true,
+      QTY: 0,
+    });
   restParams.stockId = deskStock.id;
+
+  // Check updated DeskStock is registered and its QTY, then determine the DeskOrder is preorder or not
+  if (!deskStock.isRegistered || deskStock.QTY < restParams.QTY)
+    restParams.isPreOrder = true;
+  else {
+    deskStock.QTY -= restParams.QTY;
+    await deskStock.save();
+    restParams.isPreOrder = false;
+  }
   Object.assign(deskOrder, restParams);
+  await deskOrder.save();
+  return deskOrder.get();
+}
+
+async function updateWithoutStock(id, params) {
+  const deskOrder = await getDeskOrder(id);
+  Object.assign(deskOrder, params);
   await deskOrder.save();
   return deskOrder.get();
 }

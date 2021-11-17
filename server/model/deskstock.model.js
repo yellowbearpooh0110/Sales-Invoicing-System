@@ -58,6 +58,11 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: '',
     },
+    isRegistered: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     QTY: {
       type: DataTypes.INTEGER,
       allowNull: false,

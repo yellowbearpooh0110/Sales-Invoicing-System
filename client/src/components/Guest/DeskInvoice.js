@@ -121,7 +121,7 @@ export default () => {
 
   const getOrder = ({ id, cancelToken }) => {
     axios
-      .get(`/chairorder/${id}`, { cancelToken })
+      .get(`/deskorder/${id}`, { cancelToken })
       .then((response) => {
         // handle success
         setSuccess(true);
@@ -151,7 +151,7 @@ export default () => {
       <Document>
         <Page style={styles.body} wrap>
           <Text style={styles.header} fixed>
-            Chair Invoice
+            Desk Invoice
           </Text>
           <Text style={styles.title}>Invoice</Text>
           <View style={styles.detail}>
@@ -251,7 +251,7 @@ export default () => {
                 cells: [
                   { content: order.QTY, width: '15%' },
                   {
-                    content: `${order.stock.chairBrand.name}, ${order.stock.chairModel.name}, ${order.stock.frameColor.name}-F, ${order.stock.backColor.name}-B, ${order.stock.seatColor.name}-S, ${order.stock.chairRemark}`,
+                    content: `${order.stock.deskModel.name}, ${order.stock.color.name}, ${order.stock.beam}, ${order.stock.akInfo}`,
                     width: '55%',
                   },
                   { content: `${order.unitPrice} HKD`, width: '15%' },

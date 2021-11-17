@@ -17,7 +17,11 @@ function model(sequelize) {
     password: { type: DataTypes.STRING, allowNull: false },
     type: { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
     prefix: { type: DataTypes.CHAR(2), allowNull: false, defaultValue: '' },
-    active: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
   };
 
   const options = {

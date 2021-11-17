@@ -14,6 +14,7 @@ router.get('/getDelivery', authorize(), getDelivery);
 router.get('/current', authorize(), getCurrent);
 router.get('/:id', authorize(), getById);
 // router.get('/chairinvoice/:token', getByToken);
+router.put('/withoutStock/:id', admin(), updateSchema, updateWithoutStock);
 router.put('/:id', admin(), createSchema, update);
 router.post('/sign', authorize(), signSchema, signDelivery);
 router.delete('/:id', admin(), _delete);
@@ -23,25 +24,34 @@ module.exports = router;
 
 function createSchema(req, res, next) {
   const schema = Joi.object({
-    chairBrandId: Joi.string().guid(),
-    chairModelId: Joi.string().guid(),
-    frameColorId: Joi.string().guid(),
-    backColorId: Joi.string().guid(),
-    seatColorId: Joi.string().guid(),
-    withHeadrest: Joi.boolean(),
-    withAdArmrest: Joi.boolean(),
-    chairRemark: Joi.string().allow(''),
-    clientName: Joi.string().allow(''),
-    clientEmail: Joi.string().allow(''),
-    clientPhone: Joi.string().allow(''),
-    clientDistrict: Joi.string().allow(''),
-    clientStreet: Joi.string().allow(''),
-    clientBlock: Joi.string().allow(''),
-    clientFloor: Joi.string().allow(''),
-    clientUnit: Joi.string().allow(''),
-    clientRemark: Joi.string(),
-    deliveryDate: Joi.date(),
-    QTY: Joi.number(),
+    chairBrandId: Joi.string().guid().allow(null).required(),
+    chairModelId: Joi.string().guid().allow(null).required(),
+    frameColorId: Joi.string().guid().allow(null).required(),
+    backColorId: Joi.string().guid().allow(null).required(),
+    seatColorId: Joi.string().guid().allow(null).required(),
+    withHeadrest: Joi.boolean().required(),
+    withAdArmrest: Joi.boolean().required(),
+    chairRemark: Joi.string().allow('').required(),
+    clientName: Joi.string().allow('').required(),
+    clientEmail: Joi.string().allow('').required(),
+    clientPhone: Joi.string().allow('').required(),
+    clientDistrict: Joi.string().allow('').required(),
+    clientStreet: Joi.string().allow('').required(),
+    clientBlock: Joi.string().allow('').required(),
+    clientFloor: Joi.string().allow('').required(),
+    clientUnit: Joi.string().allow('').required(),
+    clientRemark: Joi.string().allow('').required(),
+    deliveryDate: Joi.date().required(),
+    unitPrice: Joi.number().required(),
+    QTY: Joi.number().required(),
+  });
+  validateRequest(req, next, schema);
+}
+
+function updateSchema(req, res, next) {
+  const schema = Joi.object({
+    paid: Joi.boolean(),
+    finished: Joi.boolean(),
   });
   validateRequest(req, next, schema);
 }
@@ -88,7 +98,8 @@ function getAll(req, res, next) {
 }
 
 function getDelivery(req, res, next) {
-  console.log(req.params);
+  const host = req.get('host');
+  const protocol = req.protocol;
   const deliveryDate = new Date(
     req.query.deliveryDate.replace(/(\d+[/])(\d+[/])/, '$2$1')
   );
@@ -117,8 +128,9 @@ function getDelivery(req, res, next) {
             clientFloor,
             clientUnit,
             clientRemark,
-            purchased,
+            paid,
             finished,
+            signURL,
             QTY,
             stock,
             salesman,
@@ -133,8 +145,9 @@ function getDelivery(req, res, next) {
             clientFloor,
             clientUnit,
             clientRemark,
-            purchased,
+            paid,
             finished,
+            signURL: signURL !== '' ? `${protocol}://${host}/${signURL}` : null,
             QTY,
             invoiceNum:
               'C_' + salesman.prefix + ('000' + invoiceNum).substr(-3),
@@ -172,6 +185,13 @@ function getById(req, res, next) {
 function update(req, res, next) {
   chairorderController
     .update(req.params.id, req.body)
+    .then((chairorder) => res.json(chairorder))
+    .catch(next);
+}
+
+function updateWithoutStock(req, res, next) {
+  chairorderController
+    .updateWithoutStock(req.params.id, req.body)
     .then((chairorder) => res.json(chairorder))
     .catch(next);
 }

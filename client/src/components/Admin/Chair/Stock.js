@@ -11,13 +11,14 @@ import {
   DialogTitle,
   Fade,
   FormControlLabel,
+  IconButton,
   Paper,
   Popper,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
+import { Add as AddIcon, Remove as RemoveIcon } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import axios from 'axios';
@@ -26,12 +27,6 @@ import Swal from 'sweetalert2';
 import DataGrid from 'components/Common/DataGrid';
 
 const columns = [
-  {
-    id: 'id',
-    numeric: false,
-    disablePadding: false,
-    label: 'Id',
-  },
   {
     id: 'chairBrand',
     numeric: false,
@@ -80,6 +75,7 @@ const columns = [
     disablePadding: false,
     label: 'Special Remarks',
   },
+
   {
     id: 'QTY',
     numeric: true,
@@ -131,10 +127,6 @@ const Stock = connect(mapStateToProps)((props) => {
   const handleEditClick = (event, index) => {
     event.preventDefault();
     if (index < stocks.length && index >= 0) {
-      getBrands();
-      getModels();
-      getColors();
-      getChairRemarks();
       setID(stocks[index].id);
       setBrand(stocks[index].chairBrand);
       setModel(stocks[index].chairModel);
@@ -376,7 +368,11 @@ const Stock = connect(mapStateToProps)((props) => {
 
   useEffect(() => {
     const source = axios.CancelToken.source();
+    getBrands(source.token);
+    getModels(source.token);
+    getColors(source.token);
     getStocks(source.token);
+    getChairRemarks(source.token);
     return () => source.cancel('Stock Component got unmounted');
   }, []);
 
@@ -386,10 +382,6 @@ const Stock = connect(mapStateToProps)((props) => {
         variant="outlined"
         startIcon={<AddIcon />}
         onClick={() => {
-          getBrands();
-          getModels();
-          getColors();
-          getChairRemarks();
           setBrand(null);
           setModel(null);
           setFrameColor(null);
@@ -690,18 +682,40 @@ const Stock = connect(mapStateToProps)((props) => {
                 label="With Adjustable Armrests"
               />
             </Paper>
-            <TextField
-              label="QTY"
-              fullWidth
-              margin="dense"
-              variant="outlined"
-              size="small"
-              value={QTY}
-              type="number"
-              onChange={(e) => {
-                setQTY(e.target.value);
-              }}
-            />
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              sx={{ flexBasis: '100%', minWidth: '100%' }}
+            >
+              <IconButton
+                onClick={() => {
+                  setQTY(QTY > 1 ? QTY - 1 : 0);
+                }}
+              >
+                <RemoveIcon />
+              </IconButton>
+              <TextField
+                margin="dense"
+                label="QTY"
+                variant="outlined"
+                size="small"
+                value={QTY}
+                type="number"
+                sx={{ width: '80px', mx: '5px' }}
+                onChange={(e) => {
+                  if (e.target.value > 0) setQTY(e.target.value);
+                  else setQTY(0);
+                }}
+              />
+              <IconButton
+                onClick={() => {
+                  setQTY(QTY + 1);
+                }}
+              >
+                <AddIcon />
+              </IconButton>
+            </Box>
           </Stack>
         </DialogContent>
         <DialogActions>
@@ -844,18 +858,40 @@ const Stock = connect(mapStateToProps)((props) => {
                 label="With Adjustable Armrests"
               />
             </Paper>
-            <TextField
-              label="QTY"
-              fullWidth
-              margin="dense"
-              variant="outlined"
-              size="small"
-              value={QTY}
-              type="number"
-              onChange={(e) => {
-                setQTY(e.target.value);
-              }}
-            />
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              sx={{ flexBasis: '100%', minWidth: '100%' }}
+            >
+              <IconButton
+                onClick={() => {
+                  setQTY(QTY > 1 ? QTY - 1 : 0);
+                }}
+              >
+                <RemoveIcon />
+              </IconButton>
+              <TextField
+                margin="dense"
+                label="QTY"
+                variant="outlined"
+                size="small"
+                value={QTY}
+                type="number"
+                sx={{ width: '80px', mx: '5px' }}
+                onChange={(e) => {
+                  if (e.target.value > 0) setQTY(e.target.value);
+                  else setQTY(0);
+                }}
+              />
+              <IconButton
+                onClick={() => {
+                  setQTY(QTY + 1);
+                }}
+              >
+                <AddIcon />
+              </IconButton>
+            </Box>
           </Stack>
         </DialogContent>
         <DialogActions>

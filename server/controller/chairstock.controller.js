@@ -13,11 +13,11 @@ async function getAll() {
   return await db.ChairStock.findAll({
     attributes: ['id', 'chairRemark', 'QTY', 'withHeadrest', 'withAdArmrest'],
     include: [
-      { model: db.ChairBrand, as: 'chairBrand', attributes: ['name'] },
-      { model: db.ChairModel, as: 'chairModel', attributes: ['name'] },
-      { model: db.ProductColor, as: 'frameColor', attributes: ['name'] },
-      { model: db.ProductColor, as: 'backColor', attributes: ['name'] },
-      { model: db.ProductColor, as: 'seatColor', attributes: ['name'] },
+      { model: db.ChairBrand, as: 'chairBrand', attributes: ['id', 'name'] },
+      { model: db.ChairModel, as: 'chairModel', attributes: ['id', 'name'] },
+      { model: db.ProductColor, as: 'frameColor', attributes: ['id', 'name'] },
+      { model: db.ProductColor, as: 'backColor', attributes: ['id', 'name'] },
+      { model: db.ProductColor, as: 'seatColor', attributes: ['id', 'name'] },
     ],
     order: ['createdAt'],
   });
@@ -29,14 +29,23 @@ async function getById(id) {
 
 async function create(params) {
   const { QTY, ...restParams } = params;
-  if (
-    await db.ChairStock.findOne({
-      where: restParams,
-    })
-  )
-    throw 'Identical ChairStock Exists.';
-  // save ChairStock
-  await db.ChairStock.create(params);
+  const nonRegistered = await db.ChairStock.findOne({
+    where: { isRegistered: false, ...restParams },
+  });
+  const registered = await db.ChairStock.findOne({
+    where: { isRegistered: true, ...restParams },
+  });
+  if (registered) throw 'Identical ChairStock Exists.';
+  else {
+    if (nonRegistered) {
+      // set isRegistered as true and save
+      nonRegistered.isRegistered = true;
+      await nonRegistered.save();
+    } else {
+      // save registered ChairStock
+      await db.ChairStock.create({ ...params, isRegistered: true });
+    }
+  }
 }
 
 async function update(id, params) {

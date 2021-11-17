@@ -13,6 +13,7 @@ router.get('/', admin(), getAll);
 router.get('/getDelivery', authorize(), getDelivery);
 router.get('/current', authorize(), getCurrent);
 router.get('/:id', authorize(), getById);
+router.put('/withoutStock/:id', admin(), updateSchema, updateWithoutStock);
 router.put('/:id', admin(), createSchema, update);
 router.post('/sign', authorize(), signSchema, signDelivery);
 router.delete('/:id', admin(), _delete);
@@ -42,9 +43,18 @@ function createSchema(req, res, next) {
     clientBlock: Joi.string().allow(''),
     clientFloor: Joi.string().allow(''),
     clientUnit: Joi.string().allow(''),
-    clientRemark: Joi.string(),
+    clientRemark: Joi.string().allow(''),
     deliveryDate: Joi.date(),
+    unitPrice: Joi.number().required(),
     QTY: Joi.number(),
+  });
+  validateRequest(req, next, schema);
+}
+
+function updateSchema(req, res, next) {
+  const schema = Joi.object({
+    paid: Joi.boolean(),
+    finished: Joi.boolean(),
   });
   validateRequest(req, next, schema);
 }
@@ -91,7 +101,8 @@ function getAll(req, res, next) {
 }
 
 function getDelivery(req, res, next) {
-  console.log(req.params);
+  const host = req.get('host');
+  const protocol = req.protocol;
   const deliveryDate = new Date(
     req.query.deliveryDate.replace(/(\d+[/])(\d+[/])/, '$2$1')
   );
@@ -121,8 +132,9 @@ function getDelivery(req, res, next) {
               clientFloor,
               clientUnit,
               clientRemark,
-              purchased,
+              paid,
               finished,
+              signURL,
               QTY,
               stock,
               salesman,
@@ -139,8 +151,9 @@ function getDelivery(req, res, next) {
             clientFloor,
             clientUnit,
             clientRemark,
-            purchased,
+            paid,
             finished,
+            signURL: signURL !== '' ? `${protocol}://${host}/${signURL}` : null,
             QTY,
             invoiceNum:
               'D_' + salesman.prefix + ('000' + invoiceNum).substr(-3),
@@ -170,6 +183,13 @@ function getById(req, res, next) {
 function update(req, res, next) {
   deskorderController
     .update(req.params.id, req.body)
+    .then((deskorder) => res.json(deskorder))
+    .catch(next);
+}
+
+function updateWithoutStock(req, res, next) {
+  deskorderController
+    .updateWithoutStock(req.params.id, req.body)
     .then((deskorder) => res.json(deskorder))
     .catch(next);
 }

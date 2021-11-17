@@ -30,6 +30,7 @@ function mapStateToProps(state) {
 }
 
 const Brand = connect(mapStateToProps)((props) => {
+  const [loading, setLoading] = useState(true);
   const [brands, setBrands] = useState([]);
   const [editOpen, setEditOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);

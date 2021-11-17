@@ -48,7 +48,7 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: '',
     },
-    purchased: {
+    paid: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
@@ -58,10 +58,20 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: false,
     },
+    unitPrice: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+      defaultValue: 1000,
+    },
     QTY: {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 1,
+    },
+    isPreOrder: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
   };
 

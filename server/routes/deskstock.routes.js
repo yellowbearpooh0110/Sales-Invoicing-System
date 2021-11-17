@@ -18,19 +18,19 @@ module.exports = router;
 
 function createSchema(req, res, next) {
   const schema = Joi.object({
-    deskModelId: Joi.string().guid().allow(null),
-    colorId: Joi.string().guid().allow(null),
-    armSize: Joi.number(),
-    feetSize: Joi.number(),
-    beam: Joi.string(),
-    akInfo: Joi.string(),
-    woodInfo_1: Joi.string(),
-    woodInfo_2: Joi.string(),
-    melamineInfo: Joi.string(),
-    laminateInfo: Joi.string(),
-    bambooInfo: Joi.string(),
-    deskRemark: Joi.string().allow(''),
-    QTY: Joi.number().required(),
+    deskModelId: Joi.string().guid().allow(null).required(),
+    colorId: Joi.string().guid().allow(null).required(),
+    armSize: Joi.number().required(),
+    feetSize: Joi.number().required(),
+    beam: Joi.string().required(),
+    akInfo: Joi.string().required(),
+    woodInfo_1: Joi.string().required(),
+    woodInfo_2: Joi.string().required(),
+    melamineInfo: Joi.string().required(),
+    laminateInfo: Joi.string().required(),
+    bambooInfo: Joi.string().required(),
+    deskRemark: Joi.string().allow('').required(),
+    QTY: Joi.number().required().required(),
   });
   validateRequest(req, next, schema);
 }

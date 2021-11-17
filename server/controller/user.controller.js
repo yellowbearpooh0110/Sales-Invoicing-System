@@ -13,7 +13,7 @@ module.exports = {
 
 async function authenticate({ email, password }) {
   const user = await db.User.scope('withPassword').findOne({
-    where: { email, active: true },
+    where: { email, isActive: true },
   });
   if (!user || !(await bcrypt.compare(password, user.password)))
     throw 'Email or password is incorrect';

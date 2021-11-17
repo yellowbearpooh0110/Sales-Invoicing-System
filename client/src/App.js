@@ -1,17 +1,20 @@
+import React, { useState } from 'react';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
-import { Container, CssBaseline } from '@mui/material';
+import {
+  Backdrop,
+  CircularProgress,
+  Container,
+  CssBaseline,
+} from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Provider } from 'react-redux';
 import axios from 'axios';
 
-import { ChairInvoice, SignIn } from 'components/Guest';
+import { ChairInvoice, DeskInvoice, SignIn } from 'components/Guest';
 import Admin from 'components/Admin';
 import Standard from 'components/Standard';
 import { AdminRoute, GuestRoute, PrivateRoute } from 'components/Common/Routes';
 import store from 'store';
-
-// axios.defaults.baseURL = 'http://localhost:4000/api';
-axios.defaults.baseURL = 'http://97.74.83.170/api';
 
 if (store.getState().auth.isLoggedIn)
   axios.defaults.headers.common['Authorization'] = `Bearer ${
@@ -20,7 +23,36 @@ if (store.getState().auth.isLoggedIn)
 
 const theme = createTheme();
 
+axios.defaults.baseURL = 'http://localhost:4000/api';
+// axios.defaults.baseURL = 'http://97.74.83.170/api';
+
+axios.interceptors.request.use(
+  function (config) {
+    store.dispatch({ type: 'loading/beginLoading' });
+    return config;
+  },
+  function (error) {
+    return Promise.reject(error);
+  }
+);
+
+// Add a response interceptor
+axios.interceptors.response.use(
+  function (response) {
+    store.dispatch({ type: 'loading/endLoading' });
+    return response;
+  },
+  function (error) {
+    store.dispatch({ type: 'loading/endLoading' });
+    return Promise.reject(error);
+  }
+);
+
 const App = () => {
+  const [loading, setLoading] = useState(store.getState().loading.value);
+  store.subscribe(() => {
+    setLoading(store.getState().loading.value);
+  });
   return (
     <ThemeProvider theme={theme}>
       <Provider store={store}>
@@ -35,12 +67,19 @@ const App = () => {
             flexDirection: 'column',
           }}
         >
+          <Backdrop
+            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.modal + 1 }}
+            open={loading}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
           <BrowserRouter>
             <Switch>
               <Route path="/" exact>
                 <Redirect to="/signin" />
               </Route>
               <Route path="/chairinvoice/:id" exact component={ChairInvoice} />
+              <Route path="/deskinvoice/:id" exact component={DeskInvoice} />
               <GuestRoute path="/signin" exact component={SignIn} />
               <AdminRoute path="/admin" component={Admin} />
               <PrivateRoute path="/user" component={Standard} />

@@ -27,6 +27,7 @@ router.post('/send', authorize(), sendSchema, (req, res, next) => {
   let HelperOptions = {
     from: 'Ergoseatings Team',
     to: email,
+    from: 'yellowbearpooh0110@gmail.com',
     subject: 'Erogseatings Invoice!',
     template: 'invoice',
     context: {
