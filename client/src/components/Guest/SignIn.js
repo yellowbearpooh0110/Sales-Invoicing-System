@@ -53,7 +53,7 @@ export default connect(mapStateToProps, { login })((props) => {
       })
       .then()
       .catch((err) => {
-        console.log(err.response.data.message.replace('\n', '<br />'));
+        form.password.value = '';
         Swal.fire({
           icon: 'error',
           title: 'Login Failure',

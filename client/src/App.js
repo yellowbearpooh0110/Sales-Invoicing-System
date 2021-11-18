@@ -8,13 +8,13 @@ import {
 } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Provider } from 'react-redux';
+import store from 'store';
 import axios from 'axios';
 
 import { ChairInvoice, DeskInvoice, SignIn, SignUp } from 'components/Guest';
 import Admin from 'components/Admin';
 import Standard from 'components/Standard';
 import { AdminRoute, GuestRoute, PrivateRoute } from 'components/Common/Routes';
-import store from 'store';
 
 if (store.getState().auth.isLoggedIn)
   axios.defaults.headers.common['Authorization'] = `Bearer ${
