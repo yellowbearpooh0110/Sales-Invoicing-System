@@ -5,7 +5,6 @@ import {
   Page,
   PDFViewer,
   Text,
-  Image,
   StyleSheet,
   View,
   Tspan,
@@ -108,7 +107,7 @@ Font.register({
   src: microsoft_sans_serif,
 });
 
-export default () => {
+const DeskInvoice = () => {
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);
   const [order, setOrder] = useState({});
@@ -411,3 +410,5 @@ export default () => {
     </Backdrop>
   );
 };
+
+export default DeskInvoice;

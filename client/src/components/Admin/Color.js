@@ -36,8 +36,7 @@ export default connect(mapStateToProps)((props) => {
   const [id, setID] = useState('');
   const [name, setName] = useState('');
 
-  const handleEditClick = (event, index) => {
-    event.preventDefault();
+  const handleEditClick = (index) => {
     if (index < colors.length && index >= 0) {
       setID(colors[index].id);
       setName(colors[index].name);
@@ -45,8 +44,7 @@ export default connect(mapStateToProps)((props) => {
     setEditOpen(true);
   };
 
-  const handleRemoveClick = (event, index) => {
-    event.preventDefault();
+  const handleRemoveClick = (index) => {
     if (index < colors.length && index >= 0) {
       Swal.fire({
         title: 'Are you sure?',

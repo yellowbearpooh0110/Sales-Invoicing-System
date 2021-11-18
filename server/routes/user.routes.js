@@ -20,8 +20,18 @@ module.exports = router;
 
 function authenticateSchema(req, res, next) {
   const schema = Joi.object({
-    email: Joi.string().required(),
-    password: Joi.string().required(),
+    email: Joi.string()
+      .required()
+      .email({ tlds: { allow: false } })
+      .messages({
+        'any.required': `Email field is required.`,
+        'string.empty': `Email cannot be empty.`,
+        'string.email': `This Email address is not valid email type.`,
+      }),
+    password: Joi.string().required().messages({
+      'any.required': `Password field is required.`,
+      'string.empty': `Password cannot be empty.`,
+    }),
   });
   validateRequest(req, next, schema);
 }
@@ -46,6 +56,7 @@ function registerSchema(req, res, next) {
     prefix: Joi.string().max(2).allow(''),
     lastName: Joi.string().required(),
     email: Joi.string().required(),
+    type: Joi.string().valid('salesman', 'driver', ''),
     password: Joi.string().min(6).required(),
     avatarURL: Joi.string(),
   });

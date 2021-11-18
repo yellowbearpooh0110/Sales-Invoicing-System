@@ -10,7 +10,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Provider } from 'react-redux';
 import axios from 'axios';
 
-import { ChairInvoice, DeskInvoice, SignIn } from 'components/Guest';
+import { ChairInvoice, DeskInvoice, SignIn, SignUp } from 'components/Guest';
 import Admin from 'components/Admin';
 import Standard from 'components/Standard';
 import { AdminRoute, GuestRoute, PrivateRoute } from 'components/Common/Routes';
@@ -24,7 +24,8 @@ if (store.getState().auth.isLoggedIn)
 const theme = createTheme();
 
 // axios.defaults.baseURL = 'http://localhost:4000/api';
-axios.defaults.baseURL = 'http://97.74.83.170/api';
+// axios.defaults.baseURL = 'http://97.74.83.170/api';
+axios.defaults.baseURL = 'http://blueoceanblue.com/api';
 
 axios.interceptors.request.use(
   function (config) {
@@ -81,6 +82,7 @@ const App = () => {
               <Route path="/chairinvoice/:id" exact component={ChairInvoice} />
               <Route path="/deskinvoice/:id" exact component={DeskInvoice} />
               <GuestRoute path="/signin" exact component={SignIn} />
+              <GuestRoute path="/signup" exact component={SignUp} />
               <AdminRoute path="/admin" component={Admin} />
               <PrivateRoute path="/user" component={Standard} />
             </Switch>

@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Box, Toolbar } from '@mui/material';
-import {
-  BookOnline as BookOnlineIcon,
-  Home as HomeIcon,
-} from '@mui/icons-material';
+import { Box } from '@mui/material';
+import { BookOnline as BookOnlineIcon } from '@mui/icons-material';
 import Swal from 'sweetalert2';
 
 import AppHeader from 'components/Common/AppHeader';

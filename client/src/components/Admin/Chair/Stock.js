@@ -124,8 +124,7 @@ const Stock = connect(mapStateToProps)((props) => {
     else setFilterAnchor(null);
   };
 
-  const handleEditClick = (event, index) => {
-    event.preventDefault();
+  const handleEditClick = (index) => {
     if (index < stocks.length && index >= 0) {
       setID(stocks[index].id);
       setBrand(stocks[index].chairBrand);
@@ -141,8 +140,7 @@ const Stock = connect(mapStateToProps)((props) => {
     setEditOpen(true);
   };
 
-  const handleRemoveClick = (event, index) => {
-    event.preventDefault();
+  const handleRemoveClick = (index) => {
     if (index < stocks.length && index >= 0) {
       Swal.fire({
         title: 'Are you sure?',

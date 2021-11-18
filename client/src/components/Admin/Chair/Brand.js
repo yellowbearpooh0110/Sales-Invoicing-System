@@ -30,15 +30,13 @@ function mapStateToProps(state) {
 }
 
 const Brand = connect(mapStateToProps)((props) => {
-  const [loading, setLoading] = useState(true);
   const [brands, setBrands] = useState([]);
   const [editOpen, setEditOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [id, setID] = useState('');
   const [name, setName] = useState('');
 
-  const handleEditClick = (event, index) => {
-    event.preventDefault();
+  const handleEditClick = (index) => {
     if (index < brands.length && index >= 0) {
       setID(brands[index].id);
       setName(brands[index].name);
@@ -46,8 +44,7 @@ const Brand = connect(mapStateToProps)((props) => {
     setEditOpen(true);
   };
 
-  const handleRemoveClick = (event, index) => {
-    event.preventDefault();
+  const handleRemoveClick = (index) => {
     if (index < brands.length && index >= 0) {
       Swal.fire({
         title: 'Are you sure?',

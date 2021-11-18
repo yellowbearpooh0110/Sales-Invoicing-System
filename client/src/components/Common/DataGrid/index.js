@@ -202,7 +202,7 @@ const DataGrid = (props) => {
   const [orderBy, setOrderBy] = useState('id');
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const prevRows = useRef();
 
@@ -341,7 +341,8 @@ const DataGrid = (props) => {
                       >
                         <IconButton
                           onClick={(e) => {
-                            onEditClick(e, row.id);
+                            e.preventDefault();
+                            onEditClick(row.id);
                           }}
                         >
                           <EditIcon />
@@ -354,7 +355,8 @@ const DataGrid = (props) => {
                       >
                         <IconButton
                           onClick={(e) => {
-                            onRemoveClick(e, index);
+                            e.preventDefault();
+                            onRemoveClick(index);
                           }}
                         >
                           <DeleteIcon />

@@ -13,10 +13,12 @@ module.exports = {
 
 async function authenticate({ email, password }) {
   const user = await db.User.scope('withPassword').findOne({
-    where: { email, isActive: true },
+    where: { email },
   });
-  if (!user || !(await bcrypt.compare(password, user.password)))
-    throw 'Email or password is incorrect';
+  if (!user) throw 'Email Address does not exist.';
+  if (!user.isActive) throw 'Administrator did not allow you yet.';
+  if (!(await bcrypt.compare(password, user.password)))
+    throw 'Password is incorrect';
 
   // authentication successful
   const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET, {
@@ -36,6 +38,12 @@ async function getById(id) {
 }
 
 async function create(params) {
+  if (
+    await db.User.findOne({
+      where: { email: params.email },
+    })
+  )
+    throw 'This Email Address is already taken.';
   params.password && (params.password = await bcrypt.hash(params.password, 10));
   // save user
   await db.User.create(params);

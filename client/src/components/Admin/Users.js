@@ -67,18 +67,86 @@ const Users = connect(mapStateToProps)((props) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [type, setType] = useState('');
-  const [isActive, setIsActive] = useState('');
 
-  const handleEditClick = (event, index) => {
+  const handleEditClick = (index) => {
     if (index < users.length && index >= 0) {
       setID(users[index].id);
       setEmail(users[index].email);
       setFirstName(users[index].firstName);
       setLastName(users[index].lastName);
       setType(users[index].type);
-      setIsActive(users[index].isActive);
     }
     setEditOpen(true);
+  };
+
+  const handleRemoveClick = (index) => {
+    if (index < users.length && index >= 0) {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: 'This action will remove current account permanently.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Remove!',
+        cancelButtonText: 'No, Keep this account.',
+        allowOutsideClick: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          axios
+            .delete(`/user/${users[index].id}`)
+            .then((response) => {
+              // handle success
+              getUsers();
+            })
+            .catch(function (error) {
+              // handle error
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.response.data.message,
+                allowOutsideClick: false,
+              });
+              console.log(error);
+            })
+            .then(function () {
+              // always executed
+            });
+        }
+      });
+    }
+  };
+
+  const handleBulkRemoveClick = (selected) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This action will remove selected ChairColors permanently.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Remove!',
+      cancelButtonText: 'No, Keep Them.',
+      allowOutsideClick: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .delete('/user', { data: { ids: selected } })
+          .then((response) => {
+            // handle success
+            getUsers();
+          })
+          .catch(function (error) {
+            // handle error
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.response.data.message,
+              allowOutsideClick: false,
+            });
+            console.log(error);
+          })
+          .then(function () {
+            // always executed
+          });
+      }
+    });
   };
 
   const handleClose = () => {
@@ -176,6 +244,8 @@ const Users = connect(mapStateToProps)((props) => {
         }))}
         columns={columns}
         onEditClick={handleEditClick}
+        onRemoveClick={handleRemoveClick}
+        onBulkRemoveClick={handleBulkRemoveClick}
       ></DataGrid>
       <Dialog open={editOpen}>
         <DialogTitle>Edit User</DialogTitle>
@@ -219,7 +289,9 @@ const Users = connect(mapStateToProps)((props) => {
               />
             ))}
             <FormControl>
-              <InputLabel id="user-type-select-label">Type</InputLabel>
+              <InputLabel id="user-type-select-label" size="small">
+                Type
+              </InputLabel>
               <Select
                 labelId="user-type-select-label"
                 id="user-type-select"

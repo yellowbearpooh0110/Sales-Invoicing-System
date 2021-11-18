@@ -59,7 +59,7 @@ const columns = [
     id: 'salesmanName',
     numeric: false,
     disablePadding: false,
-    label: 'Salesman',
+    label: 'Seller',
   },
   {
     id: 'orderDate',
@@ -226,8 +226,7 @@ export default connect(mapStateToProps)((props) => {
       });
   };
 
-  const handleEditClick = (event, index) => {
-    event.preventDefault();
+  const handleEditClick = (index) => {
     if (index < orders.length && index >= 0) {
       setID(orders[index].id);
       setBrand(orders[index].stock.chairBrand);
@@ -258,8 +257,7 @@ export default connect(mapStateToProps)((props) => {
     }
   };
 
-  const handleRemoveClick = (event, index) => {
-    event.preventDefault();
+  const handleRemoveClick = (index) => {
     if (index < orders.length && index >= 0) {
       Swal.fire({
         title: 'Are you sure?',

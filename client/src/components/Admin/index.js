@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Box, Toolbar } from '@mui/material';
+import { Box } from '@mui/material';
 import {
   BookOnline as BookOnlineIcon,
   BlurOn as BlurOnIcon,
