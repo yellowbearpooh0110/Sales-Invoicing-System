@@ -8,6 +8,7 @@ module.exports = {
   getById,
   create,
   update,
+  signDelivery,
   delete: _delete,
   bulkDelete: _bulkDelete,
 };
@@ -197,6 +198,17 @@ async function _bulkDelete(where) {
     }
   }
   return await db.SalesOrder.destroy({ where });
+}
+
+async function signDelivery(id, signature) {
+  const salesOrder = await getSalesOrder(id);
+  if (salesOrder.finished) throw 'This Order is already finished!';
+  const dirpath = 'uploads/signature';
+  const filepath = `${dirpath}/${Date.now()}.png`;
+  fs.writeFileSync(`server/${filepath}`, signature, 'base64');
+  Object.assign(salesOrder, { signURL: filepath, finished: true });
+  await salesOrder.save();
+  return salesOrder.get();
 }
 
 //helper function
