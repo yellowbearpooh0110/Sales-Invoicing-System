@@ -27,6 +27,14 @@ const useFixedSidebarStyles = makeStyles({
     '& a': {
       textDecoration: 'none',
     },
+    overflow: 'auto',
+    '&::-webkit-scrollbar': {
+      width: 8,
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#6b778c',
+      borderRadius: 4,
+    },
   },
   navlink: {
     color: '#6b778c',

@@ -118,7 +118,7 @@ function _delete(req, res, next) {
 
 function _bulkDelete(req, res, next) {
   userController
-    .bulkDelete({ id: req.body.ids })
+    .bulkDelete({ id: req.body.ids.map((tmp) => tmp.toString()) })
     .then((affectedRows) =>
       res.json({
         message: `${affectedRows} User${

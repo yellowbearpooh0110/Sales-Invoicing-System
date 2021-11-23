@@ -9,26 +9,10 @@ module.exports = {
   bulkDelete: _bulkDelete,
 };
 
-async function getAll() {
+async function getAll(where) {
   return await db.DeskStock.findAll({
-    attributes: [
-      'id',
-      'armSize',
-      'feetSize',
-      'beam',
-      'akInfo',
-      'woodInfo_1',
-      'woodInfo_2',
-      'melamineInfo',
-      'laminateInfo',
-      'bambooInfo',
-      'deskRemark',
-      'QTY',
-    ],
-    include: [
-      { model: db.DeskModel, as: 'deskModel', attributes: ['id', 'name'] },
-      { model: db.ProductColor, as: 'color', attributes: ['id', 'name'] },
-    ],
+    where,
+    attributes: { exclude: ['createdAt', 'updatedAt'] },
     order: ['createdAt'],
   });
 }

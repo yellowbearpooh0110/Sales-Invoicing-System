@@ -1,6 +1,11 @@
 const Sequelize = require('sequelize');
 
 module.exports = {
+  getBrands,
+  getModels,
+  getFrameColors,
+  getBackColors,
+  getSeatColors,
   getAll,
   getById,
   create,
@@ -9,16 +14,49 @@ module.exports = {
   bulkDelete: _bulkDelete,
 };
 
-async function getAll() {
+async function getBrands() {
   return await db.ChairStock.findAll({
-    attributes: ['id', 'chairRemark', 'QTY', 'withHeadrest', 'withAdArmrest'],
-    include: [
-      { model: db.ChairBrand, as: 'chairBrand', attributes: ['id', 'name'] },
-      { model: db.ChairModel, as: 'chairModel', attributes: ['id', 'name'] },
-      { model: db.ProductColor, as: 'frameColor', attributes: ['id', 'name'] },
-      { model: db.ProductColor, as: 'backColor', attributes: ['id', 'name'] },
-      { model: db.ProductColor, as: 'seatColor', attributes: ['id', 'name'] },
-    ],
+    attributes: ['brand'],
+    group: ['brand'],
+    order: ['createdAt'],
+  });
+}
+
+async function getModels() {
+  return await db.ChairStock.findAll({
+    attributes: ['model'],
+    group: ['model'],
+    order: ['createdAt'],
+  });
+}
+async function getFrameColors() {
+  return await db.ChairStock.findAll({
+    attributes: ['frameColor'],
+    group: ['frameColor'],
+    order: ['createdAt'],
+  });
+}
+
+async function getSeatColors() {
+  return await db.ChairStock.findAll({
+    attributes: ['seatColor'],
+    group: ['seatColor'],
+    order: ['createdAt'],
+  });
+}
+
+async function getBackColors() {
+  return await db.ChairStock.findAll({
+    attributes: ['backColor'],
+    group: ['backColor'],
+    order: ['createdAt'],
+  });
+}
+
+async function getAll(where) {
+  return await db.ChairStock.findAll({
+    where,
+    attributes: { exclude: ['createdAt', 'updatedAt'] },
     order: ['createdAt'],
   });
 }
@@ -28,7 +66,7 @@ async function getById(id) {
 }
 
 async function create(params) {
-  const { QTY, ...restParams } = params;
+  const { balance, qty, shipmentDate, arrivalDate, ...restParams } = params;
   const nonRegistered = await db.ChairStock.findOne({
     where: { isRegistered: false, ...restParams },
   });
@@ -51,7 +89,7 @@ async function create(params) {
 async function update(id, params) {
   console.log(params);
   const chairStock = await getChairStock(id);
-  const { QTY, ...restParams } = params;
+  const { balance, qty, shipmentDate, arrivalDate, ...restParams } = params;
   if (
     await db.ChairStock.findOne({
       where: { id: { [Sequelize.Op.ne]: id }, ...restParams },

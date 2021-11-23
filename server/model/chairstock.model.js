@@ -1,7 +1,4 @@
-const { DataTypes, Sequelize } = require('sequelize');
-const ChairBrand = require('./chairbrand.model');
-const ChairModel = require('./chairmodel.model');
-const ProductColor = require('./productcolor.model');
+const { DataTypes } = require('sequelize');
 
 module.exports = model;
 
@@ -13,54 +10,68 @@ function model(sequelize) {
       allowNull: false,
       primaryKey: true,
     },
+    brand: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
+    },
+    model: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
+    },
+    frameColor: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
+    },
+    backColor: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
+    },
+    seatColor: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
+    },
     withHeadrest: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false,
+      defaultValue: true,
     },
     withAdArmrest: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false,
+      defaultValue: true,
     },
-    chairRemark: {
+    remark: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: '',
+    },
+    balance: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    qty: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    shipmentDate: {
+      type: DataTypes.DATEONLY,
+    },
+    arrivalDate: {
+      type: DataTypes.DATEONLY,
     },
     isRegistered: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
     },
-    QTY: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
-    },
   };
 
-  const ChairStock = sequelize.define('ChairStock', attributes);
-  ChairStock.belongsTo(ChairBrand(sequelize), {
-    as: 'chairBrand',
-    foreignKey: 'chairBrandId',
-  });
-  ChairStock.belongsTo(ChairModel(sequelize), {
-    as: 'chairModel',
-    foreignKey: 'chairModelId',
-  });
-  ChairStock.belongsTo(ProductColor(sequelize), {
-    as: 'frameColor',
-    foreignKey: 'frameColorId',
-  });
-  ChairStock.belongsTo(ProductColor(sequelize), {
-    as: 'backColor',
-    foreignKey: 'backColorId',
-  });
-  ChairStock.belongsTo(ProductColor(sequelize), {
-    as: 'seatColor',
-    foreignKey: 'seatColorId',
-  });
-
-  return ChairStock;
+  return sequelize.define('ChairStock', attributes);
 }

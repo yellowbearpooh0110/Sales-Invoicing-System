@@ -1,6 +1,4 @@
-const { DataTypes, Sequelize } = require('sequelize');
-const DeskModel = require('./deskmodel.model');
-const ProductColor = require('./productcolor.model');
+const { DataTypes } = require('sequelize');
 
 module.exports = model;
 
@@ -12,48 +10,52 @@ function model(sequelize) {
       allowNull: false,
       primaryKey: true,
     },
+    supplierCode: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: 'AK',
+    },
+    model: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
+    },
+    color: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
+    },
     armSize: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
     },
     feetSize: {
-      type: DataTypes.FLOAT,
-    },
-    beam: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: '',
     },
-    akInfo: {
+    beamSize: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: 'Regular',
+    },
+    topMaterial: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: '',
     },
-    woodInfo_1: {
+    topColor: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: '',
     },
-    woodInfo_2: {
+    topSize: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: '',
     },
-    melamineInfo: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: '',
-    },
-    laminateInfo: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: '',
-    },
-    bambooInfo: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: '',
-    },
-    deskRemark: {
+    remark: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: '',
@@ -63,21 +65,28 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: false,
     },
-    QTY: {
+    balance: {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
+    qty: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    shipmentDate: {
+      type: DataTypes.DATEONLY,
+    },
+    arrivalDate: {
+      type: DataTypes.DATEONLY,
+    },
+    isRegistered: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
   };
 
-  const DeskStock = sequelize.define('DeskStock', attributes);
-  DeskStock.belongsTo(DeskModel(sequelize), {
-    as: 'deskModel',
-    foreignKey: 'deskModelId',
-  });
-  DeskStock.belongsTo(ProductColor(sequelize), {
-    as: 'color',
-    foreignKey: 'colorId',
-  });
-  return DeskStock;
+  return sequelize.define('DeskStock', attributes);
 }

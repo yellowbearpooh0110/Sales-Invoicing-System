@@ -7,16 +7,15 @@ const admin = require('server/middleware/admin');
 const salesman = require('server/middleware/salesman');
 const authorize = require('server/middleware/authorize');
 const validateRequest = require('server/middleware/validate-request');
-const chairorderController = require('server/controller/chairorder.controller');
+const salesOrderController = require('server/controller/salesOrder.controller');
 
 router.post('/create', authorize(), createSchema, create);
 router.get('/', admin(), getAll);
 router.get('/getDelivery', authorize(), getDelivery);
 router.get('/current', salesman(), getCurrent);
 router.get('/:id', authorize(), getById);
-// router.get('/chairinvoice/:token', getByToken);
 router.put('/withoutStock/:id', admin(), updateSchema, updateWithoutStock);
-router.put('/:id', salesman(), createSchema, update);
+router.put('/:id', salesman(), updateSchema, update);
 router.post('/sign', authorize(), signSchema, signDelivery);
 router.delete('/:id', salesman(), _delete);
 router.delete('/', salesman(), bulkDeleteSchema, _bulkDelete);
@@ -25,34 +24,36 @@ module.exports = router;
 
 function createSchema(req, res, next) {
   const schema = Joi.object({
-    chairBrandId: Joi.string().guid().allow(null).required(),
-    chairModelId: Joi.string().guid().allow(null).required(),
-    frameColorId: Joi.string().guid().allow(null).required(),
-    backColorId: Joi.string().guid().allow(null).required(),
-    seatColorId: Joi.string().guid().allow(null).required(),
-    withHeadrest: Joi.boolean().required(),
-    withAdArmrest: Joi.boolean().required(),
-    chairRemark: Joi.string().allow('').required(),
-    clientName: Joi.string().allow('').required(),
-    clientEmail: Joi.string().allow('').required(),
-    clientPhone: Joi.string().allow('').required(),
-    clientDistrict: Joi.string().allow('').required(),
-    clientStreet: Joi.string().allow('').required(),
-    clientBlock: Joi.string().allow('').required(),
-    clientFloor: Joi.string().allow('').required(),
-    clientUnit: Joi.string().allow('').required(),
-    clientRemark: Joi.string().allow('').required(),
-    deliveryDate: Joi.date().required(),
-    unitPrice: Joi.number().required(),
-    QTY: Joi.number().integer().min(1).required(),
+    name: Joi.string().allow('').required(),
+    email: Joi.string().allow('').required(),
+    phone: Joi.string().allow('').required(),
+    district: Joi.string().allow('').required(),
+    street: Joi.string().allow('').required(),
+    block: Joi.string().allow('').required(),
+    floor: Joi.string().allow('').required(),
+    unit: Joi.string().allow('').required(),
+    remark: Joi.string().allow('').required(),
+    deliveryDate: Joi.date().allow(null).required(),
+    products: Joi.array(),
   });
   validateRequest(req, next, schema);
 }
 
 function updateSchema(req, res, next) {
   const schema = Joi.object({
-    paid: Joi.boolean(),
+    name: Joi.string().allow(''),
+    email: Joi.string().allow(''),
+    phone: Joi.string().allow(''),
+    district: Joi.string().allow(''),
+    street: Joi.string().allow(''),
+    block: Joi.string().allow(''),
+    floor: Joi.string().allow(''),
+    unit: Joi.string().allow(''),
+    remark: Joi.string().allow(''),
+    deliveryDate: Joi.date(),
+    paid: Joi.boolean().allow(null),
     finished: Joi.boolean(),
+    products: Joi.array(),
   });
   validateRequest(req, next, schema);
 }
@@ -75,22 +76,22 @@ function signSchema(req, res, next) {
 }
 
 function create(req, res, next) {
-  chairorderController
-    .create({ ...req.body, salesmanId: req.user.id })
+  salesOrderController
+    .create({ ...req.body, sellerId: req.user.id })
     .then(() => {
-      res.json({ message: 'New ChairOrder was created successfully.' });
+      res.json({ message: 'New SalesOrder was created successfully.' });
     })
     .catch(next);
 }
 
 function getAll(req, res, next) {
-  chairorderController
+  salesOrderController
     .getAll()
-    .then((chairorders) =>
+    .then((salesOrders) =>
       res.json(
-        chairorders.map((item) => {
+        salesOrders.map((item) => {
           item.invoiceNum =
-            'C_' + item.salesman.prefix + ('000' + item.invoiceNum).substr(-3);
+            item.seller.prefix + ('000' + item.invoiceNum).substr(-3);
           return item;
         })
       )
@@ -113,11 +114,11 @@ function getDelivery(req, res, next) {
     },
     paid: true,
   };
-  chairorderController
+  salesOrderController
     .getAll(where)
-    .then((chairorders) =>
+    .then((salesOrders) =>
       res.json(
-        chairorders.map(
+        salesOrders.map(
           ({
             id,
             invoiceNum,
@@ -163,68 +164,68 @@ function getDelivery(req, res, next) {
 }
 
 function getCurrent(req, res, next) {
-  chairorderController
+  salesOrderController
     .getAll({ salesmanId: req.user.id })
-    .then((chairorders) => res.json(chairorders))
+    .then((salesOrders) => res.json(salesOrders))
     .catch(next);
 }
 
 function getById(req, res, next) {
-  chairorderController
+  salesOrderController
     .getById(req.params.id)
-    .then((chairorder) => res.json(chairorder))
+    .then((salesOrder) => res.json(salesOrder))
     .catch(next);
 }
 
 // function getByToken(req, res, next) {
 //   req.params.token;
-//   chairorderController
+//   salesOrderController
 //     .getById(req.params.id)
-//     .then((chairorder) => res.json(chairorder))
+//     .then((salesOrder) => res.json(salesOrder))
 //     .catch(next);
 // }
 
 function update(req, res, next) {
-  chairorderController
+  salesOrderController
     .update(req.params.id, req.body)
-    .then((chairorder) => res.json(chairorder))
+    .then((salesOrder) => res.json(salesOrder))
     .catch(next);
 }
 
 function updateWithoutStock(req, res, next) {
-  chairorderController
+  salesOrderController
     .updateWithoutStock(req.params.id, req.body)
-    .then((chairorder) => res.json(chairorder))
+    .then((salesOrder) => res.json(salesOrder))
     .catch(next);
 }
 
 function signDelivery(req, res, next) {
   const host = req.get('host');
   const protocol = req.protocol;
-  chairorderController
+  salesOrderController
     .signDelivery(req.body.orderId, req.body.signature)
-    .then((chairorder) => {
+    .then((salesOrder) => {
       res.json({
         success: true,
-        url: `${protocol}://${host}/${chairorder.signURL}`,
+        url: `${protocol}://${host}/${salesOrder.signURL}`,
       });
     })
     .catch(next);
 }
 
 function _delete(req, res, next) {
-  chairorderController
+  salesOrderController
     .delete(req.params.id)
-    .then(() => res.json({ message: 'ChairOrder was deleted successfully.' }))
+    .then(() => res.json({ message: 'SalesOrder was deleted successfully.' }))
     .catch(next);
 }
 
 function _bulkDelete(req, res, next) {
-  chairorderController
-    .bulkDelete({ id: req.body.ids })
+  salesOrderController
+    .bulkDelete({ id: req.body.ids.map((tmp) => tmp.toString()) })
     .then((affectedRows) =>
       res.json({
-        message: `${affectedRows} ChairOrder${
+        message: `${affectedRows} SalesOrder${
           affectedRows === 1 ? ' was' : 's were'
         } deleted successfully.`,
       })

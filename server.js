@@ -16,14 +16,9 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // api routes
-router.use('/chairBrand', require('server/routes/chairbrand.routes'));
-router.use('/chairModel', require('server/routes/chairmodel.routes'));
-router.use('/chairStock', require('server/routes/chairstock.routes'));
-router.use('/chairOrder', require('server/routes/chairorder.routes'));
-router.use('/deskModel', require('server/routes/deskmodel.routes'));
-router.use('/deskStock', require('server/routes/deskstock.routes'));
-router.use('/deskOrder', require('server/routes/deskorder.routes'));
-router.use('/productColor', require('server/routes/productcolor.routes'));
+router.use('/chairStock', require('server/routes/chairStock.routes'));
+router.use('/deskStock', require('server/routes/deskStock.routes'));
+router.use('/salesOrder', require('server/routes/salesOrder.routes'));
 router.use('/user', require('server/routes/user.routes'));
 router.use('/email', require('server/routes/email.routes'));
 router.use('/whatsapp', require('server/routes/whatsapp.routes'));

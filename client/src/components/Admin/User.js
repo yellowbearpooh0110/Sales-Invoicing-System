@@ -23,32 +23,22 @@ import DataGrid from 'components/Common/DataGrid';
 const columns = [
   {
     id: 'email',
-    numeric: false,
-    disablePadding: true,
     label: 'Email',
   },
   {
     id: 'firstName',
-    numeric: false,
-    disablePadding: true,
     label: 'First Name',
   },
   {
     id: 'lastName',
-    numeric: false,
-    disablePadding: true,
     label: 'Last Name',
   },
   {
     id: 'type',
-    numeric: false,
-    disablePadding: true,
     label: 'Type',
   },
   {
     id: 'isActive',
-    numeric: false,
-    disablePadding: true,
     label: 'Active',
   },
 ];
@@ -58,7 +48,7 @@ function mapStateToProps(state) {
   return { auth };
 }
 
-const Users = connect(mapStateToProps)((props) => {
+export default connect(mapStateToProps)((props) => {
   const [users, setUsers] = useState([]);
   const [editOpen, setEditOpen] = useState(false);
 
@@ -320,5 +310,3 @@ const Users = connect(mapStateToProps)((props) => {
     </>
   );
 });
-
-export default Users;

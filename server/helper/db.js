@@ -28,15 +28,39 @@ async function initialize() {
 
   // init models and add them to the exported db object
   db.User = require('server/model/user.model')(sequelize);
-  db.ChairBrand = require('server/model/chairbrand.model')(sequelize);
-  db.ChairModel = require('server/model/chairmodel.model')(sequelize);
-  db.ChairStock = require('server/model/chairstock.model')(sequelize);
-  db.ChairOrder = require('server/model/chairorder.model')(sequelize);
-  db.DeskModel = require('server/model/deskmodel.model')(sequelize);
-  db.DeskStock = require('server/model/deskstock.model')(sequelize);
-  db.DeskOrder = require('server/model/deskorder.model')(sequelize);
-  db.ProductColor = require('server/model/productcolor.model')(sequelize);
+  db.ChairStock = require('server/model/chairStock.model')(sequelize);
+  db.DeskStock = require('server/model/deskStock.model')(sequelize);
+  db.SalesOrder = require('server/model/salesOrder.model')(sequelize);
+  db.ChairToOrder = require('server/model/chairToOrder.model')(sequelize);
+  db.DeskToOrder = require('server/model/deskToOrder.model')(sequelize);
+
+  db.ChairStock.belongsToMany(db.SalesOrder, { through: db.ChairToOrder });
+  db.SalesOrder.belongsToMany(db.ChairStock, { through: db.ChairToOrder });
+
+  db.DeskStock.belongsToMany(db.SalesOrder, { through: db.DeskToOrder });
+  db.SalesOrder.belongsToMany(db.DeskStock, { through: db.DeskToOrder });
+  // db.ChairToOrder.belongsTo(db.SalesOrder, {
+  //   as: 'salesOrder',
+  //   foreignKey: { name: 'salesOrderId', allowNull: false },
+  //   onDelete: 'cascade',
+  // });
+
+  // db.DeskToOrder.belongsTo(db.DeskStock, {
+  //   as: 'stock',
+  //   foreignKey: { name: 'stockId', allowNull: false },
+  //   onDelete: 'cascade',
+  // });
+  // db.DeskToOrder.belongsTo(db.SalesOrder, {
+  //   as: 'salesOrder',
+  //   foreignKey: { name: 'salesOrderId', allowNull: false },
+  //   onDelete: 'cascade',
+  // });
+
+  db.SalesOrder.belongsTo(db.User, {
+    as: 'seller',
+    foreignKey: { name: 'sellerId', allowNull: false },
+  });
 
   // sync all models with database
-  await sequelize.sync();
+  await sequelize.sync({ alter: true });
 }

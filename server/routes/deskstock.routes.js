@@ -5,7 +5,7 @@ const Joi = require('joi');
 const admin = require('server/middleware/admin');
 const authorize = require('server/middleware/authorize');
 const validateRequest = require('server/middleware/validate-request');
-const deskstockController = require('server/controller/deskstock.controller');
+const deskStockController = require('server/controller/deskStock.controller');
 
 router.post('/create', admin(), createSchema, create);
 router.get('/', authorize(), getAll);
@@ -18,19 +18,18 @@ module.exports = router;
 
 function createSchema(req, res, next) {
   const schema = Joi.object({
-    deskModelId: Joi.string().guid().allow(null).required(),
-    colorId: Joi.string().guid().allow(null).required(),
-    armSize: Joi.number().required(),
-    feetSize: Joi.number().required(),
-    beam: Joi.string().required(),
-    akInfo: Joi.string().required(),
-    woodInfo_1: Joi.string().required(),
-    woodInfo_2: Joi.string().required(),
-    melamineInfo: Joi.string().required(),
-    laminateInfo: Joi.string().required(),
-    bambooInfo: Joi.string().required(),
-    deskRemark: Joi.string().allow('').required(),
-    QTY: Joi.number().integer().min(0).required(),
+    supplierCode: Joi.string().allow('').required(),
+    model: Joi.string().allow('').required(),
+    color: Joi.string().allow('').required(),
+    armSize: Joi.string().allow('').required(),
+    feetSize: Joi.string().allow('').required(),
+    beamSize: Joi.string().allow('').required(),
+    topMaterial: Joi.string().allow('').required(),
+    topColor: Joi.string().allow('').required(),
+    topSize: Joi.string().allow('').required(),
+    remark: Joi.string().allow('').required(),
+    balance: Joi.number().integer().min(0).required(),
+    qty: Joi.number().integer().min(0).required(),
   });
   validateRequest(req, next, schema);
 }
@@ -43,7 +42,7 @@ function bulkDeleteSchema(req, res, next) {
 }
 
 function create(req, res, next) {
-  deskstockController
+  deskStockController
     .create(req.body)
     .then(() => {
       res.json({ message: 'New DeskStock was created successfully.' });
@@ -52,36 +51,36 @@ function create(req, res, next) {
 }
 
 function getAll(req, res, next) {
-  deskstockController
+  deskStockController
     .getAll()
-    .then((deskstocks) => res.json(deskstocks))
+    .then((deskStocks) => res.json(deskStocks))
     .catch(next);
 }
 
 function getById(req, res, next) {
-  deskstockController
+  deskStockController
     .getById(req.params.id)
-    .then((deskstock) => res.json(deskstock))
+    .then((deskStock) => res.json(deskStock))
     .catch(next);
 }
 
 function update(req, res, next) {
-  deskstockController
+  deskStockController
     .update(req.params.id, req.body)
-    .then((deskstock) => res.json(deskstock))
+    .then((deskStock) => res.json(deskStock))
     .catch(next);
 }
 
 function _delete(req, res, next) {
-  deskstockController
+  deskStockController
     .delete(req.params.id)
     .then(() => res.json({ message: 'DeskStock was deleted successfully.' }))
     .catch(next);
 }
 
 function _bulkDelete(req, res, next) {
-  deskstockController
-    .bulkDelete({ id: req.body.ids })
+  deskStockController
+    .bulkDelete({ id: req.body.ids.map((tmp) => tmp.toString()) })
     .then((affectedRows) =>
       res.json({
         message: `${affectedRows} DeskStock${

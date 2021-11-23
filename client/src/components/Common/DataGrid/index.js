@@ -2,14 +2,18 @@ import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  tableCellClasses,
+  TableSortLabel,
+} from '@mui/material';
+import { yellow, grey } from '@mui/material/colors';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
@@ -17,8 +21,11 @@ import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import FilterListIcon from '@mui/icons-material/FilterList';
-import { visuallyHidden } from '@mui/utils';
-import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
+import {
+  ArrowDropDown as ArrowDropDownIcon,
+  Delete as DeleteIcon,
+} from '@mui/icons-material';
+import { makeStyles } from '@mui/styles';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -53,11 +60,11 @@ function stableSort(array, comparator) {
 function EnhancedTableHead(props) {
   const {
     columns,
-    actionSpan,
     onSelectAllClick,
     order,
     orderBy,
     numSelected,
+    nonSelect,
     rowCount,
     onRequestSort,
   } = props;
@@ -69,47 +76,41 @@ function EnhancedTableHead(props) {
   return (
     <TableHead>
       <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            color="primary"
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{
-              'aria-label': 'select all desserts',
-            }}
-          />
-        </TableCell>
-        {columns.map((headCell) => (
+        {!nonSelect && (
+          <TableCell padding="checkbox">
+            <Checkbox
+              color="primary"
+              indeterminate={numSelected > 0 && numSelected < rowCount}
+              checked={rowCount > 0 && numSelected === rowCount}
+              onChange={onSelectAllClick}
+              inputProps={{
+                'aria-label': 'select all desserts',
+              }}
+            />
+          </TableCell>
+        )}
+        {columns.map(({ id, label, nonSort, sx, ...restProps }) => (
           <TableCell
-            key={headCell.id}
-            align="center"
-            padding={headCell.disablePadding ? 'none' : 'normal'}
-            sortDirection={orderBy === headCell.id ? order : false}
+            key={id}
+            align="left"
+            sx={{ p: '3px 0 3px 5px', ...sx }}
+            sortDirection={orderBy === id ? order : false}
+            {...restProps}
           >
-            {headCell.nonSort ? (
-              headCell.label
+            {nonSort ? (
+              label
             ) : (
               <TableSortLabel
-                active={orderBy === headCell.id}
-                direction={orderBy === headCell.id ? order : 'asc'}
-                onClick={createSortHandler(headCell.id)}
+                active={orderBy === id}
+                direction={orderBy === id ? order : 'asc'}
+                onClick={createSortHandler(id)}
+                IconComponent={ArrowDropDownIcon}
               >
-                {headCell.label}
-                {orderBy === headCell.id ? (
-                  <Box component="span" sx={visuallyHidden}>
-                    {order === 'desc'
-                      ? 'sorted descending'
-                      : 'sorted ascending'}
-                  </Box>
-                ) : null}
+                {label}
               </TableSortLabel>
             )}
           </TableCell>
         ))}
-        <TableCell align="center" colSpan={actionSpan}>
-          Action
-        </TableCell>
       </TableRow>
     </TableHead>
   );
@@ -117,7 +118,6 @@ function EnhancedTableHead(props) {
 
 EnhancedTableHead.propTypes = {
   columns: PropTypes.arrayOf(Object).isRequired,
-  actionSpan: PropTypes.number.isRequired,
   numSelected: PropTypes.number.isRequired,
   onRequestSort: PropTypes.func.isRequired,
   onSelectAllClick: PropTypes.func.isRequired,
@@ -186,20 +186,40 @@ EnhancedTableToolbar.propTypes = {
   onFilterClick: PropTypes.func,
 };
 
+const useDataGridStyles = makeStyles((theme) => ({
+  table: {
+    [`& .MuiTableCell-root.${tableCellClasses.head}`]: {
+      backgroundColor: yellow[300],
+      fontSize: 12,
+      fontWeight: 600,
+    },
+    [`& .MuiTableCell-root.${tableCellClasses.body}`]: {
+      fontSize: 10,
+    },
+    '& .MuiTableRow-root:nth-of-type(odd)': {
+      backgroundColor: grey[50],
+    },
+    // hide last border
+    '& .MuiTableRow-root:last-child td, & .MuiTableRow-root:last-child th': {
+      border: 0,
+    },
+  },
+}));
+
 const DataGrid = (props) => {
   const {
     title,
     columns,
-    rows,
-    onEditClick,
-    onRemoveClick,
+    nonSelect,
     onBulkRemoveClick,
     onFilterClick,
-    extraLinks,
+    rows,
   } = props;
 
+  const classes = useDataGridStyles();
+
   const [order, setOrder] = useState('asc');
-  const [orderBy, setOrderBy] = useState('id');
+  const [orderBy, setOrderBy] = useState('index');
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -207,11 +227,12 @@ const DataGrid = (props) => {
   const prevRows = useRef();
 
   useEffect(() => {
-    if (prevRows.current !== rows) {
-      prevRows.current = rows;
-      setSelected(selected.filter((item) => item in rows.map((row) => row.id)));
+    if (prevRows.current !== rows.map((tmp) => tmp.id).join(',')) {
+      prevRows.current = rows.map((tmp) => tmp.id).join(',');
+      setSelected(
+        selected.filter((item) => rows.map((row) => row.id).includes(item))
+      );
     }
-    // setSelected(selected.filter((item) => item in rows.map((row) => row.id)));
   }, [rows, selected]);
 
   const handleRequestSort = (event, property) => {
@@ -272,24 +293,25 @@ const DataGrid = (props) => {
           numSelected={selected.length}
           onBulkRemoveClick={(event) => {
             event.preventDefault();
-            onBulkRemoveClick(selected);
+            onBulkRemoveClick && onBulkRemoveClick(selected);
           }}
           onFilterClick={onFilterClick}
         />
         <TableContainer>
           <Table
+            className={classes.table}
             sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
             size="small"
           >
             <EnhancedTableHead
               columns={columns}
-              actionSpan={2 + (extraLinks ? extraLinks.length : 0)}
               numSelected={selected.length}
               order={order}
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
+              nonSelect={nonSelect}
               rowCount={rows.length}
             />
             <TableBody>
@@ -303,76 +325,42 @@ const DataGrid = (props) => {
 
                   return (
                     <TableRow
-                      hover
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
                       key={index}
                       selected={isItemSelected}
                     >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          onClick={(event) => handleClick(event, row.id)}
-                          color="primary"
-                          checked={isItemSelected}
-                          inputProps={{
-                            'aria-labelledby': labelId,
-                          }}
-                        />
-                      </TableCell>
-                      {columns.map((field, filedIndex) => (
-                        <TableCell
-                          key={filedIndex}
-                          component="th"
-                          id={filedIndex === 0 ? labelId : ''}
-                          scope="row"
-                          align="center"
-                          padding="none"
-                        >
-                          {field.id === 'id'
-                            ? row[field.id] + 1
-                            : row[field.id]}
+                      {!nonSelect && (
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            onClick={(event) => handleClick(event, row.id)}
+                            color="primary"
+                            checked={isItemSelected}
+                            inputProps={{
+                              'aria-labelledby': labelId,
+                            }}
+                          />
                         </TableCell>
-                      ))}
-                      <TableCell
-                        align="center"
-                        padding="none"
-                        sx={{ maxWidth: 40, width: 40 }}
-                      >
-                        <IconButton
-                          onClick={(e) => {
-                            e.preventDefault();
-                            onEditClick(row.id);
-                          }}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        padding="none"
-                        sx={{ maxWidth: 40, width: 40 }}
-                      >
-                        <IconButton
-                          onClick={(e) => {
-                            e.preventDefault();
-                            onRemoveClick(index);
-                          }}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </TableCell>
-                      {extraLinks &&
-                        extraLinks.map((item, index) => (
+                      )}
+
+                      {columns.map(
+                        (
+                          { id, label, nonSort, sx, ...restProps },
+                          filedIndex
+                        ) => (
                           <TableCell
-                            key={index}
-                            align="center"
-                            padding="none"
-                            sx={{ maxWidth: 40, width: 40 }}
+                            key={filedIndex}
+                            component="th"
+                            id={filedIndex === 0 ? labelId : ''}
+                            scope="row"
+                            sx={{ p: '3px 0 3px 5px', ...sx }}
+                            {...restProps}
                           >
-                            {item(row.id)}
+                            {id === 'index' ? row[id] + 1 : row[id]}
                           </TableCell>
-                        ))}
+                        )
+                      )}
                     </TableRow>
                   );
                 })}
@@ -405,9 +393,7 @@ const DataGrid = (props) => {
 DataGrid.propTypes = {
   columns: PropTypes.array.isRequired,
   rows: PropTypes.array.isRequired,
-  onEditClick: PropTypes.func.isRequired,
-  onRemoveClick: PropTypes.func.isRequired,
-  onBulkRemoveClick: PropTypes.func.isRequired,
+  onBulkRemoveClick: PropTypes.func,
   OnFilterClick: PropTypes.func,
 };
 

@@ -4,8 +4,6 @@ import { connect } from 'react-redux';
 import { Box } from '@mui/material';
 import {
   BookOnline as BookOnlineIcon,
-  BlurOn as BlurOnIcon,
-  ColorLens as ColorLensIcon,
   PeopleAlt as PeopleAltIcon,
   Storefront as StorefrontIcon,
 } from '@mui/icons-material';
@@ -14,10 +12,10 @@ import Swal from 'sweetalert2';
 import AppHeader from 'components/Common/AppHeader';
 import { CollapsedSidebar, FixedSidebar } from 'components/Common/Sidebar';
 import { logout } from 'services/auth.service';
-import Users from './Users';
-import { ChairBrand, ChairModel, ChairOrder, ChairStock } from './Chair';
-import { DeskModel, DeskOrder, DeskStock } from './Desk';
-import Color from './Color';
+import User from './User';
+import { ChairStock } from './Chair';
+import { DeskStock } from './Desk';
+import { SalesOrderCreate, SalesOrderEdit, SalesOrderView } from './SalesOrder';
 
 function mapStateToProps(state) {
   const { auth } = state;
@@ -31,34 +29,19 @@ const menuLists = [
   {
     category: 'Chair',
     content: [
-      {
-        icon: <BlurOnIcon />,
-        label: 'Basic',
-        children: [
-          { path: '/admin/chair/brand', label: 'Brand' },
-          { path: '/admin/chair/model', label: 'Model' },
-        ],
-      },
       { path: '/admin/chair/stock', icon: <StorefrontIcon />, label: 'Stock' },
-      { path: '/admin/chair/order', icon: <BookOnlineIcon />, label: 'Order' },
     ],
   },
   {
     category: 'Desk',
     content: [
-      {
-        icon: <BlurOnIcon />,
-        label: 'Basic',
-        children: [{ path: '/admin/desk/model', label: 'Model' }],
-      },
       { path: '/admin/desk/stock', icon: <StorefrontIcon />, label: 'Stock' },
-      { path: '/admin/desk/order', icon: <BookOnlineIcon />, label: 'Order' },
     ],
   },
   {
-    category: 'Common',
+    category: 'Salement',
     content: [
-      { path: '/admin/color', icon: <ColorLensIcon />, label: 'Color' },
+      { path: '/admin/order', icon: <BookOnlineIcon />, label: 'Order' },
     ],
   },
   {
@@ -129,22 +112,25 @@ const Admin = (props) => {
           component="main"
           sx={{
             flexGrow: 1,
-            p: 3,
             width: { sm: `calc(100% - ${drawerWidth}px)` },
             maxWidth: '100%',
           }}
         >
           <Switch>
-            <Route path={`${path}/user`} component={Users} />
-            <Route path={`${path}/chair/brand`} exact component={ChairBrand} />
-            <Route path={`${path}/chair/model`} exact component={ChairModel} />
-            <Route path={`${path}/chair/order`} exact component={ChairOrder} />
+            <Route path={`${path}/user`} component={User} />
             <Route path={`${path}/chair/stock`} exact component={ChairStock} />
-
-            <Route path={`${path}/desk/model`} exact component={DeskModel} />
-            <Route path={`${path}/desk/order`} exact component={DeskOrder} />
             <Route path={`${path}/desk/stock`} exact component={DeskStock} />
-            <Route path={`${path}/color`} exact component={Color} />
+            <Route path={`${path}/order`} exact component={SalesOrderView} />
+            <Route
+              path={`${path}/order/create`}
+              exact
+              component={SalesOrderCreate}
+            />
+            <Route
+              path={`${path}/order/edit`}
+              exact
+              component={SalesOrderEdit}
+            />
           </Switch>
         </Box>
       </Box>

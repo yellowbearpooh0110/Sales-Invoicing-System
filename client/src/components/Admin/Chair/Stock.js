@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import {
-  Autocomplete,
   Button,
   Box,
   Checkbox,
@@ -9,16 +8,17 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Fade,
   FormControlLabel,
   IconButton,
   Paper,
-  Popper,
-  Stack,
   TextField,
-  Typography,
 } from '@mui/material';
-import { Add as AddIcon, Remove as RemoveIcon } from '@mui/icons-material';
+import {
+  Add as AddIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Remove as RemoveIcon,
+} from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import axios from 'axios';
@@ -28,59 +28,64 @@ import DataGrid from 'components/Common/DataGrid';
 
 const columns = [
   {
-    id: 'chairBrand',
-    numeric: false,
-    disablePadding: false,
+    id: 'index',
+    label: '#',
+  },
+  {
+    id: 'brand',
     label: 'Brand',
   },
   {
-    id: 'chairModel',
-    numeric: false,
-    disablePadding: false,
+    id: 'model',
     label: 'Model',
   },
   {
     id: 'frameColor',
-    numeric: false,
-    disablePadding: false,
     label: 'Frame Color',
   },
   {
     id: 'backColor',
-    numeric: false,
-    disablePadding: false,
     label: 'Back Color',
   },
   {
     id: 'seatColor',
-    numeric: false,
-    disablePadding: false,
     label: 'Seat Color',
   },
   {
     id: 'withHeadrest',
-    numeric: false,
-    disablePadding: false,
-    label: 'With Headrest',
+    label: 'Headrest',
   },
   {
     id: 'withAdArmrest',
-    numeric: false,
-    disablePadding: false,
-    label: 'With Adjustable Armrests',
+    label: 'Adjustable Armrests',
   },
   {
-    id: 'chairRemark',
-    numeric: false,
-    disablePadding: false,
-    label: 'Special Remarks',
+    id: 'remark',
+    label: 'Special Remark',
   },
-
   {
-    id: 'QTY',
-    numeric: true,
-    disablePadding: false,
+    id: 'balance',
+    label: 'Balance',
+  },
+  {
+    id: 'qty',
     label: 'QTY',
+  },
+  {
+    id: 'shipmentDate',
+    label: 'Shipment',
+  },
+  {
+    id: 'arrivalDate',
+    label: 'Arrival',
+  },
+  {
+    id: 'edit',
+    nonSort: true,
+  },
+  {
+    id: 'delete',
+    nonSort: true,
   },
 ];
 
@@ -94,29 +99,15 @@ const Stock = connect(mapStateToProps)((props) => {
   const [stocks, setStocks] = useState([]);
   const [editOpen, setEditOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
+  const editForm = useRef(null);
+  const createForm = useRef(null);
+  const [formProps, setFormProps] = useState([]);
+
   const [id, setID] = useState('');
   const [filterAnchor, setFilterAnchor] = useState(null);
 
-  const [brands, setBrands] = useState([]);
-  const [models, setModels] = useState([]);
-  const [colors, setColors] = useState([]);
-  const [chairRemarks, setChairRemarks] = useState(['av', 'avas']);
-
-  const [filterBrand, setFilterBrand] = useState('');
-  const [filterModel, setFilterModel] = useState('');
-  const [filterFrameColor, setFilterFrameColor] = useState('');
-  const [filterSeatColor, setFilterSeatColor] = useState('');
-  const [filterBackColor, setFilterBackColor] = useState('');
-
-  const [brand, setBrand] = useState();
-  const [model, setModel] = useState();
-  const [frameColor, setFrameColor] = useState();
-  const [backColor, setBackColor] = useState();
-  const [seatColor, setSeatColor] = useState();
-  const [withHeadrest, setWithHeadrest] = useState(true);
-  const [withAdArmrest, setWithAdArmrest] = useState(true);
-  const [chairRemark, setChairRemark] = useState('');
-  const [QTY, setQTY] = useState(0);
+  const [balance, setBalance] = useState(0);
+  const [qty, setQty] = useState(0);
 
   const handleFilterClick = (e) => {
     e.preventDefault();
@@ -127,15 +118,80 @@ const Stock = connect(mapStateToProps)((props) => {
   const handleEditClick = (index) => {
     if (index < stocks.length && index >= 0) {
       setID(stocks[index].id);
-      setBrand(stocks[index].chairBrand);
-      setModel(stocks[index].chairModel);
-      setFrameColor(stocks[index].frameColor);
-      setBackColor(stocks[index].backColor);
-      setSeatColor(stocks[index].seatColor);
-      setWithHeadrest(stocks[index].withHeadrest);
-      setWithAdArmrest(stocks[index].withAdArmrest);
-      setChairRemark(stocks[index].chairRemark);
-      setQTY(stocks[index].QTY);
+      setFormProps([
+        {
+          name: 'brand',
+          label: 'Brand',
+          type: 'text',
+          defaultValue: stocks[index].brand,
+          width: '48%',
+        },
+        {
+          name: 'model',
+          label: 'Model',
+          type: 'text',
+          defaultValue: stocks[index].model,
+          width: '48%',
+        },
+        {
+          name: 'frameColor',
+          label: 'Frame Color',
+          type: 'text',
+          defaultValue: stocks[index].frameColor,
+          width: '30%',
+        },
+        {
+          name: 'backColor',
+          label: 'Back Color',
+          type: 'text',
+          defaultValue: stocks[index].backColor,
+          width: '30%',
+        },
+        {
+          name: 'seatColor',
+          label: 'Seat Color',
+          type: 'text',
+          defaultValue: stocks[index].seatColor,
+          width: '30%',
+        },
+        {
+          name: 'remark',
+          label: 'Remark',
+          type: 'text',
+          defaultValue: stocks[index].remark,
+          width: '100%',
+        },
+        {
+          name: 'withHeadrest',
+          label: 'Headrest',
+          type: 'checkbox',
+          defaultValue: stocks[index].withHeadrest,
+          width: '48%',
+        },
+        {
+          name: 'withAdArmrest',
+          label: 'Adjustable Armrest',
+          type: 'checkbox',
+          defaultValue: stocks[index].withAdArmrest,
+          width: '48%',
+        },
+        {
+          name: 'shipmentDate',
+          label: 'Shipment Date',
+          type: 'date',
+          defaultValue: stocks[index].shipmentDate,
+          width: '48%',
+        },
+        {
+          name: 'arrivalDate',
+          label: 'Arrival Date',
+          type: 'date',
+          defaultValue: stocks[index].arrivalDate,
+          width: '48%',
+        },
+      ]);
+      setBalance(stocks[index].balance);
+      setQty(stocks[index].qty);
     }
     setEditOpen(true);
   };
@@ -188,7 +244,9 @@ const Stock = connect(mapStateToProps)((props) => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete('/chairStock', { data: { ids: selected } })
+          .delete('/chairStock', {
+            data: { ids: selected },
+          })
           .then((response) => {
             // handle success
             getStocks();
@@ -212,17 +270,21 @@ const Stock = connect(mapStateToProps)((props) => {
 
   const handleSave = (event) => {
     event.preventDefault();
+    const data = new FormData(editForm.current);
     axios
       .put(`/chairStock/${id}`, {
-        chairBrandId: brand ? brand.id : null,
-        chairModelId: model ? model.id : null,
-        frameColorId: frameColor ? frameColor.id : null,
-        backColorId: backColor ? backColor.id : null,
-        seatColorId: seatColor ? seatColor.id : null,
-        withHeadrest,
-        withAdArmrest,
-        chairRemark,
-        QTY,
+        brand: data.get('brand'),
+        model: data.get('model'),
+        frameColor: data.get('frameColor'),
+        backColor: data.get('backColor'),
+        seatColor: data.get('seatColor'),
+        withHeadrest: Boolean(data.get('withHeadrest')),
+        withAdArmrest: Boolean(data.get('withAdArmrest')),
+        remark: data.get('remark'),
+        shipmentDate: data.get('shipmentDate') || null,
+        arrivalDate: data.get('arrivalDate') || null,
+        balance: balance,
+        qty: qty,
       })
       .then((response) => {
         // handle success
@@ -235,7 +297,7 @@ const Stock = connect(mapStateToProps)((props) => {
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: error.response.data.message,
+          html: error.response.data.message.replace('\n', '<br />'),
           allowOutsideClick: false,
         }).then(() => {
           setEditOpen(true);
@@ -249,17 +311,21 @@ const Stock = connect(mapStateToProps)((props) => {
 
   const handleCreate = (event) => {
     event.preventDefault();
+    const data = new FormData(createForm.current);
     axios
       .post(`/chairStock/create`, {
-        chairBrandId: brand ? brand.id : null,
-        chairModelId: model ? model.id : null,
-        frameColorId: frameColor ? frameColor.id : null,
-        backColorId: backColor ? backColor.id : null,
-        seatColorId: seatColor ? seatColor.id : null,
-        withHeadrest,
-        withAdArmrest,
-        chairRemark,
-        QTY,
+        brand: data.get('brand'),
+        model: data.get('model'),
+        frameColor: data.get('frameColor'),
+        backColor: data.get('backColor'),
+        seatColor: data.get('seatColor'),
+        withHeadrest: Boolean(data.get('withHeadrest')),
+        withAdArmrest: Boolean(data.get('withAdArmrest')),
+        remark: data.get('remark'),
+        shipmentDate: data.get('shipmentDate') || null,
+        arrivalDate: data.get('arrivalDate') || null,
+        balance: balance,
+        qty: qty,
       })
       .then((response) => {
         // handle success
@@ -289,7 +355,6 @@ const Stock = connect(mapStateToProps)((props) => {
       .get('/chairBrand', { cancelToken })
       .then((response) => {
         // handle success
-        setBrands(response.data);
       })
       .catch(function (error) {
         // handle error
@@ -305,7 +370,6 @@ const Stock = connect(mapStateToProps)((props) => {
       .get('/chairModel', { cancelToken })
       .then((response) => {
         // handle success
-        setModels(response.data);
       })
       .catch(function (error) {
         // handle error
@@ -321,7 +385,6 @@ const Stock = connect(mapStateToProps)((props) => {
       .get('/productColor', { cancelToken })
       .then((response) => {
         // handle success
-        setColors(response.data);
       })
       .catch(function (error) {
         // handle error
@@ -380,15 +443,70 @@ const Stock = connect(mapStateToProps)((props) => {
         variant="outlined"
         startIcon={<AddIcon />}
         onClick={() => {
-          setBrand(null);
-          setModel(null);
-          setFrameColor(null);
-          setBackColor(null);
-          setSeatColor(null);
-          setWithHeadrest(false);
-          setWithAdArmrest(false);
-          setChairRemark('');
-          setQTY(0);
+          setFormProps([
+            {
+              name: 'brand',
+              label: 'Brand',
+              type: 'text',
+              width: '48%',
+            },
+            {
+              name: 'model',
+              label: 'Model',
+              type: 'text',
+              width: '48%',
+            },
+            {
+              name: 'frameColor',
+              label: 'Frame Color',
+              type: 'text',
+              width: '30%',
+            },
+            {
+              name: 'backColor',
+              label: 'Back Color',
+              type: 'text',
+              width: '30%',
+            },
+            {
+              name: 'seatColor',
+              label: 'Seat Color',
+              type: 'text',
+              width: '30%',
+            },
+            {
+              name: 'remark',
+              label: 'Remark',
+              type: 'text',
+              width: '100%',
+            },
+            {
+              name: 'withHeadrest',
+              label: 'Headrest',
+              type: 'checkbox',
+              width: '48%',
+            },
+            {
+              name: 'withAdArmrest',
+              label: 'Adjustable Armrest',
+              type: 'checkbox',
+              width: '48%',
+            },
+            {
+              name: 'shipmentDate',
+              label: 'Shipment Date',
+              type: 'date',
+              width: '48%',
+            },
+            {
+              name: 'arrivalDate',
+              label: 'Arrival Date',
+              type: 'date',
+              width: '48%',
+            },
+          ]);
+          setBalance(0);
+          setQty(0);
           setCreateOpen(true);
         }}
       >
@@ -396,300 +514,171 @@ const Stock = connect(mapStateToProps)((props) => {
       </Button>
       <DataGrid
         title="Chair Stocks"
-        rows={stocks
-          .map(
-            (
-              {
-                id,
-                chairBrand,
-                chairModel,
-                frameColor,
-                backColor,
-                seatColor,
-                withHeadrest,
-                withAdArmrest,
-                ...restProps
-              },
-              index
-            ) => ({
-              id: index,
-              chairBrand: chairBrand ? chairBrand.name : null,
-              chairModel: chairModel ? chairModel.name : null,
-              frameColor: frameColor ? frameColor.name : null,
-              backColor: backColor ? backColor.name : null,
-              seatColor: seatColor ? seatColor.name : null,
-              withHeadrest: withHeadrest ? 'Yes' : 'No',
-              withAdArmrest: withAdArmrest ? 'Yes' : 'No',
-              ...restProps,
-            })
-          )
-          .filter(
-            (item, key) =>
-              (item.chairBrand || '')
-                .toLowerCase()
-                .includes(filterBrand.toLowerCase()) &&
-              (item.chairModel || '')
-                .toLowerCase()
-                .includes(filterModel.toLowerCase()) &&
-              (item.frameColor || '')
-                .toLowerCase()
-                .includes(filterFrameColor.toLowerCase()) &&
-              (item.backColor || '')
-                .toLowerCase()
-                .includes(filterBackColor.toLowerCase()) &&
-              (item.seatColor || '')
-                .toLowerCase()
-                .includes(filterSeatColor.toLowerCase())
-          )}
+        rows={stocks.map(
+          (
+            {
+              withHeadrest,
+              withAdArmrest,
+              shipmentDate,
+              arrivalDate,
+              ...restProps
+            },
+            index
+          ) => ({
+            index,
+            withHeadrest: withHeadrest ? 'Yes' : 'No',
+            withAdArmrest: withAdArmrest ? 'Yes' : 'No',
+            edit: (
+              <IconButton
+                onClick={(event) => {
+                  event.preventDefault();
+                  handleEditClick(index);
+                }}
+              >
+                <EditIcon />
+              </IconButton>
+            ),
+            delete: (
+              <IconButton
+                onClick={(event) => {
+                  event.preventDefault();
+                  handleRemoveClick(index);
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            ),
+            shipmentDate: (() => {
+              if (shipmentDate === null) return 'No';
+              const createdTime = new Date(shipmentDate);
+              createdTime.setMinutes(
+                createdTime.getMinutes() - createdTime.getTimezoneOffset()
+              );
+              return createdTime.toISOString().split('T')[0];
+            })(),
+            arrivalDate: (() => {
+              if (arrivalDate === null) return 'No';
+              const createdTime = new Date(arrivalDate);
+              createdTime.setMinutes(
+                createdTime.getMinutes() - createdTime.getTimezoneOffset()
+              );
+              return createdTime.toISOString().split('T')[0];
+            })(),
+            ...restProps,
+          })
+        )}
         columns={columns}
         onEditClick={handleEditClick}
         onRemoveClick={handleRemoveClick}
         onBulkRemoveClick={handleBulkRemoveClick}
         onFilterClick={handleFilterClick}
       ></DataGrid>
-      <Popper
-        anchorEl={filterAnchor}
-        open={Boolean(filterAnchor)}
-        placement={'bottom-end'}
-        disablePortal={false}
-        transition
-        onClose={() => {
-          setFilterAnchor(null);
-        }}
-        sx={{ zIndex: 1 }}
-      >
-        {({ TransitionProps }) => (
-          <Fade {...TransitionProps} timeout={350}>
-            <Paper
-              sx={{
-                mt: '5px',
-                p: '10px',
-                maxWidth: 400,
-                // maxWidth: '100%',
-              }}
-            >
-              <Box
-                display="flex"
-                flexWrap="wrap"
-                justifyContent="space-between"
-              >
-                {[
-                  {
-                    value: filterBrand,
-                    values: brands,
-                    setValue: setFilterBrand,
-                    label: 'Brand',
-                    width: '48%',
-                  },
-                  {
-                    value: filterModel,
-                    values: models,
-                    setValue: setFilterModel,
-                    label: 'Model',
-                    width: '48%',
-                  },
-                  {
-                    value: filterFrameColor,
-                    values: colors,
-                    setValue: setFilterFrameColor,
-                    label: 'FrameColor',
-                    width: '30%',
-                  },
-                  {
-                    value: filterBackColor,
-                    values: colors,
-                    setValue: setFilterBackColor,
-                    label: 'BackColor',
-                    width: '30%',
-                  },
-                  {
-                    value: filterSeatColor,
-                    values: colors,
-                    setValue: setFilterSeatColor,
-                    label: 'SeatColor',
-                    width: '30%',
-                  },
-                ].map(({ value, values, setValue, label, width }, index) => (
-                  <TextField
-                    key={index}
-                    sx={{ flexBasis: width, minWidth: width }}
-                    value={value}
-                    onChange={(event) => {
-                      event.preventDefault();
-                      setValue(event.target.value);
-                    }}
-                    margin="dense"
-                    label={label}
-                    variant="outlined"
-                    size="small"
-                  />
-                ))}
-              </Box>
-              <Box display="flex" justifyContent="space-between">
-                <Button
-                  onClick={() => {
-                    setFilterBrand('');
-                    setFilterModel('');
-                    setFilterFrameColor('');
-                    setFilterBackColor('');
-                    setFilterSeatColor('');
-                  }}
-                  variant="outlined"
-                >
-                  Clear
-                </Button>
-                <Button
-                  onClick={() => {
-                    setFilterAnchor(null);
-                  }}
-                  variant="outlined"
-                >
-                  OK
-                </Button>
-              </Box>
-            </Paper>
-          </Fade>
-        )}
-      </Popper>
       <Dialog
         fullWidth
         fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
         maxWidth="sm"
         open={editOpen}
+        PaperProps={{
+          ref: editForm,
+          component: 'form',
+          onSubmit: handleSave,
+        }}
       >
         <DialogTitle>Edit Stock</DialogTitle>
         <DialogContent>
-          <Stack spacing={2}>
-            <Paper
-              sx={{
-                mt: '5px',
-                p: '10px',
-                display: 'flex',
-                flexWrap: 'wrap',
-                justifyContent: 'space-between',
-              }}
-            >
-              <Typography sx={{ flexBasis: '100%', minWidth: '100%' }}>
-                Chair Features
-              </Typography>
-              {[
-                {
-                  value: brand,
-                  values: brands,
-                  setValue: setBrand,
-                  label: 'Brand',
-                  width: '48%',
-                },
-                {
-                  value: model,
-                  values: models,
-                  setValue: setModel,
-                  label: 'Model',
-                  width: '48%',
-                },
-                {
-                  value: frameColor,
-                  values: colors,
-                  setValue: setFrameColor,
-                  label: 'FrameColor',
-                  width: '30%',
-                },
-                {
-                  value: backColor,
-                  values: colors,
-                  setValue: setBackColor,
-                  label: 'BackColor',
-                  width: '30%',
-                },
-                {
-                  value: seatColor,
-                  values: colors,
-                  setValue: setSeatColor,
-                  label: 'SeatColor',
-                  width: '30%',
-                },
-              ].map(({ value, values, setValue, label, width }, index) => (
-                <Autocomplete
-                  key={index}
-                  disablePortal
-                  value={value ? value : null}
-                  onChange={(event, newValue) => {
-                    event.preventDefault();
-                    setValue(newValue);
-                  }}
-                  freeSolo
-                  options={values}
-                  getOptionLabel={(option) => option.name}
-                  sx={{ flexBasis: width, minWidth: width }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      margin="dense"
-                      label={label}
-                      variant="outlined"
-                      size="small"
-                    />
-                  )}
-                />
-              ))}
-              <Autocomplete
-                disablePortal
-                freeSolo
-                value={chairRemark}
-                onChange={(event, newValue) => {
-                  event.preventDefault();
-                  setChairRemark(newValue);
-                }}
-                options={chairRemarks}
-                fullWidth
-                renderInput={(params) => (
+          <Paper
+            sx={{
+              mt: '5px',
+              p: '10px',
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'space-between',
+            }}
+          >
+            {formProps.map(({ type, width, ...restParams }, index) => {
+              if (type === 'text') {
+                return (
                   <TextField
-                    {...params}
-                    label="Chair Remark"
+                    key={index}
                     margin="dense"
                     variant="outlined"
                     size="small"
-                    onChange={(event) => {
-                      event.preventDefault();
-                      setChairRemark(event.target.value);
-                    }}
+                    sx={{ flexBasis: width, minWidth: width }}
+                    {...restParams}
                   />
-                )}
-              />
-              <FormControlLabel
-                sx={{ flexBasis: '45%', minWidth: '45%' }}
-                control={
-                  <Checkbox
-                    checked={withHeadrest}
-                    onChange={() => {
-                      setWithHeadrest(!withHeadrest);
-                    }}
+                );
+              } else if (type === 'date') {
+                return (
+                  <TextField
+                    key={index}
+                    margin="dense"
+                    variant="outlined"
+                    size="small"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    sx={{ flexBasis: width, minWidth: width }}
+                    {...restParams}
                   />
-                }
-                label="With Headrest"
-              />
-              <FormControlLabel
-                sx={{ flexBasis: '45%', minWidth: '45%' }}
-                control={
-                  <Checkbox
-                    checked={withAdArmrest}
-                    onChange={() => {
-                      setWithAdArmrest(!withAdArmrest);
-                    }}
+                );
+              } else if (type === 'checkbox') {
+                const { defaultValue, label, name } = restParams;
+                return (
+                  <FormControlLabel
+                    key={index}
+                    control={
+                      <Checkbox name={name} defaultChecked={defaultValue} />
+                    }
+                    label={label}
+                    sx={{ flexBasis: width, minWidth: width }}
                   />
-                }
-                label="With Adjustable Armrests"
-              />
-            </Paper>
+                );
+              } else return null;
+            })}
             <Box
               display="flex"
               justifyContent="center"
               alignItems="center"
-              sx={{ flexBasis: '100%', minWidth: '100%' }}
+              sx={{ flexBasis: '48%', minWidth: '48%' }}
             >
               <IconButton
-                onClick={() => {
-                  setQTY(QTY > 1 ? QTY - 1 : 0);
+                onClick={(event) => {
+                  event.preventDefault();
+                  setBalance(Math.max(0, balance - 1));
+                }}
+              >
+                <RemoveIcon />
+              </IconButton>
+              <TextField
+                margin="dense"
+                label="Balance"
+                variant="outlined"
+                size="small"
+                value={balance}
+                type="number"
+                sx={{ width: '80px', mx: '5px' }}
+                onChange={(e) => {
+                  setBalance(Math.max(0, e.target.value));
+                }}
+              />
+              <IconButton
+                onClick={(event) => {
+                  event.preventDefault();
+                  setBalance(balance + 1);
+                }}
+              >
+                <AddIcon />
+              </IconButton>
+            </Box>
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              sx={{ flexBasis: '48%', minWidth: '48%' }}
+            >
+              <IconButton
+                onClick={(event) => {
+                  event.preventDefault();
+                  setQty(Math.max(0, qty - 1));
                 }}
               >
                 <RemoveIcon />
@@ -699,23 +688,23 @@ const Stock = connect(mapStateToProps)((props) => {
                 label="QTY"
                 variant="outlined"
                 size="small"
-                value={QTY}
+                value={qty}
                 type="number"
                 sx={{ width: '80px', mx: '5px' }}
                 onChange={(e) => {
-                  if (e.target.value > 0) setQTY(e.target.value);
-                  else setQTY(0);
+                  setQty(Math.max(0, e.target.value));
                 }}
               />
               <IconButton
-                onClick={() => {
-                  setQTY(QTY + 1);
+                onClick={(event) => {
+                  event.preventDefault();
+                  setQty(qty + 1);
                 }}
               >
                 <AddIcon />
               </IconButton>
             </Box>
-          </Stack>
+          </Paper>
         </DialogContent>
         <DialogActions>
           <Button
@@ -725,7 +714,7 @@ const Stock = connect(mapStateToProps)((props) => {
           >
             Cancel
           </Button>
-          <Button onClick={handleSave}>Save</Button>
+          <Button type="submit">Save</Button>
         </DialogActions>
       </Dialog>
       <Dialog
@@ -733,139 +722,105 @@ const Stock = connect(mapStateToProps)((props) => {
         fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
         maxWidth="sm"
         open={createOpen}
+        PaperProps={{
+          ref: createForm,
+          component: 'form',
+          onSubmit: handleCreate,
+        }}
       >
         <DialogTitle>New Stock</DialogTitle>
         <DialogContent>
-          <Stack spacing={2}>
-            <Paper
-              sx={{
-                mt: '5px',
-                p: '10px',
-                display: 'flex',
-                flexWrap: 'wrap',
-                justifyContent: 'space-between',
-              }}
-            >
-              <Typography sx={{ flexBasis: '100%', minWidth: '100%' }}>
-                Chair Features
-              </Typography>
-              {[
-                {
-                  value: brand,
-                  values: brands,
-                  setValue: setBrand,
-                  label: 'Brand',
-                  width: '48%',
-                },
-                {
-                  value: model,
-                  values: models,
-                  setValue: setModel,
-                  label: 'Model',
-                  width: '48%',
-                },
-                {
-                  value: frameColor,
-                  values: colors,
-                  setValue: setFrameColor,
-                  label: 'FrameColor',
-                  width: '30%',
-                },
-                {
-                  value: backColor,
-                  values: colors,
-                  setValue: setBackColor,
-                  label: 'BackColor',
-                  width: '30%',
-                },
-                {
-                  value: seatColor,
-                  values: colors,
-                  setValue: setSeatColor,
-                  label: 'SeatColor',
-                  width: '30%',
-                },
-              ].map(({ value, values, setValue, label, width }, index) => (
-                <Autocomplete
-                  key={index}
-                  disablePortal
-                  value={value ? value : null}
-                  onChange={(event, newValue) => {
-                    event.preventDefault();
-                    setValue(newValue);
-                  }}
-                  options={values}
-                  getOptionLabel={(option) => option.name}
-                  sx={{ flexBasis: width, minWidth: width }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      margin="dense"
-                      label={label}
-                      variant="outlined"
-                      size="small"
-                    />
-                  )}
-                />
-              ))}
-              <Autocomplete
-                disablePortal
-                freeSolo
-                value={chairRemark}
-                onChange={(event, newValue) => {
-                  event.preventDefault();
-                  setChairRemark(newValue);
-                }}
-                options={chairRemarks}
-                fullWidth
-                renderInput={(params) => (
+          <Paper
+            sx={{
+              mt: '5px',
+              p: '10px',
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'space-between',
+            }}
+          >
+            {formProps.map(({ type, width, ...restParams }, index) => {
+              if (type === 'text') {
+                return (
                   <TextField
-                    {...params}
-                    label="Chair Remark"
+                    key={index}
                     margin="dense"
                     variant="outlined"
                     size="small"
-                    onChange={(event) => {
-                      event.preventDefault();
-                      setChairRemark(event.target.value);
-                    }}
+                    sx={{ flexBasis: width, minWidth: width }}
+                    {...restParams}
                   />
-                )}
-              />
-              <FormControlLabel
-                sx={{ flexBasis: '45%', minWidth: '45%' }}
-                control={
-                  <Checkbox
-                    checked={withHeadrest}
-                    onChange={() => {
-                      setWithHeadrest(!withHeadrest);
-                    }}
+                );
+              } else if (type === 'date') {
+                return (
+                  <TextField
+                    key={index}
+                    margin="dense"
+                    variant="outlined"
+                    size="small"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    sx={{ flexBasis: width, minWidth: width }}
+                    {...restParams}
                   />
-                }
-                label="With Headrest"
-              />
-              <FormControlLabel
-                sx={{ flexBasis: '45%', minWidth: '45%' }}
-                control={
-                  <Checkbox
-                    checked={withAdArmrest}
-                    onChange={() => {
-                      setWithAdArmrest(!withAdArmrest);
-                    }}
+                );
+              } else if (type === 'checkbox') {
+                const { defaultValue, label, name } = restParams;
+                return (
+                  <FormControlLabel
+                    key={index}
+                    control={
+                      <Checkbox name={name} defaultChecked={defaultValue} />
+                    }
+                    label={label}
+                    sx={{ flexBasis: width, minWidth: width }}
                   />
-                }
-                label="With Adjustable Armrests"
-              />
-            </Paper>
+                );
+              } else return null;
+            })}
             <Box
               display="flex"
               justifyContent="center"
               alignItems="center"
-              sx={{ flexBasis: '100%', minWidth: '100%' }}
+              sx={{ flexBasis: '48%', minWidth: '48%' }}
             >
               <IconButton
                 onClick={() => {
-                  setQTY(QTY > 1 ? QTY - 1 : 0);
+                  setBalance(balance > 1 ? balance - 1 : 0);
+                }}
+              >
+                <RemoveIcon />
+              </IconButton>
+              <TextField
+                margin="dense"
+                label="Balance"
+                variant="outlined"
+                size="small"
+                value={balance}
+                type="number"
+                sx={{ width: '80px', mx: '5px' }}
+                onChange={(e) => {
+                  if (e.target.value > 0) setBalance(e.target.value);
+                  else setBalance(0);
+                }}
+              />
+              <IconButton
+                onClick={() => {
+                  setBalance(balance + 1);
+                }}
+              >
+                <AddIcon />
+              </IconButton>
+            </Box>
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              sx={{ flexBasis: '48%', minWidth: '48%' }}
+            >
+              <IconButton
+                onClick={() => {
+                  setQty(qty > 1 ? qty - 1 : 0);
                 }}
               >
                 <RemoveIcon />
@@ -875,23 +830,23 @@ const Stock = connect(mapStateToProps)((props) => {
                 label="QTY"
                 variant="outlined"
                 size="small"
-                value={QTY}
+                value={qty}
                 type="number"
                 sx={{ width: '80px', mx: '5px' }}
                 onChange={(e) => {
-                  if (e.target.value > 0) setQTY(e.target.value);
-                  else setQTY(0);
+                  if (e.target.value > 0) setQty(e.target.value);
+                  else setQty(0);
                 }}
               />
               <IconButton
                 onClick={() => {
-                  setQTY(QTY + 1);
+                  setQty(qty + 1);
                 }}
               >
                 <AddIcon />
               </IconButton>
             </Box>
-          </Stack>
+          </Paper>
         </DialogContent>
         <DialogActions>
           <Button
@@ -901,7 +856,7 @@ const Stock = connect(mapStateToProps)((props) => {
           >
             Cancel
           </Button>
-          <Button onClick={handleCreate}>Create</Button>
+          <Button type="submit">Save</Button>
         </DialogActions>
       </Dialog>
     </>

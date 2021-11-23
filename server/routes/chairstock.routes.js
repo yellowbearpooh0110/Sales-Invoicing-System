@@ -5,7 +5,7 @@ const Joi = require('joi');
 const admin = require('server/middleware/admin');
 const authorize = require('server/middleware/authorize');
 const validateRequest = require('server/middleware/validate-request');
-const chairstockController = require('server/controller/chairstock.controller');
+const chairStockController = require('server/controller/chairStock.controller');
 
 router.post('/create', admin(), createSchema, create);
 router.get('/', authorize(), getAll);
@@ -18,15 +18,24 @@ module.exports = router;
 
 function createSchema(req, res, next) {
   const schema = Joi.object({
-    chairBrandId: Joi.string().guid().allow(null).required(),
-    chairModelId: Joi.string().guid().allow(null).required(),
-    frameColorId: Joi.string().guid().allow(null).required(),
-    backColorId: Joi.string().guid().allow(null).required(),
-    seatColorId: Joi.string().guid().allow(null).required(),
+    brand: Joi.string().allow('').required(),
+    model: Joi.string().allow('').required(),
+    frameColor: Joi.string().allow('').required(),
+    backColor: Joi.string().allow('').required(),
+    seatColor: Joi.string().allow('').required(),
     withHeadrest: Joi.boolean().required(),
     withAdArmrest: Joi.boolean().required(),
-    chairRemark: Joi.string().allow('').required(),
-    QTY: Joi.number().integer().min(0).required(),
+    remark: Joi.string().allow('').required(),
+    balance: Joi.number().integer().min(0).required(),
+    qty: Joi.number().integer().min(0).required(),
+    shipmentDate: Joi.date().allow(null).required().messages({
+      'any.required': `Shipment Date field is required.`,
+      'date.base': `Shipment Date should be a valid date type.`,
+    }),
+    arrivalDate: Joi.date().allow(null).required().messages({
+      'any.required': `Arrival Date field is required.`,
+      'date.base': `Arrival Date should be a valid date type.`,
+    }),
   });
   validateRequest(req, next, schema);
 }
@@ -39,7 +48,7 @@ function bulkDeleteSchema(req, res, next) {
 }
 
 function create(req, res, next) {
-  chairstockController
+  chairStockController
     .create(req.body)
     .then(() => {
       res.json({ message: 'New ChairStock was created successfully.' });
@@ -48,36 +57,36 @@ function create(req, res, next) {
 }
 
 function getAll(req, res, next) {
-  chairstockController
+  chairStockController
     .getAll()
-    .then((chairstocks) => res.json(chairstocks))
+    .then((chairStocks) => res.json(chairStocks))
     .catch(next);
 }
 
 function getById(req, res, next) {
-  chairstockController
+  chairStockController
     .getById(req.params.id)
-    .then((chairstock) => res.json(chairstock))
+    .then((chairStock) => res.json(chairStock))
     .catch(next);
 }
 
 function update(req, res, next) {
-  chairstockController
+  chairStockController
     .update(req.params.id, req.body)
-    .then((chairstock) => res.json(chairstock))
+    .then((chairStock) => res.json(chairStock))
     .catch(next);
 }
 
 function _delete(req, res, next) {
-  chairstockController
+  chairStockController
     .delete(req.params.id)
     .then(() => res.json({ message: 'ChairStock was deleted successfully.' }))
     .catch(next);
 }
 
 function _bulkDelete(req, res, next) {
-  chairstockController
-    .bulkDelete({ id: req.body.ids })
+  chairStockController
+    .bulkDelete({ id: req.body.ids.map((tmp) => tmp.toString()) })
     .then((affectedRows) =>
       res.json({
         message: `${affectedRows} ChairStock${
