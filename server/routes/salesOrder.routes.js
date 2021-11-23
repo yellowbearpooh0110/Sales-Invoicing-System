@@ -165,7 +165,7 @@ function getDelivery(req, res, next) {
 
 function getCurrent(req, res, next) {
   salesOrderController
-    .getAll({ salesmanId: req.user.id })
+    .getAll({ sellerId: req.user.id })
     .then((salesOrders) => res.json(salesOrders))
     .catch(next);
 }

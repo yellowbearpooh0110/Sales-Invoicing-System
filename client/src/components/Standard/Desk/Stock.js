@@ -84,14 +84,6 @@ const columns = [
     id: 'arrivalDate',
     label: 'Arrival',
   },
-  {
-    id: 'edit',
-    nonSort: true,
-  },
-  {
-    id: 'delete',
-    nonSort: true,
-  },
 ];
 
 function mapStateToProps(state) {
@@ -573,6 +565,7 @@ const Stock = connect(mapStateToProps)((props) => {
         New Stock
       </Button>
       <DataGrid
+        nonSelect={true}
         title="Chair Stocks"
         rows={stocks.map(
           (
@@ -588,26 +581,6 @@ const Stock = connect(mapStateToProps)((props) => {
             index,
             withHeadrest: withHeadrest ? 'Yes' : 'No',
             withAdArmrest: withAdArmrest ? 'Yes' : 'No',
-            edit: (
-              <IconButton
-                onClick={(event) => {
-                  event.preventDefault();
-                  handleEditClick(index);
-                }}
-              >
-                <EditIcon />
-              </IconButton>
-            ),
-            delete: (
-              <IconButton
-                onClick={(event) => {
-                  event.preventDefault();
-                  handleRemoveClick(index);
-                }}
-              >
-                <DeleteIcon />
-              </IconButton>
-            ),
             shipmentDate: (() => {
               if (shipmentDate === null) return 'No';
               const createdTime = new Date(shipmentDate);

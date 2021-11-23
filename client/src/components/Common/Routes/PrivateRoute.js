@@ -11,7 +11,7 @@ const PrivateRoute = ({ component: Component, auth, ...rest }) => (
         auth.isAdmin === false ? (
           <Component {...props} />
         ) : (
-          <Redirect to="/admin" />
+          <Redirect to="/admin/order" />
         )
       ) : (
         <Redirect to="/signin" />

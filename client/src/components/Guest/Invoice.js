@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Document,
+  Image,
   Font,
   Page,
   PDFViewer,
@@ -11,11 +12,11 @@ import {
 } from '@react-pdf/renderer';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-
 import { Warning as WarningIcon } from '@mui/icons-material';
+import { Backdrop, CircularProgress, Typography } from '@mui/material';
 
 import microsoft_sans_serif from 'fonts/Microsoft Sans Serif.ttf';
-import { Backdrop, CircularProgress, Typography } from '@mui/material';
+import logoTitle from 'images/logo_title.png';
 
 const styles = StyleSheet.create({
   body: {
@@ -86,10 +87,9 @@ const styles = StyleSheet.create({
     borderRight: '0.5px solid #808080',
   },
   header: {
-    fontSize: 12,
-    marginBottom: 20,
-    textAlign: 'center',
-    color: 'grey',
+    width: 100,
+    marginLeft: 'auto',
+    marginRight: 'auto',
   },
   pageNumber: {
     position: 'absolute',
@@ -107,7 +107,7 @@ Font.register({
   src: microsoft_sans_serif,
 });
 
-const DeskInvoice = () => {
+const Invoice = () => {
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);
   const [order, setOrder] = useState({});
@@ -120,12 +120,11 @@ const DeskInvoice = () => {
 
   const getOrder = ({ id, cancelToken }) => {
     axios
-      .get(`/deskorder/${id}`, { cancelToken })
+      .get(`/salesOrder/${id}`, { cancelToken })
       .then((response) => {
         // handle success
         setSuccess(true);
         setOrder(response.data);
-        console.log(response.data);
       })
       .catch(function (error) {
         // handle error
@@ -149,9 +148,7 @@ const DeskInvoice = () => {
     <PDFViewer height="100%">
       <Document>
         <Page style={styles.body} wrap>
-          <Text style={styles.header} fixed>
-            Desk Invoice
-          </Text>
+          <Image style={styles.header} src={logoTitle} />
           <Text style={styles.title}>Invoice</Text>
           <View style={styles.detail}>
             <Text>No: 20211127</Text>
@@ -171,13 +168,13 @@ const DeskInvoice = () => {
               </Text>
             </View>
             <View style={styles.clientInfo}>
-              <Text>Client's Name: {order.clientName}</Text>
-              <Text>{order.clientUnit}</Text>
-              <Text>{order.clientFloor}</Text>
-              <Text>{order.clientBlock}</Text>
-              <Text>{order.clientStreet}</Text>
-              <Text>{order.clientDistrict}</Text>
-              <Text>Phone: {order.clientPhone}</Text>
+              <Text>Client's Name: {order.name}</Text>
+              <Text>{order.unit}</Text>
+              <Text>{order.floor}</Text>
+              <Text>{order.block}</Text>
+              <Text>{order.street}</Text>
+              <Text>{order.district}</Text>
+              <Text>Phone: {order.phone}</Text>
             </View>
           </View>
           <View style={styles.table}>
@@ -195,9 +192,15 @@ const DeskInvoice = () => {
               {
                 cells: [
                   { content: 'QTY', width: '15%' },
-                  { content: order.deliveryDate, width: '55%' },
+                  {
+                    content: order.deliveryDate.split('T')[0],
+                    width: '55%',
+                  },
                   { content: '', width: '15%' },
-                  { content: order.deliveryDate, width: '15%' },
+                  {
+                    content: order.deliveryDate.split('T')[0],
+                    width: '15%',
+                  },
                 ],
               },
             ].map(({ cells, ...rowRestProps }, rowIndex, rowArr) => (
@@ -246,56 +249,57 @@ const DeskInvoice = () => {
                 backgroundColor: '#dbe5f1',
                 textTransform: 'uppercase',
               },
-              {
+              ...order.ChairStocks.map((item) => ({
                 cells: [
-                  { content: order.QTY, width: '15%' },
                   {
-                    content: `${
-                      (order.stock.deskModel || { name: '' }).name
-                    }, ${(order.stock.color || { name: '' }).name}, ${
-                      order.stock.beam
-                    }, ${order.stock.akInfo}`,
+                    content: `${item.ChairToOrder.qty}`,
+                    width: '15%',
+                  },
+                  {
+                    content: `Chair: ${item.brand} ${item.model} ${item.frameColor} ${item.backColor} ${item.seatColor}`,
                     width: '55%',
                   },
-                  { content: `${order.unitPrice} HKD`, width: '15%' },
+                  { content: `${item.ChairToOrder.unitPrice}`, width: '15%' },
                   {
-                    content: `${order.unitPrice * order.QTY} HKD`,
+                    content: `${
+                      item.ChairToOrder.unitPrice * item.ChairToOrder.qty
+                    }`,
                     width: '15%',
                   },
                 ],
-              },
-              {
+              })),
+              ...order.DeskStocks.map((item) => ({
+                cells: [
+                  {
+                    content: `${item.DeskToOrder.qty}`,
+                    width: '15%',
+                  },
+                  {
+                    content: `Desk: ${item.model} ${item.color} ${item.armSize} ${item.feetSize} ${item.beamSize}`,
+                    width: '55%',
+                  },
+                  { content: `${item.DeskToOrder.unitPrice}`, width: '15%' },
+                  {
+                    content: `${
+                      item.DeskToOrder.unitPrice * item.DeskToOrder.qty
+                    } HKD`,
+                    width: '15%',
+                  },
+                ],
+              })),
+              ...Array(
+                Math.max(
+                  0,
+                  6 - order.ChairStocks.length - order.DeskStocks.length
+                )
+              ).fill({
                 cells: [
                   { content: '', width: '15%' },
                   { content: '', width: '55%' },
                   { content: '', width: '15%' },
                   { content: '', width: '15%' },
                 ],
-              },
-              {
-                cells: [
-                  { content: '', width: '15%' },
-                  { content: '', width: '55%' },
-                  { content: '', width: '15%' },
-                  { content: '', width: '15%' },
-                ],
-              },
-              {
-                cells: [
-                  { content: '', width: '15%' },
-                  { content: '', width: '55%' },
-                  { content: '', width: '15%' },
-                  { content: '', width: '15%' },
-                ],
-              },
-              {
-                cells: [
-                  { content: '', width: '15%' },
-                  { content: '', width: '55%' },
-                  { content: '', width: '15%' },
-                  { content: '', width: '15%' },
-                ],
-              },
+              }),
               {
                 cells: [
                   {
@@ -305,7 +309,20 @@ const DeskInvoice = () => {
                   },
                   { content: 'SUBTOTAL', width: '15%' },
                   {
-                    content: `${order.unitPrice * order.QTY} HKD`,
+                    content: `${
+                      order.ChairStocks.length
+                        ? order.ChairStocks.map(
+                            (item) =>
+                              item.ChairToOrder.unitPrice *
+                              item.ChairToOrder.qty
+                          ).reduce((acc, cur) => acc + cur)
+                        : 0 + order.DeskStocks.length
+                        ? order.DeskStocks.map(
+                            (item) =>
+                              item.DeskToOrder.unitPrice * item.DeskToOrder.qty
+                          ).reduce((acc, cur) => acc + cur)
+                        : 0
+                    } HKD`,
                     width: '15%',
                     borderBottom: '0.5px solid #808080',
                   },
@@ -337,7 +354,20 @@ const DeskInvoice = () => {
                   },
                   { content: 'TOTAL', width: '15%' },
                   {
-                    content: `${order.unitPrice * order.QTY} HKD`,
+                    content: `${
+                      order.ChairStocks.length
+                        ? order.ChairStocks.map(
+                            (item) =>
+                              item.ChairToOrder.unitPrice *
+                              item.ChairToOrder.qty
+                          ).reduce((acc, cur) => acc + cur)
+                        : 0 + order.DeskStocks.length
+                        ? order.DeskStocks.map(
+                            (item) =>
+                              item.DeskToOrder.unitPrice * item.DeskToOrder.qty
+                          ).reduce((acc, cur) => acc + cur)
+                        : 0
+                    } HKD`,
                     width: '15%',
                   },
                 ],
@@ -390,6 +420,134 @@ const DeskInvoice = () => {
               HSBCHKHHHKH or FPS: info@ergoseatings.com
             </Text>
           </View>
+          {[
+            `Should the delivery of goods involved any staircases at the provided location, there will be an additional delivery fee of HK$100 per level to be charged in advance.`,
+            `If you have special assembling requirements, please let us know prior to delivery.  Otherwise, all chairs will be assembled before delivery and all desks will be assembled on site.`,
+            `If the delivery address is located in a remote area within Hong Kong, we reserve the rights to charge the client extra for delivery charges.  In such cases, we will provide a quotation upon investigation of the detailed address.  Client will be notified of such extra cost prior to delivery.`,
+            `Delivery date for pre-orders stated above is an estimate only. While we will try our best to deliver the products as soon as possible, the actual delivery date may be adjusted depending on actual freight schedule. We do NOT accept refund in case of delay arising from delivery delay.`,
+            `You understand that pre-orders are non-refundable.  Decision to switch to another product after purchase can only be treated as store credits. `,
+          ].map((text, index) => (
+            <View key={index} style={{ flexDirection: 'row', margin: '5px 0' }}>
+              <View
+                style={{
+                  width: 12,
+                  height: 12,
+                  margin: '2px 5px 0 0',
+                  border: '2px solid #888888',
+                  borderRadius: 2,
+                }}
+              ></View>
+              <View
+                style={{
+                  flexGrow: 1,
+                  fontSize: 10,
+                  lineHeight: 1.2,
+                  color: '#888888',
+                }}
+              >
+                <Text>{text}</Text>
+              </View>
+            </View>
+          ))}
+          <Text
+            style={{
+              marginTop: '5px',
+              flexGrow: 1,
+              fontSize: 10,
+              lineHeight: 1.2,
+              color: '#888888',
+            }}
+          >
+            The warranty is effective from the date of purchase from Blueocean
+            International (HK) Ltd by the original purchaser. Such warranty
+            applies under the following terms and conditions and is covered by
+            the original manufacturers for specific period stated:
+          </Text>
+          {[
+            `Nightingale chairs: 5 years for defective parts under regular usage, by Nightingale Corp.`,
+            `Allseating chairs:  5 years for defective parts under regular usage, by Allseating Corp.`,
+            `Standing desks: 5 years by manufacturer`,
+            `Okamura chairs:  5 years for defective parts under regular usage, by Okamura Salotto HK Ltd.`,
+            `Sidiz chairs: 3 years for defective parts under regular usage, by Sidiz, Inc.`,
+            `Duorest chairs: 3 years for defective parts under regular usage, by Duoback Co. Ltd.`,
+            `Wagner chairs: 5 years for defective parts under regular usage, by Topstar GMBH`,
+            `Topstar chairs: 3 years for defective parts under regular usage, by Topstar GMBH`,
+            `Ergohuman chairs: 2 years for defective parts under regular usage, by manufacturer`,
+            `HAG chairs: 2 years for defective parts under regular usage, by manufacturer`,
+          ].map((text, index) => (
+            <View
+              key={index}
+              style={{ flexDirection: 'row', marginLeft: '10px' }}
+            >
+              <View
+                style={{
+                  width: 2,
+                  height: 2,
+                  margin: '5px 10px 0 0',
+                  backgroundColor: '#888888',
+                }}
+              ></View>
+              <View
+                style={{
+                  flexGrow: 1,
+                  fontSize: 10,
+                  lineHeight: 1.2,
+                  color: '#888888',
+                }}
+              >
+                <Text>{text}</Text>
+              </View>
+            </View>
+          ))}
+          <Text
+            style={{
+              fontSize: 10,
+              lineHeight: 1.2,
+              color: '#888888',
+            }}
+          >
+            Claiming of any aforementioned warranties only covers replacement of
+            the defective or broken parts only and does not include the
+            following cost, which shall be borne by the claimant. A quotation
+            will be provided in advance for approval by the claimant: 1) labor
+            costs of technician for replacing the parts; 2) transportation costs
+            incurred for sending the product(s) to our company and delivering
+            back to the claimant from our shop after service. I, the
+            undersigned, have read and understand these policies and agree to
+            all the above.
+          </Text>
+          <Text
+            style={{
+              fontSize: 10,
+              lineHeight: 1.2,
+              marginTop: 10,
+              color: '#888888',
+            }}
+          >
+            Agreement to this invoice represents that client understands our
+            refund policy and terms and condition as stated in our website
+            ergoseatings.com and ergoseatings.com.hk
+          </Text>
+          <Text
+            style={{
+              fontSize: 10,
+              lineHeight: 1.2,
+              marginTop: 10,
+              color: '#888888',
+            }}
+          >
+            Initials: _________________
+          </Text>
+          <Text
+            style={{
+              fontSize: 12,
+              lineHeight: 1.2,
+              marginTop: 30,
+              textAlign: 'center',
+            }}
+          >
+            Thank you for your business!
+          </Text>
           <Text
             style={styles.pageNumber}
             render={({ pageNumber, totalPages }) =>
@@ -411,4 +569,4 @@ const DeskInvoice = () => {
   );
 };
 
-export default DeskInvoice;
+export default Invoice;

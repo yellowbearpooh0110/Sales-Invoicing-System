@@ -2,15 +2,19 @@ import React, { useState } from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Box } from '@mui/material';
-import { BookOnline as BookOnlineIcon } from '@mui/icons-material';
+import {
+  BookOnline as BookOnlineIcon,
+  Storefront as StorefrontIcon,
+} from '@mui/icons-material';
 import Swal from 'sweetalert2';
 
 import AppHeader from 'components/Common/AppHeader';
 import { CollapsedSidebar, FixedSidebar } from 'components/Common/Sidebar';
 import { logout } from 'services/auth.service';
 
-import { ChairOrder } from './Chair';
-import { DeskOrder } from './Desk';
+import { ChairStock } from './Chair';
+import { DeskStock } from './Desk';
+import { SalesOrderCreate, SalesOrderEdit, SalesOrderView } from './SalesOrder';
 
 function mapStateToProps(state) {
   const { auth } = state;
@@ -24,13 +28,19 @@ const menuLists = [
   {
     category: 'Chair',
     content: [
-      { path: '/user/chair/order', icon: <BookOnlineIcon />, label: 'Order' },
+      { path: '/user/chair/stock', icon: <StorefrontIcon />, label: 'Stock' },
     ],
   },
   {
     category: 'Desk',
     content: [
-      { path: '/user/desk/order', icon: <BookOnlineIcon />, label: 'Order' },
+      { path: '/user/desk/stock', icon: <StorefrontIcon />, label: 'Stock' },
+    ],
+  },
+  {
+    category: 'Salement',
+    content: [
+      { path: '/user/order', icon: <BookOnlineIcon />, label: 'Order' },
     ],
   },
 ];
@@ -101,8 +111,19 @@ const Standard = (props) => {
           }}
         >
           <Switch>
-            <Route path={`${path}/chair/order`} component={ChairOrder} />
-            <Route path={`${path}/desk/order`} component={DeskOrder} />
+            <Route path={`${path}/chair/stock`} component={ChairStock} />
+            <Route path={`${path}/desk/stock`} component={DeskStock} />
+            <Route path={`${path}/order`} exact component={SalesOrderView} />
+            <Route
+              path={`${path}/order/create`}
+              exact
+              component={SalesOrderCreate}
+            />
+            <Route
+              path={`${path}/order/edit`}
+              exact
+              component={SalesOrderEdit}
+            />
           </Switch>
         </Box>
       </Box>

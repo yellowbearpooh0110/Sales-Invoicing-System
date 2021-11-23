@@ -11,7 +11,7 @@ import { Provider } from 'react-redux';
 import store from 'store';
 import axios from 'axios';
 
-import { ChairInvoice, DeskInvoice, SignIn, SignUp } from 'components/Guest';
+import { Invoice, SignIn, SignUp } from 'components/Guest';
 import Admin from 'components/Admin';
 import Standard from 'components/Standard';
 import { AdminRoute, GuestRoute, PrivateRoute } from 'components/Common/Routes';
@@ -79,8 +79,7 @@ const App = () => {
               <Route path="/" exact>
                 <Redirect to="/signin" />
               </Route>
-              <Route path="/chairinvoice/:id" exact component={ChairInvoice} />
-              <Route path="/deskinvoice/:id" exact component={DeskInvoice} />
+              <Route path="/invoice/:id" exact component={Invoice} />
               <GuestRoute path="/signin" exact component={SignIn} />
               <GuestRoute path="/signup" exact component={SignUp} />
               <AdminRoute path="/admin" component={Admin} />

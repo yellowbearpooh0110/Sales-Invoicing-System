@@ -107,7 +107,7 @@ const Stock = connect(mapStateToProps)((props) => {
   const [filterAnchor, setFilterAnchor] = useState(null);
 
   const [balance, setBalance] = useState(0);
-  const [qty, setQty] = useState(0);
+  const [shipmentQty, setShipmentQty] = useState(0);
 
   const handleFilterClick = (e) => {
     e.preventDefault();
@@ -157,6 +157,7 @@ const Stock = connect(mapStateToProps)((props) => {
         {
           name: 'remark',
           label: 'Remark',
+          multiline: 'true',
           type: 'text',
           defaultValue: stocks[index].remark,
           width: '100%',
@@ -191,7 +192,7 @@ const Stock = connect(mapStateToProps)((props) => {
         },
       ]);
       setBalance(stocks[index].balance);
-      setQty(stocks[index].qty);
+      setShipmentQty(stocks[index].qty - stocks[index].balance);
     }
     setEditOpen(true);
   };
@@ -284,7 +285,7 @@ const Stock = connect(mapStateToProps)((props) => {
         shipmentDate: data.get('shipmentDate') || null,
         arrivalDate: data.get('arrivalDate') || null,
         balance: balance,
-        qty: qty,
+        qty: balance + shipmentQty,
       })
       .then((response) => {
         // handle success
@@ -325,7 +326,7 @@ const Stock = connect(mapStateToProps)((props) => {
         shipmentDate: data.get('shipmentDate') || null,
         arrivalDate: data.get('arrivalDate') || null,
         balance: balance,
-        qty: qty,
+        qty: balance + shipmentQty,
       })
       .then((response) => {
         // handle success
@@ -506,7 +507,7 @@ const Stock = connect(mapStateToProps)((props) => {
             },
           ]);
           setBalance(0);
-          setQty(0);
+          setShipmentQty(0);
           setCreateOpen(true);
         }}
       >
@@ -678,27 +679,27 @@ const Stock = connect(mapStateToProps)((props) => {
               <IconButton
                 onClick={(event) => {
                   event.preventDefault();
-                  setQty(Math.max(0, qty - 1));
+                  setShipmentQty(Math.max(0, shipmentQty - 1));
                 }}
               >
                 <RemoveIcon />
               </IconButton>
               <TextField
                 margin="dense"
-                label="QTY"
+                label="Shipment"
                 variant="outlined"
                 size="small"
-                value={qty}
+                value={shipmentQty}
                 type="number"
                 sx={{ width: '80px', mx: '5px' }}
                 onChange={(e) => {
-                  setQty(Math.max(0, e.target.value));
+                  setShipmentQty(Math.max(0, e.target.value));
                 }}
               />
               <IconButton
                 onClick={(event) => {
                   event.preventDefault();
-                  setQty(qty + 1);
+                  setShipmentQty(shipmentQty + 1);
                 }}
               >
                 <AddIcon />
@@ -820,27 +821,26 @@ const Stock = connect(mapStateToProps)((props) => {
             >
               <IconButton
                 onClick={() => {
-                  setQty(qty > 1 ? qty - 1 : 0);
+                  setShipmentQty(Math.max(shipmentQty - 1, 0));
                 }}
               >
                 <RemoveIcon />
               </IconButton>
               <TextField
                 margin="dense"
-                label="QTY"
+                label="Shipment"
                 variant="outlined"
                 size="small"
-                value={qty}
+                value={shipmentQty}
                 type="number"
                 sx={{ width: '80px', mx: '5px' }}
                 onChange={(e) => {
-                  if (e.target.value > 0) setQty(e.target.value);
-                  else setQty(0);
+                  setShipmentQty(Math.max(e.target.value, 0));
                 }}
               />
               <IconButton
                 onClick={() => {
-                  setQty(qty + 1);
+                  setShipmentQty(shipmentQty + 1);
                 }}
               >
                 <AddIcon />

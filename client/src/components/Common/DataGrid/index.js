@@ -196,12 +196,14 @@ const useDataGridStyles = makeStyles((theme) => ({
     [`& .MuiTableCell-root.${tableCellClasses.body}`]: {
       fontSize: 10,
     },
-    '& .MuiTableRow-root:nth-of-type(odd)': {
-      backgroundColor: grey[50],
-    },
-    // hide last border
-    '& .MuiTableRow-root:last-child td, & .MuiTableRow-root:last-child th': {
-      border: 0,
+    '& .MuiTableRow-root': {
+      height: 40,
+      '&:nth-of-type(odd)': {
+        backgroundColor: grey[50],
+      },
+      '&:last-child td, &:last-child th': {
+        border: 0,
+      },
     },
   },
 }));

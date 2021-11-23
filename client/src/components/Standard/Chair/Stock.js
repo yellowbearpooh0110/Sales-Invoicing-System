@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import {
-  Autocomplete,
   Button,
   Box,
   Checkbox,
@@ -33,40 +32,36 @@ const columns = [
     label: '#',
   },
   {
-    id: 'supplierCode',
-    label: 'Supplier',
+    id: 'brand',
+    label: 'Brand',
   },
   {
     id: 'model',
     label: 'Model',
   },
   {
-    id: 'color',
-    label: 'Color',
+    id: 'frameColor',
+    label: 'Frame Color',
   },
   {
-    id: 'armSize',
-    label: 'Arm Size',
+    id: 'backColor',
+    label: 'Back Color',
   },
   {
-    id: 'feetSize',
-    label: 'Feet Size',
+    id: 'seatColor',
+    label: 'Seat Color',
   },
   {
-    id: 'beamSize',
-    label: 'Beam Size',
+    id: 'withHeadrest',
+    label: 'Headrest',
   },
   {
-    id: 'topMaterial',
-    label: 'topMaterial',
+    id: 'withAdArmrest',
+    label: 'Adjustable Armrests',
   },
   {
-    id: 'topColor',
-    label: 'topColor',
-  },
-  {
-    id: 'topSize',
-    label: 'topSize',
+    id: 'remark',
+    label: 'Special Remark',
   },
   {
     id: 'balance',
@@ -83,14 +78,6 @@ const columns = [
   {
     id: 'arrivalDate',
     label: 'Arrival',
-  },
-  {
-    id: 'edit',
-    nonSort: true,
-  },
-  {
-    id: 'delete',
-    nonSort: true,
   },
 ];
 
@@ -125,80 +112,39 @@ const Stock = connect(mapStateToProps)((props) => {
       setID(stocks[index].id);
       setFormProps([
         {
-          name: 'supplierCode',
-          label: 'Suppier',
-          type: 'autocomplete',
-          defaultValue: stocks[index].suppliderCode,
-          options: ['AK', 'JC', 'AW', 'LK'],
-          width: '30%',
+          name: 'brand',
+          label: 'Brand',
+          type: 'text',
+          defaultValue: stocks[index].brand,
+          width: '48%',
         },
         {
           name: 'model',
           label: 'Model',
           type: 'text',
           defaultValue: stocks[index].model,
-          width: '30%',
+          width: '48%',
         },
         {
-          name: 'color',
-          label: 'Color',
+          name: 'frameColor',
+          label: 'Frame Color',
           type: 'text',
-          defaultValue: stocks[index].color,
+          defaultValue: stocks[index].frameColor,
           width: '30%',
         },
         {
-          name: 'armSize',
-          label: 'Arm Size',
-          type: 'autocomplete',
-          defaultValue: stocks[index].armSize,
-          options: ['400', '500', '600'],
-          width: '30%',
-        },
-        {
-          name: 'feetSize',
-          label: 'FeetSize',
-          type: 'autocomplete',
-          defaultValue: stocks[index].feetSize,
-          options: ['400', '500', '600', '700'],
-          width: '30%',
-        },
-        {
-          name: 'beamSize',
-          label: 'BeamSize',
-          type: 'autocomplete',
-          defaultValue: stocks[index].beamSize,
-          options: ['740-1100', 'Regular'],
-          width: '30%',
-        },
-        {
-          name: 'topMaterial',
-          label: 'Top Material',
-          type: 'autocomplete',
-          defaultValue: stocks[index].topMaterial,
-          options: [
-            'Melamine',
-            'Laminate',
-            'North American Walnut',
-            'South American Walnut',
-            'Red Oak',
-            'Maple, Bamboo',
-            'Melamine with glass top',
-          ],
-          width: '65%',
-        },
-        {
-          name: 'topColor',
-          label: 'Top Color',
+          name: 'backColor',
+          label: 'Back Color',
           type: 'text',
-          defaultValue: stocks[index].topColor,
+          defaultValue: stocks[index].backColor,
           width: '30%',
         },
         {
-          name: 'topSize',
-          label: 'Top Size',
+          name: 'seatColor',
+          label: 'Seat Color',
           type: 'text',
-          defaultValue: stocks[index].topSize,
-          width: '100%',
+          defaultValue: stocks[index].seatColor,
+          width: '30%',
         },
         {
           name: 'remark',
@@ -209,20 +155,36 @@ const Stock = connect(mapStateToProps)((props) => {
           width: '100%',
         },
         {
+          name: 'withHeadrest',
+          label: 'Headrest',
+          type: 'checkbox',
+          defaultValue: stocks[index].withHeadrest,
+          width: '48%',
+        },
+        {
+          name: 'withAdArmrest',
+          label: 'Adjustable Armrest',
+          type: 'checkbox',
+          defaultValue: stocks[index].withAdArmrest,
+          width: '48%',
+        },
+        {
           name: 'shipmentDate',
           label: 'Shipment Date',
           type: 'date',
+          defaultValue: stocks[index].shipmentDate,
           width: '48%',
         },
         {
           name: 'arrivalDate',
           label: 'Arrival Date',
           type: 'date',
+          defaultValue: stocks[index].arrivalDate,
           width: '48%',
         },
       ]);
       setBalance(stocks[index].balance);
-      setShipmentQty(stocks[index].qty);
+      setShipmentQty(stocks[index].qty - stocks[index].balance);
     }
     setEditOpen(true);
   };
@@ -231,7 +193,7 @@ const Stock = connect(mapStateToProps)((props) => {
     if (index < stocks.length && index >= 0) {
       Swal.fire({
         title: 'Are you sure?',
-        text: 'This action will remove current DeskStock permanently.',
+        text: 'This action will remove current ChairStock permanently.',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Yes, Remove!',
@@ -240,7 +202,7 @@ const Stock = connect(mapStateToProps)((props) => {
       }).then((result) => {
         if (result.isConfirmed) {
           axios
-            .delete(`/deskStock/${stocks[index].id}`)
+            .delete(`/chairStock/${stocks[index].id}`)
             .then((response) => {
               // handle success
               getStocks();
@@ -266,7 +228,7 @@ const Stock = connect(mapStateToProps)((props) => {
   const handleBulkRemoveClick = (selected) => {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'This action will remove selected DeskStocks permanently.',
+      text: 'This action will remove selected ChairStocks permanently.',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Yes, Remove!',
@@ -275,7 +237,7 @@ const Stock = connect(mapStateToProps)((props) => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete('/deskStock', {
+          .delete('/chairStock', {
             data: { ids: selected },
           })
           .then((response) => {
@@ -303,16 +265,14 @@ const Stock = connect(mapStateToProps)((props) => {
     event.preventDefault();
     const data = new FormData(editForm.current);
     axios
-      .put(`/deskStock/${id}`, {
-        supplierCode: data.get('supplierCode'),
+      .put(`/chairStock/${id}`, {
+        brand: data.get('brand'),
         model: data.get('model'),
-        color: data.get('color'),
-        armSize: data.get('armSize'),
-        feetSize: data.get('feetSize'),
-        beamSize: data.get('beamSize'),
-        topMaterial: data.get('topMaterial'),
-        topColor: data.get('topColor'),
-        topSize: data.get('topSize'),
+        frameColor: data.get('frameColor'),
+        backColor: data.get('backColor'),
+        seatColor: data.get('seatColor'),
+        withHeadrest: Boolean(data.get('withHeadrest')),
+        withAdArmrest: Boolean(data.get('withAdArmrest')),
         remark: data.get('remark'),
         shipmentDate: data.get('shipmentDate') || null,
         arrivalDate: data.get('arrivalDate') || null,
@@ -346,16 +306,14 @@ const Stock = connect(mapStateToProps)((props) => {
     event.preventDefault();
     const data = new FormData(createForm.current);
     axios
-      .post(`/deskStock/create`, {
-        supplierCode: data.get('supplierCode'),
+      .post(`/chairStock/create`, {
+        brand: data.get('brand'),
         model: data.get('model'),
-        color: data.get('color'),
-        armSize: data.get('armSize'),
-        feetSize: data.get('feetSize'),
-        beamSize: data.get('beamSize'),
-        topMaterial: data.get('topMaterial'),
-        topColor: data.get('topColor'),
-        topSize: data.get('topSize'),
+        frameColor: data.get('frameColor'),
+        backColor: data.get('backColor'),
+        seatColor: data.get('seatColor'),
+        withHeadrest: Boolean(data.get('withHeadrest')),
+        withAdArmrest: Boolean(data.get('withAdArmrest')),
         remark: data.get('remark'),
         shipmentDate: data.get('shipmentDate') || null,
         arrivalDate: data.get('arrivalDate') || null,
@@ -448,7 +406,7 @@ const Stock = connect(mapStateToProps)((props) => {
 
   const getStocks = (cancelToken) => {
     axios
-      .get('/deskStock', { cancelToken })
+      .get('/chairStock', { cancelToken })
       .then((response) => {
         // handle success
         setStocks(response.data);
@@ -480,77 +438,52 @@ const Stock = connect(mapStateToProps)((props) => {
         onClick={() => {
           setFormProps([
             {
-              name: 'supplierCode',
-              label: 'Suppier',
-              type: 'autocomplete',
-              options: ['AK', 'JC', 'AW', 'LK'],
-              width: '30%',
+              name: 'brand',
+              label: 'Brand',
+              type: 'text',
+              width: '48%',
             },
             {
               name: 'model',
               label: 'Model',
               type: 'text',
-              width: '30%',
+              width: '48%',
             },
             {
-              name: 'color',
-              label: 'Color',
+              name: 'frameColor',
+              label: 'Frame Color',
               type: 'text',
               width: '30%',
             },
             {
-              name: 'armSize',
-              label: 'Arm Size',
-              type: 'autocomplete',
-              options: ['400', '500', '600'],
-              width: '30%',
-            },
-            {
-              name: 'feetSize',
-              label: 'FeetSize',
-              type: 'autocomplete',
-              options: ['400', '500', '600', '700'],
-              width: '30%',
-            },
-            {
-              name: 'beamSize',
-              label: 'BeamSize',
-              type: 'autocomplete',
-              options: ['740-1100', 'Regular'],
-              width: '30%',
-            },
-            {
-              name: 'topMaterial',
-              label: 'Top Material',
-              type: 'autocomplete',
-              options: [
-                'Melamine',
-                'Laminate',
-                'North American Walnut',
-                'South American Walnut',
-                'Red Oak',
-                'Maple, Bamboo',
-                'Melamine with glass top',
-              ],
-              width: '65%',
-            },
-            {
-              name: 'topColor',
-              label: 'Top Color',
+              name: 'backColor',
+              label: 'Back Color',
               type: 'text',
               width: '30%',
             },
             {
-              name: 'topSize',
-              label: 'Top Size',
+              name: 'seatColor',
+              label: 'Seat Color',
               type: 'text',
-              width: '100%',
+              width: '30%',
             },
             {
               name: 'remark',
               label: 'Remark',
               type: 'text',
               width: '100%',
+            },
+            {
+              name: 'withHeadrest',
+              label: 'Headrest',
+              type: 'checkbox',
+              width: '48%',
+            },
+            {
+              name: 'withAdArmrest',
+              label: 'Adjustable Armrest',
+              type: 'checkbox',
+              width: '48%',
             },
             {
               name: 'shipmentDate',
@@ -573,6 +506,7 @@ const Stock = connect(mapStateToProps)((props) => {
         New Stock
       </Button>
       <DataGrid
+        nonSelect={true}
         title="Chair Stocks"
         rows={stocks.map(
           (
@@ -588,26 +522,6 @@ const Stock = connect(mapStateToProps)((props) => {
             index,
             withHeadrest: withHeadrest ? 'Yes' : 'No',
             withAdArmrest: withAdArmrest ? 'Yes' : 'No',
-            edit: (
-              <IconButton
-                onClick={(event) => {
-                  event.preventDefault();
-                  handleEditClick(index);
-                }}
-              >
-                <EditIcon />
-              </IconButton>
-            ),
-            delete: (
-              <IconButton
-                onClick={(event) => {
-                  event.preventDefault();
-                  handleRemoveClick(index);
-                }}
-              >
-                <DeleteIcon />
-              </IconButton>
-            ),
             shipmentDate: (() => {
               if (shipmentDate === null) return 'No';
               const createdTime = new Date(shipmentDate);
@@ -680,24 +594,16 @@ const Stock = connect(mapStateToProps)((props) => {
                     {...restParams}
                   />
                 );
-              } else if (type === 'autocomplete') {
-                const { name, label, ...autocomParams } = restParams;
+              } else if (type === 'checkbox') {
+                const { defaultValue, label, name } = restParams;
                 return (
-                  <Autocomplete
+                  <FormControlLabel
                     key={index}
-                    options={['aa', 'ss']}
+                    control={
+                      <Checkbox name={name} defaultChecked={defaultValue} />
+                    }
+                    label={label}
                     sx={{ flexBasis: width, minWidth: width }}
-                    renderInput={(params) => (
-                      <TextField
-                        margin="dense"
-                        {...params}
-                        name={name}
-                        label={label}
-                        variant="outlined"
-                        size="small"
-                      />
-                    )}
-                    {...autocomParams}
                   />
                 );
               } else return null;
@@ -842,26 +748,6 @@ const Stock = connect(mapStateToProps)((props) => {
                     }
                     label={label}
                     sx={{ flexBasis: width, minWidth: width }}
-                  />
-                );
-              } else if (type === 'autocomplete') {
-                const { name, label, ...autocomParams } = restParams;
-                return (
-                  <Autocomplete
-                    key={index}
-                    options={['aa', 'ss']}
-                    sx={{ flexBasis: width, minWidth: width }}
-                    renderInput={(params) => (
-                      <TextField
-                        margin="dense"
-                        {...params}
-                        name={name}
-                        label={label}
-                        variant="outlined"
-                        size="small"
-                      />
-                    )}
-                    {...autocomParams}
                   />
                 );
               } else return null;
