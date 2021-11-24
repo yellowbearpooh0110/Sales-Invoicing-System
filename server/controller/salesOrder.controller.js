@@ -26,19 +26,19 @@ async function getAll(where) {
       {
         model: db.ChairStock,
         through: {
-          attributes: ['unitPrice', 'qty'],
+          attributes: ['unitPrice', 'qty', 'preOrder'],
         },
       },
       {
         model: db.DeskStock,
         through: {
-          attributes: ['unitPrice', 'qty'],
+          attributes: ['unitPrice', 'qty', 'preOrder'],
         },
       },
       {
         model: db.AccessoryStock,
         through: {
-          attributes: ['unitPrice', 'qty'],
+          attributes: ['unitPrice', 'qty', 'preOrder'],
         },
       },
     ],
@@ -301,6 +301,12 @@ async function getSalesOrder(id) {
       },
       {
         model: db.DeskStock,
+        through: {
+          attributes: ['unitPrice', 'qty', 'preOrder'],
+        },
+      },
+      {
+        model: db.AccessoryStock,
         through: {
           attributes: ['unitPrice', 'qty', 'preOrder'],
         },

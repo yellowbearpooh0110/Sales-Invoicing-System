@@ -259,11 +259,14 @@ const Invoice = () => {
                     content: `Chair: ${item.brand} ${item.model} ${item.frameColor} ${item.backColor} ${item.seatColor}`,
                     width: '55%',
                   },
-                  { content: `${item.ChairToOrder.unitPrice}`, width: '15%' },
+                  {
+                    content: `${item.ChairToOrder.unitPrice} HKD`,
+                    width: '15%',
+                  },
                   {
                     content: `${
                       item.ChairToOrder.unitPrice * item.ChairToOrder.qty
-                    }`,
+                    } HKD`,
                     width: '15%',
                   },
                 ],
@@ -278,7 +281,10 @@ const Invoice = () => {
                     content: `Desk: ${item.model} ${item.color} ${item.armSize} ${item.feetSize} ${item.beamSize}`,
                     width: '55%',
                   },
-                  { content: `${item.DeskToOrder.unitPrice}`, width: '15%' },
+                  {
+                    content: `${item.DeskToOrder.unitPrice} HKD`,
+                    width: '15%',
+                  },
                   {
                     content: `${
                       item.DeskToOrder.unitPrice * item.DeskToOrder.qty
@@ -287,10 +293,36 @@ const Invoice = () => {
                   },
                 ],
               })),
+              ...order.AccessoryStocks.map((item) => ({
+                cells: [
+                  {
+                    content: `${item.AccessoryToOrder.qty}`,
+                    width: '15%',
+                  },
+                  {
+                    content: `Accessory: ${item.color}<br />${item.remark}`,
+                    width: '55%',
+                  },
+                  {
+                    content: `${item.AccessoryToOrder.unitPrice} HKD`,
+                    width: '15%',
+                  },
+                  {
+                    content: `${
+                      item.AccessoryToOrder.unitPrice *
+                      item.AccessoryToOrder.qty
+                    } HKD`,
+                    width: '15%',
+                  },
+                ],
+              })),
               ...Array(
                 Math.max(
                   0,
-                  6 - order.ChairStocks.length - order.DeskStocks.length
+                  6 -
+                    order.ChairStocks.length -
+                    order.DeskStocks.length -
+                    order.AccessoryStocks.length
                 )
               ).fill({
                 cells: [
@@ -310,18 +342,26 @@ const Invoice = () => {
                   { content: 'SUBTOTAL', width: '15%' },
                   {
                     content: `${
-                      order.ChairStocks.length
+                      (order.ChairStocks.length
                         ? order.ChairStocks.map(
                             (item) =>
                               item.ChairToOrder.unitPrice *
                               item.ChairToOrder.qty
                           ).reduce((acc, cur) => acc + cur)
-                        : 0 + order.DeskStocks.length
+                        : 0) +
+                      (order.DeskStocks.length
                         ? order.DeskStocks.map(
                             (item) =>
                               item.DeskToOrder.unitPrice * item.DeskToOrder.qty
                           ).reduce((acc, cur) => acc + cur)
-                        : 0
+                        : 0) +
+                      (order.AccessoryStocks.length
+                        ? order.AccessoryStocks.map(
+                            (item) =>
+                              item.AccessoryToOrder.unitPrice *
+                              item.AccessoryToOrder.qty
+                          ).reduce((acc, cur) => acc + cur)
+                        : 0)
                     } HKD`,
                     width: '15%',
                     borderBottom: '0.5px solid #808080',
@@ -355,18 +395,26 @@ const Invoice = () => {
                   { content: 'TOTAL', width: '15%' },
                   {
                     content: `${
-                      order.ChairStocks.length
+                      (order.ChairStocks.length
                         ? order.ChairStocks.map(
                             (item) =>
                               item.ChairToOrder.unitPrice *
                               item.ChairToOrder.qty
                           ).reduce((acc, cur) => acc + cur)
-                        : 0 + order.DeskStocks.length
+                        : 0) +
+                      (order.DeskStocks.length
                         ? order.DeskStocks.map(
                             (item) =>
                               item.DeskToOrder.unitPrice * item.DeskToOrder.qty
                           ).reduce((acc, cur) => acc + cur)
-                        : 0
+                        : 0) +
+                      (order.AccessoryStocks.length
+                        ? order.AccessoryStocks.map(
+                            (item) =>
+                              item.AccessoryToOrder.unitPrice *
+                              item.AccessoryToOrder.qty
+                          ).reduce((acc, cur) => acc + cur)
+                        : 0)
                     } HKD`,
                     width: '15%',
                   },
