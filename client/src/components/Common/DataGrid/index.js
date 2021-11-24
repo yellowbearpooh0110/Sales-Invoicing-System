@@ -20,7 +20,6 @@ import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import {
   ArrowDropDown as ArrowDropDownIcon,
   Delete as DeleteIcon,

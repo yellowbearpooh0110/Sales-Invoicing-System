@@ -29,8 +29,9 @@ import DataGrid from 'components/Common/DataGrid';
 
 const columns = [
   {
-    id: 'index',
-    label: '#',
+    id: 'thumbnail',
+    sx: { width: 50 },
+    nonSort: true,
   },
   {
     id: 'supplierCode',
@@ -84,6 +85,10 @@ const columns = [
     id: 'arrivalDate',
     label: 'Arrival',
   },
+  {
+    id: 'edit',
+    nonSort: true,
+  },
 ];
 
 function mapStateToProps(state) {
@@ -94,23 +99,20 @@ function mapStateToProps(state) {
 const Stock = connect(mapStateToProps)((props) => {
   const theme = useTheme();
   const [stocks, setStocks] = useState([]);
-  const [editOpen, setEditOpen] = useState(false);
-  const [createOpen, setCreateOpen] = useState(false);
-  const editForm = useRef(null);
-  const createForm = useRef(null);
+  const [formMode, setFormMode] = useState('create');
+  const [formOpen, setFormOpen] = useState(false);
   const [formProps, setFormProps] = useState([]);
+  const inputForm = useRef(null);
 
   const [id, setID] = useState('');
-  const [filterAnchor, setFilterAnchor] = useState(null);
 
   const [balance, setBalance] = useState(0);
   const [shipmentQty, setShipmentQty] = useState(0);
 
-  const handleFilterClick = (e) => {
-    e.preventDefault();
-    if (filterAnchor === null) setFilterAnchor(e.currentTarget);
-    else setFilterAnchor(null);
-  };
+  const [features, setFeatures] = useState([]);
+
+  const [filterModel, setFilterModel] = useState(null);
+  const [filterColor, setFilterColor] = useState(null);
 
   const handleEditClick = (index) => {
     if (index < stocks.length && index >= 0) {
@@ -120,7 +122,7 @@ const Stock = connect(mapStateToProps)((props) => {
           name: 'supplierCode',
           label: 'Suppier',
           type: 'autocomplete',
-          defaultValue: stocks[index].suppliderCode,
+          defaultValue: stocks[index].supplierCode,
           options: ['AK', 'JC', 'AW', 'LK'],
           width: '30%',
         },
@@ -216,7 +218,8 @@ const Stock = connect(mapStateToProps)((props) => {
       setBalance(stocks[index].balance);
       setShipmentQty(stocks[index].qty);
     }
-    setEditOpen(true);
+    setFormMode('edit');
+    setFormOpen(true);
   };
 
   const handleRemoveClick = (index) => {
@@ -291,9 +294,22 @@ const Stock = connect(mapStateToProps)((props) => {
     });
   };
 
-  const handleSave = (event) => {
+  const handleSave = async (event) => {
     event.preventDefault();
-    const data = new FormData(editForm.current);
+    const data = new FormData(inputForm.current);
+    let thumbnailUrl = '';
+    if (data.get('thumbnail')) {
+      const uploadData = new FormData();
+      uploadData.append('file', data.get('thumbnail'));
+      try {
+        const response = await axios.post(`/chairStock/upload`, uploadData, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        });
+        thumbnailUrl = response.data.url;
+      } catch (err) {}
+    }
     axios
       .put(`/deskStock/${id}`, {
         supplierCode: data.get('supplierCode'),
@@ -306,6 +322,7 @@ const Stock = connect(mapStateToProps)((props) => {
         topColor: data.get('topColor'),
         topSize: data.get('topSize'),
         remark: data.get('remark'),
+        thumbnailUrl,
         shipmentDate: data.get('shipmentDate') || null,
         arrivalDate: data.get('arrivalDate') || null,
         balance: balance,
@@ -313,19 +330,19 @@ const Stock = connect(mapStateToProps)((props) => {
       })
       .then((response) => {
         // handle success
-        setEditOpen(false);
+        setFormOpen(false);
         getStocks();
       })
       .catch(function (error) {
         // handle error
-        setEditOpen(false);
+        setFormOpen(false);
         Swal.fire({
           icon: 'error',
           title: 'Error',
           html: error.response.data.message.replace('\n', '<br />'),
           allowOutsideClick: false,
         }).then(() => {
-          setEditOpen(true);
+          setFormOpen(true);
         });
         console.log(error);
       })
@@ -334,9 +351,22 @@ const Stock = connect(mapStateToProps)((props) => {
       });
   };
 
-  const handleCreate = (event) => {
+  const handleCreate = async (event) => {
     event.preventDefault();
-    const data = new FormData(createForm.current);
+    const data = new FormData(inputForm.current);
+    let thumbnailUrl = '';
+    if (data.get('thumbnail')) {
+      const uploadData = new FormData();
+      uploadData.append('file', data.get('thumbnail'));
+      try {
+        const response = await axios.post(`/chairStock/upload`, uploadData, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        });
+        thumbnailUrl = response.data.url;
+      } catch (err) {}
+    }
     axios
       .post(`/deskStock/create`, {
         supplierCode: data.get('supplierCode'),
@@ -349,6 +379,7 @@ const Stock = connect(mapStateToProps)((props) => {
         topColor: data.get('topColor'),
         topSize: data.get('topSize'),
         remark: data.get('remark'),
+        thumbnailUrl,
         shipmentDate: data.get('shipmentDate') || null,
         arrivalDate: data.get('arrivalDate') || null,
         balance: balance,
@@ -356,19 +387,19 @@ const Stock = connect(mapStateToProps)((props) => {
       })
       .then((response) => {
         // handle success
-        setCreateOpen(false);
+        setFormOpen(false);
         getStocks();
       })
       .catch(function (error) {
         // handle error
-        setCreateOpen(false);
+        setFormOpen(false);
         Swal.fire({
           icon: 'error',
           title: 'Error',
           text: error.response.data.message,
           allowOutsideClick: false,
         }).then(() => {
-          setCreateOpen(true);
+          setFormOpen(true);
         });
         console.log(error);
       })
@@ -377,11 +408,12 @@ const Stock = connect(mapStateToProps)((props) => {
       });
   };
 
-  const getBrands = (cancelToken) => {
+  const getFeatures = (cancelToken) => {
     axios
-      .get('/chairBrand', { cancelToken })
+      .get('/deskStock/features', { cancelToken })
       .then((response) => {
         // handle success
+        setFeatures(response.data);
       })
       .catch(function (error) {
         // handle error
@@ -390,52 +422,6 @@ const Stock = connect(mapStateToProps)((props) => {
       .then(function () {
         // always executed
       });
-  };
-
-  const getModels = (cancelToken) => {
-    axios
-      .get('/chairModel', { cancelToken })
-      .then((response) => {
-        // handle success
-      })
-      .catch(function (error) {
-        // handle error
-        console.log(error);
-      })
-      .then(function () {
-        // always executed
-      });
-  };
-
-  const getColors = (cancelToken) => {
-    axios
-      .get('/productColor', { cancelToken })
-      .then((response) => {
-        // handle success
-      })
-      .catch(function (error) {
-        // handle error
-        console.log(error);
-      })
-      .then(function () {
-        // always executed
-      });
-  };
-
-  const getChairRemarks = (cancelToken) => {
-    // axios
-    //   .get('/chairremark', { cancelToken })
-    //   .then((response) => {
-    //     // handle success
-    //     setChairRemarks(response.data.map((item) => item.detail));
-    //   })
-    //   .catch(function (error) {
-    //     // handle error
-    //     console.log(error);
-    //   })
-    //   .then(function () {
-    //     // always executed
-    //   });
   };
 
   const getStocks = (cancelToken) => {
@@ -456,16 +442,19 @@ const Stock = connect(mapStateToProps)((props) => {
 
   useEffect(() => {
     const source = axios.CancelToken.source();
-    getBrands(source.token);
-    getModels(source.token);
-    getColors(source.token);
+    getFeatures(source.token);
     getStocks(source.token);
-    getChairRemarks(source.token);
     return () => source.cancel('Stock Component got unmounted');
   }, []);
 
   return (
-    <>
+    <Box
+      sx={{
+        height: '100%',
+        overflow: 'auto',
+        padding: '10px 20px',
+      }}
+    >
       <Button
         variant="outlined"
         startIcon={<AddIcon />}
@@ -559,217 +548,132 @@ const Stock = connect(mapStateToProps)((props) => {
           ]);
           setBalance(0);
           setShipmentQty(0);
-          setCreateOpen(true);
+          setFormMode('create');
+          setFormOpen(true);
         }}
       >
         New Stock
       </Button>
+      <Paper
+        sx={{
+          marginTop: '10px',
+          padding: '5px 10px',
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'space-around',
+        }}
+      >
+        {[
+          {
+            label: 'Model',
+            value: filterModel,
+            onChange: (event, value) => {
+              event.preventDefault();
+              setFilterModel(value);
+              setFilterColor(null);
+            },
+            options: features
+              .map((item) => item.model)
+              .filter((c, index, chars) => chars.indexOf(c) === index),
+          },
+          {
+            label: 'Color',
+            value: filterColor,
+            onChange: (event, value) => {
+              event.preventDefault();
+              setFilterColor(value);
+            },
+            options: features
+              .filter((item) => !filterModel || item.model === filterModel)
+              .map((item) => item.color)
+              .filter((c, index, chars) => chars.indexOf(c) === index),
+          },
+        ].map(({ label, ...props }, index) => (
+          <Autocomplete
+            key={index}
+            sx={{ flexBasis: '200px', maxWidth: '200px' }}
+            renderInput={(params) => (
+              <TextField
+                margin="dense"
+                {...params}
+                label={label}
+                variant="outlined"
+                size="small"
+              />
+            )}
+            {...props}
+          />
+        ))}
+      </Paper>
       <DataGrid
         nonSelect={true}
-        title="Chair Stocks"
-        rows={stocks.map(
-          (
-            {
-              withHeadrest,
-              withAdArmrest,
-              shipmentDate,
-              arrivalDate,
-              ...restProps
-            },
-            index
-          ) => ({
-            index,
-            withHeadrest: withHeadrest ? 'Yes' : 'No',
-            withAdArmrest: withAdArmrest ? 'Yes' : 'No',
-            shipmentDate: (() => {
-              if (shipmentDate === null) return 'No';
-              const createdTime = new Date(shipmentDate);
-              createdTime.setMinutes(
-                createdTime.getMinutes() - createdTime.getTimezoneOffset()
-              );
-              return createdTime.toISOString().split('T')[0];
-            })(),
-            arrivalDate: (() => {
-              if (arrivalDate === null) return 'No';
-              const createdTime = new Date(arrivalDate);
-              createdTime.setMinutes(
-                createdTime.getMinutes() - createdTime.getTimezoneOffset()
-              );
-              return createdTime.toISOString().split('T')[0];
-            })(),
-            ...restProps,
-          })
-        )}
+        title="Desk Stocks"
+        rows={stocks
+          .filter(
+            (item) =>
+              (!filterModel || item.model === filterModel) &&
+              (!filterColor || item.color === filterColor)
+          )
+          .map(
+            (
+              {
+                withHeadrest,
+                withAdArmrest,
+                thumbnailUrl,
+                shipmentDate,
+                arrivalDate,
+                ...restProps
+              },
+              index
+            ) => ({
+              thumbnail: (
+                <img
+                  alt=""
+                  width="40px"
+                  src={thumbnailUrl}
+                  style={{ marginTop: '5px' }}
+                />
+              ),
+              withHeadrest: withHeadrest ? 'Yes' : 'No',
+              withAdArmrest: withAdArmrest ? 'Yes' : 'No',
+              shipmentDate: (() => {
+                if (shipmentDate === null) return 'No';
+                const createdTime = new Date(shipmentDate);
+                createdTime.setMinutes(
+                  createdTime.getMinutes() - createdTime.getTimezoneOffset()
+                );
+                return createdTime.toISOString().split('T')[0];
+              })(),
+              arrivalDate: (() => {
+                if (arrivalDate === null) return 'No';
+                const createdTime = new Date(arrivalDate);
+                createdTime.setMinutes(
+                  createdTime.getMinutes() - createdTime.getTimezoneOffset()
+                );
+                return createdTime.toISOString().split('T')[0];
+              })(),
+              ...restProps,
+            })
+          )}
         columns={columns}
         onEditClick={handleEditClick}
         onRemoveClick={handleRemoveClick}
         onBulkRemoveClick={handleBulkRemoveClick}
-        onFilterClick={handleFilterClick}
       ></DataGrid>
       <Dialog
         fullWidth
         fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
         maxWidth="sm"
-        open={editOpen}
+        open={formOpen}
         PaperProps={{
-          ref: editForm,
+          ref: inputForm,
           component: 'form',
-          onSubmit: handleSave,
+          onSubmit: formMode === 'create' ? handleCreate : handleSave,
         }}
       >
-        <DialogTitle>Edit Stock</DialogTitle>
-        <DialogContent>
-          <Paper
-            sx={{
-              mt: '5px',
-              p: '10px',
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'space-between',
-            }}
-          >
-            {formProps.map(({ type, width, ...restParams }, index) => {
-              if (type === 'text') {
-                return (
-                  <TextField
-                    key={index}
-                    margin="dense"
-                    variant="outlined"
-                    size="small"
-                    sx={{ flexBasis: width, minWidth: width }}
-                    {...restParams}
-                  />
-                );
-              } else if (type === 'date') {
-                return (
-                  <TextField
-                    key={index}
-                    margin="dense"
-                    variant="outlined"
-                    size="small"
-                    type="date"
-                    InputLabelProps={{ shrink: true }}
-                    sx={{ flexBasis: width, minWidth: width }}
-                    {...restParams}
-                  />
-                );
-              } else if (type === 'autocomplete') {
-                const { name, label, ...autocomParams } = restParams;
-                return (
-                  <Autocomplete
-                    key={index}
-                    options={['aa', 'ss']}
-                    sx={{ flexBasis: width, minWidth: width }}
-                    renderInput={(params) => (
-                      <TextField
-                        margin="dense"
-                        {...params}
-                        name={name}
-                        label={label}
-                        variant="outlined"
-                        size="small"
-                      />
-                    )}
-                    {...autocomParams}
-                  />
-                );
-              } else return null;
-            })}
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              sx={{ flexBasis: '48%', minWidth: '48%' }}
-            >
-              <IconButton
-                onClick={(event) => {
-                  event.preventDefault();
-                  setBalance(Math.max(0, balance - 1));
-                }}
-              >
-                <RemoveIcon />
-              </IconButton>
-              <TextField
-                margin="dense"
-                label="Balance"
-                variant="outlined"
-                size="small"
-                value={balance}
-                type="number"
-                sx={{ width: '80px', mx: '5px' }}
-                onChange={(e) => {
-                  setBalance(Math.max(0, e.target.value));
-                }}
-              />
-              <IconButton
-                onClick={(event) => {
-                  event.preventDefault();
-                  setBalance(balance + 1);
-                }}
-              >
-                <AddIcon />
-              </IconButton>
-            </Box>
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              sx={{ flexBasis: '48%', minWidth: '48%' }}
-            >
-              <IconButton
-                onClick={(event) => {
-                  event.preventDefault();
-                  setShipmentQty(Math.max(0, shipmentQty - 1));
-                }}
-              >
-                <RemoveIcon />
-              </IconButton>
-              <TextField
-                margin="dense"
-                label="Shipment"
-                variant="outlined"
-                size="small"
-                value={shipmentQty}
-                type="number"
-                sx={{ width: '80px', mx: '5px' }}
-                onChange={(e) => {
-                  setShipmentQty(Math.max(0, e.target.value));
-                }}
-              />
-              <IconButton
-                onClick={(event) => {
-                  event.preventDefault();
-                  setShipmentQty(shipmentQty + 1);
-                }}
-              >
-                <AddIcon />
-              </IconButton>
-            </Box>
-          </Paper>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => {
-              setEditOpen(false);
-            }}
-          >
-            Cancel
-          </Button>
-          <Button type="submit">Save</Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog
-        fullWidth
-        fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
-        maxWidth="sm"
-        open={createOpen}
-        PaperProps={{
-          ref: createForm,
-          component: 'form',
-          onSubmit: handleCreate,
-        }}
-      >
-        <DialogTitle>New Stock</DialogTitle>
+        <DialogTitle>
+          {formMode === 'create' ? 'New Stock' : 'Edit Stock'}
+        </DialogTitle>
         <DialogContent>
           <Paper
             sx={{
@@ -839,6 +743,19 @@ const Stock = connect(mapStateToProps)((props) => {
                 );
               } else return null;
             })}
+            <TextField
+              margin="dense"
+              variant="outlined"
+              size="small"
+              label="Thumbnail"
+              name="thumbnail"
+              type="file"
+              sx={{ flexBasis: '100%', minWidth: '100%' }}
+              inputProps={{
+                accept: 'image/png, image/gif, image/jpeg',
+              }}
+              InputLabelProps={{ shrink: true }}
+            />
             <Box
               display="flex"
               justifyContent="center"
@@ -911,15 +828,17 @@ const Stock = connect(mapStateToProps)((props) => {
         <DialogActions>
           <Button
             onClick={() => {
-              setCreateOpen(false);
+              setFormOpen(false);
             }}
           >
             Cancel
           </Button>
-          <Button type="submit">Save</Button>
+          <Button type="submit">
+            {formMode === 'create' ? 'Create' : 'Save'}
+          </Button>
         </DialogActions>
       </Dialog>
-    </>
+    </Box>
   );
 });
 

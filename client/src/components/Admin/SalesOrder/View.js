@@ -134,7 +134,7 @@ export default connect(mapStateToProps)((props) => {
   const emailContent = useRef(null);
   const [filterAnchor, setFilterAnchor] = useState(null);
 
-  const [index, setIndex] = useState(0);
+  const [orderIndex, setOrderIndex] = useState(0);
 
   const handleFilterClick = (e) => {
     e.preventDefault();
@@ -279,6 +279,7 @@ export default connect(mapStateToProps)((props) => {
       .get('/salesOrder', { cancelToken })
       .then((response) => {
         // handle success
+        console.log(response.data);
         setOrders(response.data);
       })
       .catch(function (error) {
@@ -331,6 +332,7 @@ export default connect(mapStateToProps)((props) => {
               finished,
               ChairStocks,
               DeskStocks,
+              AccessoryStocks,
               ...restProps
             },
             index
@@ -369,12 +371,16 @@ export default connect(mapStateToProps)((props) => {
                 sx={{ my: '5px' }}
                 onClick={(event) => {
                   event.preventDefault();
-                  setIndex(index);
+                  setOrderIndex(index);
                   setDetailOpen(true);
                 }}
               >
                 <Badge
-                  badgeContent={ChairStocks.length + DeskStocks.length}
+                  badgeContent={
+                    ChairStocks.length +
+                    DeskStocks.length +
+                    AccessoryStocks.length
+                  }
                   color="error"
                 >
                   <DeckIcon />
@@ -645,8 +651,8 @@ export default connect(mapStateToProps)((props) => {
         <DialogTitle>Products Details</DialogTitle>
         <DialogContent>
           <List>
-            {index < orders.length &&
-              orders[index].ChairStocks.map((item, index) => (
+            {orderIndex < orders.length &&
+              orders[orderIndex].ChairStocks.map((item, index) => (
                 <ListItem
                   key={index}
                   sx={{
@@ -681,8 +687,8 @@ export default connect(mapStateToProps)((props) => {
                   </Box>
                 </ListItem>
               ))}
-            {index < orders.length &&
-              orders[index].DeskStocks.map((item, index) => (
+            {orderIndex < orders.length &&
+              orders[orderIndex].DeskStocks.map((item, index) => (
                 <ListItem
                   key={index}
                   sx={{
@@ -712,6 +718,40 @@ export default connect(mapStateToProps)((props) => {
                     }}
                   >
                     {item.DeskToOrder.qty}
+                  </Box>
+                </ListItem>
+              ))}
+            {orderIndex < orders.length &&
+              orders[orderIndex].AccessoryStocks.map((item, index) => (
+                <ListItem
+                  key={index}
+                  sx={{
+                    bgcolor: yellow[400],
+                    boxShadow: `0px 2px 1px -1px rgb(0 0 0 / 20%)`,
+                    color: blue[700],
+                    my: '10px',
+                  }}
+                >
+                  <ListItemText
+                    primary={`Accessory: ${item.color}`}
+                    secondary={`${item.remark}`}
+                  />
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    variant="span"
+                    color={red[900]}
+                    bgcolor={red[100]}
+                    sx={{
+                      flexShrink: 0,
+                      width: 40,
+                      height: 40,
+                      marginRight: '10px',
+                      borderRadius: '50%',
+                    }}
+                  >
+                    {item.AccessoryToOrder.qty}
                   </Box>
                 </ListItem>
               ))}

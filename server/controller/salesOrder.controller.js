@@ -1,7 +1,6 @@
 const chairStockController = require('./chairStock.controller');
 const deskStockController = require('./deskStock.controller');
-const chairToOrderController = require('./chairToOrder.controller');
-const deskToOrderController = require('./deskToOrder.controller');
+const accessoryStockController = require('./accessoryStock.controller');
 
 module.exports = {
   getAll,
@@ -32,6 +31,12 @@ async function getAll(where) {
       },
       {
         model: db.DeskStock,
+        through: {
+          attributes: ['unitPrice', 'qty'],
+        },
+      },
+      {
+        model: db.AccessoryStock,
         through: {
           attributes: ['unitPrice', 'qty'],
         },
@@ -86,13 +91,31 @@ async function create(params) {
           preOrder,
         },
       });
+    } else if (products[index].productType === 'accessory') {
+      const stock = await accessoryStockController.getById(
+        products[index].productId
+      );
+      let preOrder = true;
+      if (stock.balance >= products[index].productAmount) {
+        stock.balance -= products[index].productAmount;
+        stock.qty -= products[index].productAmount;
+        preOrder = false;
+        await stock.save();
+      }
+      await salesOrder.addAccessoryStock(stock, {
+        through: {
+          unitPrice: products[index].unitPrice,
+          qty: products[index].productAmount,
+          preOrder,
+        },
+      });
     }
   }
 }
 
 async function update(id, params) {
   const salesOrder = await getSalesOrder(id);
-  const { ChairStocks, DeskStocks } = salesOrder;
+  const { ChairStocks, DeskStocks, AccessoryStocks } = salesOrder;
   const { products, ...restParams } = params;
   Object.assign(salesOrder, restParams);
   await salesOrder.save();
@@ -113,6 +136,17 @@ async function update(id, params) {
       await stock.save();
     }
     salesOrder.remove(DeskStocks[index].id);
+  }
+  for (var index = 0; index < AccessoryStocks.length; index++) {
+    if (!AccessoryStocks[index].AccessoryToOrder.preOrder) {
+      const stock = await accessoryStockController.getById(
+        AccessoryStocks[index].id
+      );
+      stock.balance += AccessoryStocks[index].AccessoryToOrder.qty;
+      stock.qty += AccessoryStocks[index].AccessoryToOrder.qty;
+      await stock.save();
+    }
+    salesOrder.remove(AccessoryStocks[index].id);
   }
   for (var index = 0; index < products.length; index++) {
     if (products[index].productType === 'chair') {
@@ -145,6 +179,24 @@ async function update(id, params) {
         await stock.save();
       }
       await salesOrder.addDeskStock(stock, {
+        through: {
+          unitPrice: products[index].unitPrice,
+          qty: products[index].productAmount,
+          preOrder,
+        },
+      });
+    } else if (products[index].productType === 'accessory') {
+      const stock = await accessoryStockController.getById(
+        products[index].productId
+      );
+      let preOrder = true;
+      if (stock.balance >= products[index].productAmount) {
+        stock.balance -= products[index].productAmount;
+        stock.qty -= products[index].productAmount;
+        preOrder = false;
+        await stock.save();
+      }
+      await salesOrder.addAccessoryStock(stock, {
         through: {
           unitPrice: products[index].unitPrice,
           qty: products[index].productAmount,
@@ -186,7 +238,9 @@ async function _delete(id) {
 async function _bulkDelete(where) {
   const salesOrders = await getAll(where);
   for (var orderIndex = 0; orderIndex < salesOrders.length; orderIndex++) {
-    const { ChairStocks, DeskStocks } = salesOrders[orderIndex];
+    const { ChairStocks, DeskStocks, AccessoryStocks } = salesOrders[
+      orderIndex
+    ];
     for (var index = 0; index < ChairStocks.length; index++) {
       if (!ChairStocks[index].ChairToOrder.preOrder) {
         const stock = await chairStockController.getById(ChairStocks[index].id);
@@ -200,6 +254,16 @@ async function _bulkDelete(where) {
         const stock = await deskStockController.getById(DeskStocks[index].id);
         stock.balance += DeskStocks[index].DeskToOrder.qty;
         stock.qty += DeskStocks[index].DeskToOrder.qty;
+        await stock.save();
+      }
+    }
+    for (var index = 0; index < AccessoryStocks.length; index++) {
+      if (!AccessoryStocks[index].AccessoryToOrder.preOrder) {
+        const stock = await accessoryStockController.getById(
+          AccessoryStocks[index].id
+        );
+        stock.balance += AccessoryStocks[index].AccessoryToOrder.qty;
+        stock.qty += AccessoryStocks[index].DeskToOrder.qty;
         await stock.save();
       }
     }

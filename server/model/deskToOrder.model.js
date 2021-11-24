@@ -1,6 +1,4 @@
 const { DataTypes } = require('sequelize');
-const DeskStock = require('./deskStock.model');
-const SalesOrder = require('./salesOrder.model');
 
 module.exports = model;
 

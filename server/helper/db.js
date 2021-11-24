@@ -30,8 +30,12 @@ async function initialize() {
   db.User = require('server/model/user.model')(sequelize);
   db.ChairStock = require('server/model/chairStock.model')(sequelize);
   db.DeskStock = require('server/model/deskStock.model')(sequelize);
+  db.AccessoryStock = require('server/model/accessoryStock.model')(sequelize);
   db.SalesOrder = require('server/model/salesOrder.model')(sequelize);
   db.ChairToOrder = require('server/model/chairToOrder.model')(sequelize);
+  db.AccessoryToOrder = require('server/model/accessoryToOrder.model')(
+    sequelize
+  );
   db.DeskToOrder = require('server/model/deskToOrder.model')(sequelize);
 
   db.ChairStock.belongsToMany(db.SalesOrder, { through: db.ChairToOrder });
@@ -39,22 +43,13 @@ async function initialize() {
 
   db.DeskStock.belongsToMany(db.SalesOrder, { through: db.DeskToOrder });
   db.SalesOrder.belongsToMany(db.DeskStock, { through: db.DeskToOrder });
-  // db.ChairToOrder.belongsTo(db.SalesOrder, {
-  //   as: 'salesOrder',
-  //   foreignKey: { name: 'salesOrderId', allowNull: false },
-  //   onDelete: 'cascade',
-  // });
 
-  // db.DeskToOrder.belongsTo(db.DeskStock, {
-  //   as: 'stock',
-  //   foreignKey: { name: 'stockId', allowNull: false },
-  //   onDelete: 'cascade',
-  // });
-  // db.DeskToOrder.belongsTo(db.SalesOrder, {
-  //   as: 'salesOrder',
-  //   foreignKey: { name: 'salesOrderId', allowNull: false },
-  //   onDelete: 'cascade',
-  // });
+  db.AccessoryStock.belongsToMany(db.SalesOrder, {
+    through: db.AccessoryToOrder,
+  });
+  db.SalesOrder.belongsToMany(db.AccessoryStock, {
+    through: db.AccessoryToOrder,
+  });
 
   db.SalesOrder.belongsTo(db.User, {
     as: 'seller',

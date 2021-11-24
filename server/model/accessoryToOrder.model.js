@@ -27,5 +27,5 @@ function model(sequelize) {
     },
   };
 
-  return sequelize.define('ChairToOrder', attributes);
+  return sequelize.define('AccessoryToOrder', attributes);
 }

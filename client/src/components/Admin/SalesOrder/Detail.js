@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
+  Autocomplete,
   Box,
   Button,
   Dialog,
@@ -60,10 +61,11 @@ function mapStateToProps(state) {
   return { auth };
 }
 
-const columns = [
+const chairColumns = [
   {
-    id: 'id',
-    label: '#',
+    id: 'thumbnail',
+    sx: { width: 50 },
+    nonSort: true,
   },
   {
     id: 'brand',
@@ -115,7 +117,104 @@ const columns = [
   },
   {
     id: 'add',
+  },
+];
+
+const deskColumns = [
+  {
+    id: 'thumbnail',
+    sx: { width: 50 },
     nonSort: true,
+  },
+  {
+    id: 'supplierCode',
+    label: 'Supplier',
+  },
+  {
+    id: 'model',
+    label: 'Model',
+  },
+  {
+    id: 'color',
+    label: 'Color',
+  },
+  {
+    id: 'armSize',
+    label: 'Arm Size',
+  },
+  {
+    id: 'feetSize',
+    label: 'Feet Size',
+  },
+  {
+    id: 'beamSize',
+    label: 'Beam Size',
+  },
+  {
+    id: 'topMaterial',
+    label: 'topMaterial',
+  },
+  {
+    id: 'topColor',
+    label: 'topColor',
+  },
+  {
+    id: 'topSize',
+    label: 'topSize',
+  },
+  {
+    id: 'balance',
+    label: 'Balance',
+  },
+  {
+    id: 'qty',
+    label: 'QTY',
+  },
+  {
+    id: 'shipmentDate',
+    label: 'Shipment',
+  },
+  {
+    id: 'arrivalDate',
+    label: 'Arrival',
+  },
+  {
+    id: 'add',
+  },
+];
+
+const accessoryColumns = [
+  {
+    id: 'thumbnail',
+    sx: { width: 50 },
+    nonSort: true,
+  },
+  {
+    id: 'color',
+    label: 'Color',
+  },
+  {
+    id: 'remark',
+    label: 'Special Remark',
+  },
+  {
+    id: 'balance',
+    label: 'Balance',
+  },
+  {
+    id: 'qty',
+    label: 'QTY',
+  },
+  {
+    id: 'shipmentDate',
+    label: 'Shipment',
+  },
+  {
+    id: 'arrivalDate',
+    label: 'Arrival',
+  },
+  {
+    id: 'add',
   },
 ];
 
@@ -133,7 +232,66 @@ export default connect(mapStateToProps)((props) => {
 
   const [chairStocks, setChairStocks] = useState([]);
   const [deskStocks, setDeskStocks] = useState([]);
+  const [accessoryStocks, setAccessoryStocks] = useState([]);
   const [stocksIndex, setStocksIndex] = useState(0);
+
+  const [chairFeatures, setChairFeatures] = useState([]);
+  const [deskFeatures, setDeskFeatures] = useState([]);
+  const [accessoryFeatures, setAccessoryFeatures] = useState([]);
+
+  const [chairFilterBrand, setChairFilterBrand] = useState(null);
+  const [chairFilterModel, setChairFilterModel] = useState(null);
+  const [deskFilterModel, setDeskFilterModel] = useState(null);
+  const [deskFilterColor, setDeskFilterColor] = useState(null);
+  const [accessoryFilterColor, setAccessoryFilterColor] = useState(null);
+
+  const getChairFeatures = (cancelToken) => {
+    axios
+      .get('/chairStock/features', { cancelToken })
+      .then((response) => {
+        // handle success
+        setChairFeatures(response.data);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
+  const getDeskFeatures = (cancelToken) => {
+    axios
+      .get('/deskStock/features', { cancelToken })
+      .then((response) => {
+        // handle success
+        setDeskFeatures(response.data);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
+  const getAccessoryFeatures = (cancelToken) => {
+    axios
+      .get('/accessoryStock/features', { cancelToken })
+      .then((response) => {
+        // handle success
+        setAccessoryFeatures(response.data);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
 
   const getChairStocks = (cancelToken) => {
     axios
@@ -167,10 +325,30 @@ export default connect(mapStateToProps)((props) => {
       });
   };
 
+  const getAccessoryStocks = (cancelToken) => {
+    axios
+      .get('/accessoryStock', { cancelToken })
+      .then((response) => {
+        // handle success
+        setAccessoryStocks(response.data);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
   useEffect(() => {
     const source = axios.CancelToken.source();
+    getChairFeatures(source.token);
+    getDeskFeatures(source.token);
+    getAccessoryFeatures(source.token);
     getChairStocks(source.token);
     getDeskStocks(source.token);
+    getAccessoryStocks(source.token);
     return () => source.cancel('Stock Component got unmounted');
   }, []);
 
@@ -369,16 +547,26 @@ export default connect(mapStateToProps)((props) => {
                       </IconButton>
                     }
                   >
-                    <ListItemText
-                      primary={
-                        item.productType === 'chair'
-                          ? `${item.productDetail.brand}, ${item.productDetail.model}, ${item.productDetail.frameColor}, ${item.productDetail.backColor}, ${item.productDetail.seatColor}`
-                          : `${item.productDetail.supplierCode}, ${item.productDetail.model}, ${item.productDetail.color}, ${item.productDetail.armSize}, ${item.productDetail.feetSize}, ${item.productDetail.beamSize}`
-                      }
-                      secondary={`${
-                        item.productDetail.withHeadrest ? 'Headrest, ' : ''
-                      }${item.productDetail.withAdArmrest ? 'Armrest' : ''}`}
-                    />
+                    {item.productType === 'chair' && (
+                      <ListItemText
+                        primary={`Chair: ${item.productDetail.brand}, ${item.productDetail.model}, ${item.productDetail.frameColor}, ${item.productDetail.backColor}, ${item.productDetail.seatColor}`}
+                        secondary={`${
+                          item.productDetail.withHeadrest ? 'Headrest, ' : ''
+                        }${item.productDetail.withAdArmrest ? 'Armrest' : ''}`}
+                      />
+                    )}
+                    {item.productType === 'desk' && (
+                      <ListItemText
+                        primary={`Desk: ${item.productDetail.supplierCode}, ${item.productDetail.model}, ${item.productDetail.color}, ${item.productDetail.armSize}, ${item.productDetail.feetSize}, ${item.productDetail.beamSize}`}
+                        secondary={`${item.productDetail.topMaterial}, ${item.productDetail.topColor}, ${item.productDetail.topSize}`}
+                      />
+                    )}
+                    {item.productType === 'accessory' && (
+                      <ListItemText
+                        primary={`Accessory: ${item.productDetail.color}`}
+                        secondary={`${item.productDetail.remark}`}
+                      />
+                    )}
                     <Box
                       display="flex"
                       alignItems="center"
@@ -413,147 +601,389 @@ export default connect(mapStateToProps)((props) => {
               >
                 <Tab label="Chairs" />
                 <Tab label="Desks" />
+                <Tab label="Accessories" />
               </Tabs>
             </Box>
             <TabPanel value={stocksIndex} index={0}>
+              <Paper
+                sx={{
+                  marginTop: '10px',
+                  padding: '5px 10px',
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  justifyContent: 'space-around',
+                }}
+              >
+                {[
+                  {
+                    label: 'Brand',
+                    value: chairFilterBrand,
+                    onChange: (event, value) => {
+                      event.preventDefault();
+                      setChairFilterBrand(value);
+                      setChairFilterModel(null);
+                    },
+                    options: chairFeatures
+                      .map((item) => item.brand)
+                      .filter((c, index, chars) => chars.indexOf(c) === index),
+                  },
+                  {
+                    label: 'Model',
+                    value: chairFilterModel,
+                    onChange: (event, value) => {
+                      event.preventDefault();
+                      setChairFilterModel(value);
+                    },
+                    options: chairFeatures
+                      .filter(
+                        (item) =>
+                          !chairFilterBrand || item.brand === chairFilterBrand
+                      )
+                      .map((item) => item.model)
+                      .filter((c, index, chars) => chars.indexOf(c) === index),
+                  },
+                ].map(({ label, ...props }, index) => (
+                  <Autocomplete
+                    key={index}
+                    sx={{ flexBasis: '200px', maxWidth: '200px' }}
+                    renderInput={(params) => (
+                      <TextField
+                        margin="dense"
+                        {...params}
+                        label={label}
+                        variant="outlined"
+                        size="small"
+                      />
+                    )}
+                    {...props}
+                  />
+                ))}
+              </Paper>
               <DataGrid
                 nonSelect={true}
                 title="Chair Stocks"
-                rows={chairStocks.map(
-                  (
-                    {
-                      id,
-                      withHeadrest,
-                      withAdArmrest,
-                      shipmentDate,
-                      arrivalDate,
-                      ...restProps
-                    },
-                    index
-                  ) => ({
-                    id: index,
-                    withHeadrest: withHeadrest ? 'Yes' : 'No',
-                    withAdArmrest: withAdArmrest ? 'Yes' : 'No',
-                    add: (
-                      <IconButton
-                        onClick={(event) => {
-                          event.preventDefault();
-                          setProductType('chair');
-                          setProductDetail(chairStocks[index]);
-                          setProductAmount(1);
-                          if (
-                            cart.find(
-                              (item) =>
-                                item.productType === 'chair' &&
-                                item.productDetail.id === chairStocks[index].id
-                            )
-                          ) {
-                            Swal.fire({
-                              icon: 'warning',
-                              title: 'Warning',
-                              text: 'This product is already added.',
-                              allowOutsideClick: false,
-                            });
-                            return;
-                          }
-                          setAddOpen(true);
-                        }}
-                      >
-                        <AddIcon />
-                      </IconButton>
-                    ),
-                    shipmentDate: (() => {
-                      if (shipmentDate === null) return 'No';
-                      const createdTime = new Date(shipmentDate);
-                      createdTime.setMinutes(
-                        createdTime.getMinutes() -
-                          createdTime.getTimezoneOffset()
-                      );
-                      return createdTime.toISOString().split('T')[0];
-                    })(),
-                    arrivalDate: (() => {
-                      if (arrivalDate === null) return 'No';
-                      const createdTime = new Date(arrivalDate);
-                      createdTime.setMinutes(
-                        createdTime.getMinutes() -
-                          createdTime.getTimezoneOffset()
-                      );
-                      return createdTime.toISOString().split('T')[0];
-                    })(),
-                    ...restProps,
-                  })
-                )}
-                columns={columns}
+                rows={chairStocks
+                  .filter(
+                    (item) =>
+                      (!chairFilterBrand || item.brand === chairFilterBrand) &&
+                      (!chairFilterModel || item.model === chairFilterModel)
+                  )
+                  .map(
+                    (
+                      {
+                        thumbnailUrl,
+                        withHeadrest,
+                        withAdArmrest,
+                        shipmentDate,
+                        arrivalDate,
+                        ...restProps
+                      },
+                      index
+                    ) => ({
+                      thumbnail: (
+                        <img
+                          alt=""
+                          width="40px"
+                          src={thumbnailUrl}
+                          style={{ marginTop: '5px' }}
+                        />
+                      ),
+                      withHeadrest: withHeadrest ? 'Yes' : 'No',
+                      withAdArmrest: withAdArmrest ? 'Yes' : 'No',
+                      add: (
+                        <IconButton
+                          onClick={(event) => {
+                            event.preventDefault();
+                            setProductType('chair');
+                            setProductDetail(chairStocks[index]);
+                            setProductAmount(1);
+                            if (
+                              cart.find(
+                                (item) =>
+                                  item.productType === 'chair' &&
+                                  item.productDetail.id ===
+                                    chairStocks[index].id
+                              )
+                            ) {
+                              Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning',
+                                text: 'This product is already added.',
+                                allowOutsideClick: false,
+                              });
+                              return;
+                            }
+                            setAddOpen(true);
+                          }}
+                        >
+                          <AddIcon />
+                        </IconButton>
+                      ),
+                      shipmentDate: (() => {
+                        if (shipmentDate === null) return 'No';
+                        const createdTime = new Date(shipmentDate);
+                        createdTime.setMinutes(
+                          createdTime.getMinutes() -
+                            createdTime.getTimezoneOffset()
+                        );
+                        return createdTime.toISOString().split('T')[0];
+                      })(),
+                      arrivalDate: (() => {
+                        if (arrivalDate === null) return 'No';
+                        const createdTime = new Date(arrivalDate);
+                        createdTime.setMinutes(
+                          createdTime.getMinutes() -
+                            createdTime.getTimezoneOffset()
+                        );
+                        return createdTime.toISOString().split('T')[0];
+                      })(),
+                      ...restProps,
+                    })
+                  )}
+                columns={chairColumns}
               ></DataGrid>
             </TabPanel>
             <TabPanel value={stocksIndex} index={1}>
-              <DataGrid
-                title="Desk Stocks"
-                rows={deskStocks.map(
-                  (
-                    {
-                      id,
-                      withHeadrest,
-                      withAdArmrest,
-                      shipmentDate,
-                      arrivalDate,
-                      ...restProps
+              <Paper
+                sx={{
+                  marginTop: '10px',
+                  padding: '5px 10px',
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  justifyContent: 'space-around',
+                }}
+              >
+                {[
+                  {
+                    label: 'Model',
+                    value: deskFilterModel,
+                    onChange: (event, value) => {
+                      event.preventDefault();
+                      setDeskFilterModel(value);
+                      setDeskFilterColor(null);
                     },
-                    index
-                  ) => ({
-                    id: index,
-                    withHeadrest: withHeadrest ? 'Yes' : 'No',
-                    withAdArmrest: withAdArmrest ? 'Yes' : 'No',
-                    add: (
-                      <IconButton
-                        onClick={(event) => {
-                          event.preventDefault();
-                          setProductType('desk');
-                          setProductDetail(deskStocks[index]);
-                          setProductAmount(1);
-                          if (
-                            cart.find(
-                              (item) =>
-                                item.productType === 'desk' &&
-                                item.productDetail.id === deskStocks[index].id
-                            )
-                          ) {
-                            Swal.fire({
-                              icon: 'warning',
-                              title: 'Warning',
-                              text: 'This product is already added.',
-                              allowOutsideClick: false,
-                            });
-                            return;
-                          }
-                          setAddOpen(true);
-                        }}
-                      >
-                        <AddIcon />
-                      </IconButton>
-                    ),
-                    shipmentDate: (() => {
-                      if (shipmentDate === null) return 'No';
-                      const createdTime = new Date(shipmentDate);
-                      createdTime.setMinutes(
-                        createdTime.getMinutes() -
-                          createdTime.getTimezoneOffset()
-                      );
-                      return createdTime.toISOString().split('T')[0];
-                    })(),
-                    arrivalDate: (() => {
-                      if (arrivalDate === null) return 'No';
-                      const createdTime = new Date(arrivalDate);
-                      createdTime.setMinutes(
-                        createdTime.getMinutes() -
-                          createdTime.getTimezoneOffset()
-                      );
-                      return createdTime.toISOString().split('T')[0];
-                    })(),
-                    ...restProps,
-                  })
-                )}
-                columns={columns}
+                    options: deskFeatures
+                      .map((item) => item.model)
+                      .filter((c, index, chars) => chars.indexOf(c) === index),
+                  },
+                  {
+                    label: 'Color',
+                    value: deskFilterColor,
+                    onChange: (event, value) => {
+                      event.preventDefault();
+                      setDeskFilterColor(value);
+                    },
+                    options: deskFeatures
+                      .filter(
+                        (item) =>
+                          !deskFilterModel || item.model === deskFilterModel
+                      )
+                      .map((item) => item.color)
+                      .filter((c, index, chars) => chars.indexOf(c) === index),
+                  },
+                ].map(({ label, ...props }, index) => (
+                  <Autocomplete
+                    key={index}
+                    sx={{ flexBasis: '200px', maxWidth: '200px' }}
+                    renderInput={(params) => (
+                      <TextField
+                        margin="dense"
+                        {...params}
+                        label={label}
+                        variant="outlined"
+                        size="small"
+                      />
+                    )}
+                    {...props}
+                  />
+                ))}
+              </Paper>
+              <DataGrid
+                nonSelect={true}
+                title="Desk Stocks"
+                rows={deskStocks
+                  .filter(
+                    (item) =>
+                      (!deskFilterModel || item.model === deskFilterModel) &&
+                      (!deskFilterColor || item.color === deskFilterColor)
+                  )
+                  .map(
+                    (
+                      { thumbnailUrl, shipmentDate, arrivalDate, ...restProps },
+                      index
+                    ) => ({
+                      thumbnail: (
+                        <img
+                          alt=""
+                          width="40px"
+                          src={thumbnailUrl}
+                          style={{ marginTop: '5px' }}
+                        />
+                      ),
+                      add: (
+                        <IconButton
+                          onClick={(event) => {
+                            event.preventDefault();
+                            setProductType('desk');
+                            setProductDetail(deskStocks[index]);
+                            setProductAmount(1);
+                            if (
+                              cart.find(
+                                (item) =>
+                                  item.productType === 'desk' &&
+                                  item.productDetail.id === deskStocks[index].id
+                              )
+                            ) {
+                              Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning',
+                                text: 'This product is already added.',
+                                allowOutsideClick: false,
+                              });
+                              return;
+                            }
+                            setAddOpen(true);
+                          }}
+                        >
+                          <AddIcon />
+                        </IconButton>
+                      ),
+                      shipmentDate: (() => {
+                        if (shipmentDate === null) return 'No';
+                        const createdTime = new Date(shipmentDate);
+                        createdTime.setMinutes(
+                          createdTime.getMinutes() -
+                            createdTime.getTimezoneOffset()
+                        );
+                        return createdTime.toISOString().split('T')[0];
+                      })(),
+                      arrivalDate: (() => {
+                        if (arrivalDate === null) return 'No';
+                        const createdTime = new Date(arrivalDate);
+                        createdTime.setMinutes(
+                          createdTime.getMinutes() -
+                            createdTime.getTimezoneOffset()
+                        );
+                        return createdTime.toISOString().split('T')[0];
+                      })(),
+                      ...restProps,
+                    })
+                  )}
+                columns={deskColumns}
+              />
+            </TabPanel>
+            <TabPanel value={stocksIndex} index={2}>
+              <Paper
+                sx={{
+                  marginTop: '10px',
+                  padding: '5px 10px',
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  justifyContent: 'space-around',
+                }}
+              >
+                {[
+                  {
+                    label: 'Color',
+                    value: accessoryFilterColor,
+                    onChange: (event, value) => {
+                      event.preventDefault();
+                      setAccessoryFilterColor(value);
+                    },
+                    options: accessoryFeatures
+                      .map((item) => item.color)
+                      .filter((c, index, chars) => chars.indexOf(c) === index),
+                  },
+                ].map(({ label, ...props }, index) => (
+                  <Autocomplete
+                    key={index}
+                    sx={{ flexBasis: '200px', maxWidth: '200px' }}
+                    renderInput={(params) => (
+                      <TextField
+                        margin="dense"
+                        {...params}
+                        label={label}
+                        variant="outlined"
+                        size="small"
+                      />
+                    )}
+                    {...props}
+                  />
+                ))}
+              </Paper>
+              <DataGrid
+                nonSelect={true}
+                title="Accessory Stocks"
+                rows={accessoryStocks
+                  .filter(
+                    (item) =>
+                      !accessoryFilterColor ||
+                      item.color === accessoryFilterColor
+                  )
+                  .map(
+                    (
+                      { thumbnailUrl, shipmentDate, arrivalDate, ...restProps },
+                      index
+                    ) => ({
+                      thumbnail: (
+                        <img
+                          alt=""
+                          width="40px"
+                          src={thumbnailUrl}
+                          style={{ marginTop: '5px' }}
+                        />
+                      ),
+                      add: (
+                        <IconButton
+                          onClick={(event) => {
+                            event.preventDefault();
+                            setProductType('accessory');
+                            setProductDetail(accessoryStocks[index]);
+                            setProductAmount(1);
+                            if (
+                              cart.find(
+                                (item) =>
+                                  item.productType === 'accessory' &&
+                                  item.productDetail.id ===
+                                    accessoryStocks[index].id
+                              )
+                            ) {
+                              Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning',
+                                text: 'This product is already added.',
+                                allowOutsideClick: false,
+                              });
+                              return;
+                            }
+                            setAddOpen(true);
+                          }}
+                        >
+                          <AddIcon />
+                        </IconButton>
+                      ),
+                      shipmentDate: (() => {
+                        if (shipmentDate === null) return 'No';
+                        const createdTime = new Date(shipmentDate);
+                        createdTime.setMinutes(
+                          createdTime.getMinutes() -
+                            createdTime.getTimezoneOffset()
+                        );
+                        return createdTime.toISOString().split('T')[0];
+                      })(),
+                      arrivalDate: (() => {
+                        if (arrivalDate === null) return 'No';
+                        const createdTime = new Date(arrivalDate);
+                        createdTime.setMinutes(
+                          createdTime.getMinutes() -
+                            createdTime.getTimezoneOffset()
+                        );
+                        return createdTime.toISOString().split('T')[0];
+                      })(),
+                      ...restProps,
+                    })
+                  )}
+                columns={accessoryColumns}
               />
             </TabPanel>
           </Paper>

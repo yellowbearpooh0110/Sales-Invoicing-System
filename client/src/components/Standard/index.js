@@ -14,6 +14,7 @@ import { logout } from 'services/auth.service';
 
 import { ChairStock } from './Chair';
 import { DeskStock } from './Desk';
+import { AccessoryStock } from './Accessory';
 import { SalesOrderCreate, SalesOrderEdit, SalesOrderView } from './SalesOrder';
 
 function mapStateToProps(state) {
@@ -35,6 +36,16 @@ const menuLists = [
     category: 'Desk',
     content: [
       { path: '/user/desk/stock', icon: <StorefrontIcon />, label: 'Stock' },
+    ],
+  },
+  {
+    category: 'Accessory',
+    content: [
+      {
+        path: '/user/accessory/stock',
+        icon: <StorefrontIcon />,
+        label: 'Stock',
+      },
     ],
   },
   {
@@ -113,6 +124,10 @@ const Standard = (props) => {
           <Switch>
             <Route path={`${path}/chair/stock`} component={ChairStock} />
             <Route path={`${path}/desk/stock`} component={DeskStock} />
+            <Route
+              path={`${path}/accessory/stock`}
+              component={AccessoryStock}
+            />
             <Route path={`${path}/order`} exact component={SalesOrderView} />
             <Route
               path={`${path}/order/create`}

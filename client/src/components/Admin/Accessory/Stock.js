@@ -34,32 +34,8 @@ const columns = [
     nonSort: true,
   },
   {
-    id: 'brand',
-    label: 'Brand',
-  },
-  {
-    id: 'model',
-    label: 'Model',
-  },
-  {
-    id: 'frameColor',
-    label: 'Frame Color',
-  },
-  {
-    id: 'backColor',
-    label: 'Back Color',
-  },
-  {
-    id: 'seatColor',
-    label: 'Seat Color',
-  },
-  {
-    id: 'withHeadrest',
-    label: 'Headrest',
-  },
-  {
-    id: 'withAdArmrest',
-    label: 'Adjustable Armrests',
+    id: 'color',
+    label: 'Color',
   },
   {
     id: 'remark',
@@ -80,6 +56,14 @@ const columns = [
   {
     id: 'arrivalDate',
     label: 'Arrival',
+  },
+  {
+    id: 'edit',
+    nonSort: true,
+  },
+  {
+    id: 'delete',
+    nonSort: true,
   },
 ];
 
@@ -105,47 +89,18 @@ const Stock = connect(mapStateToProps)((props) => {
 
   const [features, setFeatures] = useState([]);
 
-  const [filterBrand, setFilterBrand] = useState(null);
-  const [filterModel, setFilterModel] = useState(null);
+  const [filterColor, setFilterColor] = useState(null);
 
   const handleEditClick = (index) => {
     if (index < stocks.length && index >= 0) {
       setID(stocks[index].id);
       setFormProps([
         {
-          name: 'brand',
-          label: 'Brand',
+          name: 'color',
+          label: 'Color',
           type: 'text',
-          defaultValue: stocks[index].brand,
+          defaultValue: stocks[index].color,
           width: '48%',
-        },
-        {
-          name: 'model',
-          label: 'Model',
-          type: 'text',
-          defaultValue: stocks[index].model,
-          width: '48%',
-        },
-        {
-          name: 'frameColor',
-          label: 'Frame Color',
-          type: 'text',
-          defaultValue: stocks[index].frameColor,
-          width: '30%',
-        },
-        {
-          name: 'backColor',
-          label: 'Back Color',
-          type: 'text',
-          defaultValue: stocks[index].backColor,
-          width: '30%',
-        },
-        {
-          name: 'seatColor',
-          label: 'Seat Color',
-          type: 'text',
-          defaultValue: stocks[index].seatColor,
-          width: '30%',
         },
         {
           name: 'remark',
@@ -154,20 +109,6 @@ const Stock = connect(mapStateToProps)((props) => {
           type: 'text',
           defaultValue: stocks[index].remark,
           width: '100%',
-        },
-        {
-          name: 'withHeadrest',
-          label: 'Headrest',
-          type: 'checkbox',
-          defaultValue: stocks[index].withHeadrest,
-          width: '48%',
-        },
-        {
-          name: 'withAdArmrest',
-          label: 'Adjustable Armrest',
-          type: 'checkbox',
-          defaultValue: stocks[index].withAdArmrest,
-          width: '48%',
         },
         {
           name: 'shipmentDate',
@@ -195,7 +136,7 @@ const Stock = connect(mapStateToProps)((props) => {
     if (index < stocks.length && index >= 0) {
       Swal.fire({
         title: 'Are you sure?',
-        text: 'This action will remove current ChairStock permanently.',
+        text: 'This action will remove current AccessoryStock permanently.',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Yes, Remove!',
@@ -204,7 +145,7 @@ const Stock = connect(mapStateToProps)((props) => {
       }).then((result) => {
         if (result.isConfirmed) {
           axios
-            .delete(`/chairStock/${stocks[index].id}`)
+            .delete(`/accessoryStock/${stocks[index].id}`)
             .then((response) => {
               // handle success
               getStocks();
@@ -230,7 +171,7 @@ const Stock = connect(mapStateToProps)((props) => {
   const handleBulkRemoveClick = (selected) => {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'This action will remove selected ChairStocks permanently.',
+      text: 'This action will remove selected AccessoryStocks permanently.',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Yes, Remove!',
@@ -239,7 +180,7 @@ const Stock = connect(mapStateToProps)((props) => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete('/chairStock', {
+          .delete('/accessoryStock', {
             data: { ids: selected },
           })
           .then((response) => {
@@ -271,23 +212,21 @@ const Stock = connect(mapStateToProps)((props) => {
       const uploadData = new FormData();
       uploadData.append('file', data.get('thumbnail'));
       try {
-        const response = await axios.post(`/chairStock/upload`, uploadData, {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        });
+        const response = await axios.post(
+          `/accessoryStock/upload`,
+          uploadData,
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+          }
+        );
         thumbnailUrl = response.data.url;
       } catch (err) {}
     }
     axios
-      .put(`/chairStock/${id}`, {
-        brand: data.get('brand'),
-        model: data.get('model'),
-        frameColor: data.get('frameColor'),
-        backColor: data.get('backColor'),
-        seatColor: data.get('seatColor'),
-        withHeadrest: Boolean(data.get('withHeadrest')),
-        withAdArmrest: Boolean(data.get('withAdArmrest')),
+      .put(`/accessoryStock/${id}`, {
+        color: data.get('color'),
         remark: data.get('remark'),
         thumbnailUrl,
         shipmentDate: data.get('shipmentDate') || null,
@@ -326,23 +265,21 @@ const Stock = connect(mapStateToProps)((props) => {
       const uploadData = new FormData();
       uploadData.append('file', data.get('thumbnail'));
       try {
-        const response = await axios.post(`/chairStock/upload`, uploadData, {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        });
+        const response = await axios.post(
+          `/accessoryStock/upload`,
+          uploadData,
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+          }
+        );
         thumbnailUrl = response.data.url;
       } catch (err) {}
     }
     axios
-      .post(`/chairStock/create`, {
-        brand: data.get('brand'),
-        model: data.get('model'),
-        frameColor: data.get('frameColor'),
-        backColor: data.get('backColor'),
-        seatColor: data.get('seatColor'),
-        withHeadrest: Boolean(data.get('withHeadrest')),
-        withAdArmrest: Boolean(data.get('withAdArmrest')),
+      .post(`/accessoryStock/create`, {
+        color: data.get('color'),
         remark: data.get('remark'),
         thumbnailUrl,
         shipmentDate: data.get('shipmentDate') || null,
@@ -375,7 +312,7 @@ const Stock = connect(mapStateToProps)((props) => {
 
   const getFeatures = (cancelToken) => {
     axios
-      .get('/chairStock/features', { cancelToken })
+      .get('/accessoryStock/features', { cancelToken })
       .then((response) => {
         // handle success
         setFeatures(response.data);
@@ -391,7 +328,7 @@ const Stock = connect(mapStateToProps)((props) => {
 
   const getStocks = (cancelToken) => {
     axios
-      .get('/chairStock', { cancelToken })
+      .get('/accessoryStock', { cancelToken })
       .then((response) => {
         // handle success
         setStocks(response.data);
@@ -426,52 +363,16 @@ const Stock = connect(mapStateToProps)((props) => {
         onClick={() => {
           setFormProps([
             {
-              name: 'brand',
-              label: 'Brand',
+              name: 'color',
+              label: 'Color',
               type: 'text',
               width: '48%',
-            },
-            {
-              name: 'model',
-              label: 'Model',
-              type: 'text',
-              width: '48%',
-            },
-            {
-              name: 'frameColor',
-              label: 'Frame Color',
-              type: 'text',
-              width: '30%',
-            },
-            {
-              name: 'backColor',
-              label: 'Back Color',
-              type: 'text',
-              width: '30%',
-            },
-            {
-              name: 'seatColor',
-              label: 'Seat Color',
-              type: 'text',
-              width: '30%',
             },
             {
               name: 'remark',
               label: 'Remark',
               type: 'text',
               width: '100%',
-            },
-            {
-              name: 'withHeadrest',
-              label: 'Headrest',
-              type: 'checkbox',
-              width: '48%',
-            },
-            {
-              name: 'withAdArmrest',
-              label: 'Adjustable Armrest',
-              type: 'checkbox',
-              width: '48%',
             },
             {
               name: 'shipmentDate',
@@ -505,27 +406,14 @@ const Stock = connect(mapStateToProps)((props) => {
       >
         {[
           {
-            label: 'Brand',
-            value: filterBrand,
+            label: 'Color',
+            value: filterColor,
             onChange: (event, value) => {
               event.preventDefault();
-              setFilterBrand(value);
-              setFilterModel(null);
+              setFilterColor(value);
             },
             options: features
-              .map((item) => item.brand)
-              .filter((c, index, chars) => chars.indexOf(c) === index),
-          },
-          {
-            label: 'Model',
-            value: filterModel,
-            onChange: (event, value) => {
-              event.preventDefault();
-              setFilterModel(value);
-            },
-            options: features
-              .filter((item) => !filterBrand || item.brand === filterBrand)
-              .map((item) => item.model)
+              .map((item) => item.color)
               .filter((c, index, chars) => chars.indexOf(c) === index),
           },
         ].map(({ label, ...props }, index) => (
@@ -546,24 +434,12 @@ const Stock = connect(mapStateToProps)((props) => {
         ))}
       </Paper>
       <DataGrid
-        nonSelect={true}
-        title="Chair Stocks"
+        title="Accessory Stocks"
         rows={stocks
-          .filter(
-            (item) =>
-              (!filterBrand || item.brand === filterBrand) &&
-              (!filterModel || item.model === filterModel)
-          )
+          .filter((item) => !filterColor || item.color === filterColor)
           .map(
             (
-              {
-                withHeadrest,
-                withAdArmrest,
-                thumbnailUrl,
-                shipmentDate,
-                arrivalDate,
-                ...restProps
-              },
+              { thumbnailUrl, shipmentDate, arrivalDate, ...restProps },
               index
             ) => ({
               thumbnail: (
@@ -574,8 +450,26 @@ const Stock = connect(mapStateToProps)((props) => {
                   style={{ marginTop: '5px' }}
                 />
               ),
-              withHeadrest: withHeadrest ? 'Yes' : 'No',
-              withAdArmrest: withAdArmrest ? 'Yes' : 'No',
+              edit: (
+                <IconButton
+                  onClick={(event) => {
+                    event.preventDefault();
+                    handleEditClick(index);
+                  }}
+                >
+                  <EditIcon />
+                </IconButton>
+              ),
+              delete: (
+                <IconButton
+                  onClick={(event) => {
+                    event.preventDefault();
+                    handleRemoveClick(index);
+                  }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              ),
               shipmentDate: (() => {
                 if (shipmentDate === null) return 'No';
                 const createdTime = new Date(shipmentDate);

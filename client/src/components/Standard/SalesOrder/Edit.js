@@ -11,35 +11,33 @@ const Edit = (props) => {
     console.log(order);
   }, [order]);
   return order ? (
-    <>
-      <Detail
-        componentType="edit"
-        initialClient={{
-          ...client,
-          phone,
-          setPhone,
-          deliveryDate: (() => {
-            const createdTime = new Date(client.deliveryDate);
-            createdTime.setMinutes(
-              createdTime.getMinutes() - createdTime.getTimezoneOffset()
-            );
-            return createdTime.toISOString().split('T')[0];
-          })(),
-        }}
-        initialCart={ChairStocks.map(({ ChairToOrder, ...restProps }) => ({
-          productType: 'chair',
+    <Detail
+      componentType="edit"
+      initialClient={{
+        ...client,
+        phone,
+        setPhone,
+        deliveryDate: (() => {
+          const createdTime = new Date(client.deliveryDate);
+          createdTime.setMinutes(
+            createdTime.getMinutes() - createdTime.getTimezoneOffset()
+          );
+          return createdTime.toISOString().split('T')[0];
+        })(),
+      }}
+      initialCart={ChairStocks.map(({ ChairToOrder, ...restProps }) => ({
+        productType: 'chair',
+        productDetail: restProps,
+        productAmount: ChairToOrder.qty,
+      })).concat(
+        DeskStocks.map(({ DeskToOrder, ...restProps }) => ({
+          productType: 'desk',
           productDetail: restProps,
-          productAmount: ChairToOrder.qty,
-        })).concat(
-          DeskStocks.map(({ DeskToOrder, ...restProps }) => ({
-            productType: 'desk',
-            productDetail: restProps,
-            productAmount: DeskToOrder.qty,
-          }))
-        )}
-        {...props}
-      />
-    </>
+          productAmount: DeskToOrder.qty,
+        }))
+      )}
+      {...props}
+    />
   ) : (
     <Redirect to="/admin/order" />
   );

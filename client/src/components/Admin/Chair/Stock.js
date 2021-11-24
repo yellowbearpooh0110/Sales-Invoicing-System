@@ -13,7 +13,6 @@ import {
   IconButton,
   Paper,
   TextField,
-  Typography,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -574,9 +573,9 @@ const Stock = connect(mapStateToProps)((props) => {
               },
               index
             ) => ({
-              index,
               thumbnail: (
                 <img
+                  alt=""
                   width="40px"
                   src={thumbnailUrl}
                   style={{ marginTop: '5px' }}
