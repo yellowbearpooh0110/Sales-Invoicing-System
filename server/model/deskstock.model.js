@@ -60,6 +60,11 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: '',
     },
+    thumbnailUrl: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
+    },
     isRegistered: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

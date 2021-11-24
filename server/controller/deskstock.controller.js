@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 
 module.exports = {
+  getFeatures,
   getAll,
   getById,
   create,
@@ -8,6 +9,14 @@ module.exports = {
   delete: _delete,
   bulkDelete: _bulkDelete,
 };
+
+async function getFeatures() {
+  return await db.DeskStock.findAll({
+    attributes: ['model', 'color'],
+    group: ['model', 'color'],
+    order: ['createdAt'],
+  });
+}
 
 async function getAll(where) {
   return await db.DeskStock.findAll({
@@ -22,7 +31,14 @@ async function getById(id) {
 }
 
 async function create(params) {
-  const { QTY, ...restParams } = params;
+  const {
+    thumbnailUrl,
+    balance,
+    qty,
+    shipmentDate,
+    arrivalDate,
+    ...restParams
+  } = params;
   const nonRegistered = await db.DeskStock.findOne({
     where: { isRegistered: false, ...restParams },
   });
@@ -44,7 +60,14 @@ async function create(params) {
 
 async function update(id, params) {
   const deskStock = await getDeskStock(id);
-  const { QTY, ...restParams } = params;
+  const {
+    thumbnailUrl,
+    balance,
+    qty,
+    shipmentDate,
+    arrivalDate,
+    ...restParams
+  } = params;
   if (
     await db.DeskStock.findOne({
       where: { id: { [Sequelize.Op.ne]: id }, ...restParams },

@@ -1,11 +1,7 @@
 const Sequelize = require('sequelize');
 
 module.exports = {
-  getBrands,
-  getModels,
-  getFrameColors,
-  getBackColors,
-  getSeatColors,
+  getFeatures,
   getAll,
   getById,
   create,
@@ -14,41 +10,10 @@ module.exports = {
   bulkDelete: _bulkDelete,
 };
 
-async function getBrands() {
+async function getFeatures() {
   return await db.ChairStock.findAll({
-    attributes: ['brand'],
-    group: ['brand'],
-    order: ['createdAt'],
-  });
-}
-
-async function getModels() {
-  return await db.ChairStock.findAll({
-    attributes: ['model'],
-    group: ['model'],
-    order: ['createdAt'],
-  });
-}
-async function getFrameColors() {
-  return await db.ChairStock.findAll({
-    attributes: ['frameColor'],
-    group: ['frameColor'],
-    order: ['createdAt'],
-  });
-}
-
-async function getSeatColors() {
-  return await db.ChairStock.findAll({
-    attributes: ['seatColor'],
-    group: ['seatColor'],
-    order: ['createdAt'],
-  });
-}
-
-async function getBackColors() {
-  return await db.ChairStock.findAll({
-    attributes: ['backColor'],
-    group: ['backColor'],
+    attributes: ['brand', 'model'],
+    group: ['brand', 'model'],
     order: ['createdAt'],
   });
 }
@@ -65,31 +30,51 @@ async function getById(id) {
   return await getChairStock(id);
 }
 
-async function create(params) {
-  const { balance, qty, shipmentDate, arrivalDate, ...restParams } = params;
-  const nonRegistered = await db.ChairStock.findOne({
-    where: { isRegistered: false, ...restParams },
-  });
-  const registered = await db.ChairStock.findOne({
-    where: { isRegistered: true, ...restParams },
-  });
-  if (registered) throw 'Identical ChairStock Exists.';
-  else {
-    if (nonRegistered) {
-      // set isRegistered as true and save
-      nonRegistered.isRegistered = true;
-      await nonRegistered.save();
-    } else {
-      // save registered ChairStock
-      await db.ChairStock.create({ ...params, isRegistered: true });
+async function create(req, res, next) {
+  try {
+    const params = req.body;
+    const {
+      thumbnailUrl,
+      balance,
+      qty,
+      shipmentDate,
+      arrivalDate,
+      ...restParams
+    } = params;
+    const nonRegistered = await db.ChairStock.findOne({
+      where: { isRegistered: false, ...restParams },
+    });
+    const registered = await db.ChairStock.findOne({
+      where: { isRegistered: true, ...restParams },
+    });
+    if (registered) throw 'Identical ChairStock Exists.';
+    else {
+      if (nonRegistered) {
+        // set isRegistered as true and save
+        nonRegistered.isRegistered = true;
+        await nonRegistered.save();
+      } else {
+        // save registered ChairStock
+        await db.ChairStock.create({ ...params, isRegistered: true });
+      }
     }
+    res.json({ message: 'New ChairStock was created successfully.' });
+  } catch (err) {
+    next(err);
   }
 }
 
 async function update(id, params) {
   console.log(params);
   const chairStock = await getChairStock(id);
-  const { balance, qty, shipmentDate, arrivalDate, ...restParams } = params;
+  const {
+    thumbnailUrl,
+    balance,
+    qty,
+    shipmentDate,
+    arrivalDate,
+    ...restParams
+  } = params;
   if (
     await db.ChairStock.findOne({
       where: { id: { [Sequelize.Op.ne]: id }, ...restParams },

@@ -9,6 +9,7 @@ const deskStockController = require('server/controller/deskStock.controller');
 
 router.post('/create', admin(), createSchema, create);
 router.get('/', authorize(), getAll);
+router.get('/features', authorize(), getFeatures);
 router.get('/:id', authorize(), getById);
 router.put('/:id', admin(), createSchema, update);
 router.delete('/:id', admin(), _delete);
@@ -28,8 +29,17 @@ function createSchema(req, res, next) {
     topColor: Joi.string().allow('').required(),
     topSize: Joi.string().allow('').required(),
     remark: Joi.string().allow('').required(),
+    thumbnailUrl: Joi.string().empty(''),
     balance: Joi.number().integer().min(0).required(),
     qty: Joi.number().integer().min(0).required(),
+    shipmentDate: Joi.date().allow(null).required().messages({
+      'any.required': `Shipment Date field is required.`,
+      'date.base': `Shipment Date should be a valid date type.`,
+    }),
+    arrivalDate: Joi.date().allow(null).required().messages({
+      'any.required': `Arrival Date field is required.`,
+      'date.base': `Arrival Date should be a valid date type.`,
+    }),
   });
   validateRequest(req, next, schema);
 }
@@ -53,6 +63,13 @@ function create(req, res, next) {
 function getAll(req, res, next) {
   deskStockController
     .getAll()
+    .then((deskStocks) => res.json(deskStocks))
+    .catch(next);
+}
+
+function getFeatures(req, res, next) {
+  deskStockController
+    .getFeatures()
     .then((deskStocks) => res.json(deskStocks))
     .catch(next);
 }

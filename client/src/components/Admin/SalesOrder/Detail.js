@@ -28,7 +28,6 @@ import {
   Remove as RemoveIcon,
 } from '@mui/icons-material';
 import MuiPhoneNumber from 'material-ui-phone-number';
-import { makeStyles } from '@mui/styles';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
@@ -60,12 +59,6 @@ function mapStateToProps(state) {
   const { auth } = state;
   return { auth };
 }
-
-const useCreateStyles = makeStyles({
-  root: {
-    padding: '10px',
-  },
-});
 
 const columns = [
   {
@@ -128,7 +121,6 @@ const columns = [
 
 export default connect(mapStateToProps)((props) => {
   const { componentType, initialClient, initialCart } = props;
-  const classes = useCreateStyles();
 
   const steps = ['Input Client Info', 'Select Products'];
   const clientForm = useRef(null);
@@ -190,8 +182,14 @@ export default connect(mapStateToProps)((props) => {
   };
 
   return (
-    <Box className={classes.root}>
-      <Stepper activeStep={currentStep}>
+    <Box
+      sx={{
+        height: '100%',
+        overflow: 'auto',
+        padding: '20px 20px 10px 20px',
+      }}
+    >
+      <Stepper activeStep={currentStep} sx={{ mb: '20px' }}>
         {steps.map((label, index) => {
           const labelProps = {};
           if (isStepFailed(index)) {
@@ -212,6 +210,7 @@ export default connect(mapStateToProps)((props) => {
         })}
       </Stepper>
       <Box
+        sx={{ mx: 'auto', mt: '50px' }}
         ref={clientForm}
         hidden={currentStep !== 0}
         component="form"
@@ -333,7 +332,11 @@ export default connect(mapStateToProps)((props) => {
             )
           )}
         </Paper>
-        <Button variant="outlined" type="submit">
+        <Button
+          variant="outlined"
+          type="submit"
+          sx={{ marginTop: '10px', float: 'right' }}
+        >
           Next
         </Button>
       </Box>
@@ -398,7 +401,7 @@ export default connect(mapStateToProps)((props) => {
               </List>
             </Paper>
           )}
-          <Paper sx={{ mt: 1 }}>
+          <Paper sx={{ my: '10px' }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs
                 value={stocksIndex}
@@ -565,6 +568,7 @@ export default connect(mapStateToProps)((props) => {
           </Button>
           <Button
             variant="outlined"
+            sx={{ float: 'right' }}
             onClick={(e) => {
               e.preventDefault();
               if (cart.length === 0) {

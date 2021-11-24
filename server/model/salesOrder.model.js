@@ -41,7 +41,7 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: '',
     },
-    signURL: {
+    signUrl: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: '',

@@ -50,6 +50,11 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: '',
     },
+    thumbnailUrl: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
+    },
     balance: {
       type: DataTypes.INTEGER,
       allowNull: false,

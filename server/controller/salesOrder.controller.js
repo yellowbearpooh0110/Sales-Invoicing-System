@@ -8,6 +8,7 @@ module.exports = {
   getById,
   create,
   update,
+  updateWithoutStock,
   signDelivery,
   delete: _delete,
   bulkDelete: _bulkDelete,
@@ -154,6 +155,12 @@ async function update(id, params) {
   }
 }
 
+async function updateWithoutStock(id, params) {
+  const salesOrder = await getSalesOrder(id);
+  Object.assign(salesOrder, params);
+  await salesOrder.save();
+}
+
 async function _delete(id) {
   const salesOrder = await getSalesOrder(id);
   const { ChairStocks, DeskStocks } = salesOrder;
@@ -206,7 +213,7 @@ async function signDelivery(id, signature) {
   const dirpath = 'uploads/signature';
   const filepath = `${dirpath}/${Date.now()}.png`;
   fs.writeFileSync(`server/${filepath}`, signature, 'base64');
-  Object.assign(salesOrder, { signURL: filepath, finished: true });
+  Object.assign(salesOrder, { signUrl: filepath, finished: true });
   await salesOrder.save();
   return salesOrder.get();
 }

@@ -14,8 +14,8 @@ router.get('/', admin(), getAll);
 router.get('/getDelivery', authorize(), getDelivery);
 router.get('/current', salesman(), getCurrent);
 router.get('/:id', authorize(), getById);
-router.put('/withoutStock/:id', admin(), updateSchema, updateWithoutStock);
-router.put('/:id', salesman(), updateSchema, update);
+router.put('/withoutStock/:id', salesman(), updateSchema, updateWithoutStock);
+router.put('/:id', salesman(), createSchema, update);
 router.post('/sign', authorize(), signSchema, signDelivery);
 router.delete('/:id', salesman(), _delete);
 router.delete('/', salesman(), bulkDeleteSchema, _bulkDelete);
@@ -34,26 +34,15 @@ function createSchema(req, res, next) {
     unit: Joi.string().allow('').required(),
     remark: Joi.string().allow('').required(),
     deliveryDate: Joi.date().allow(null).required(),
-    products: Joi.array(),
+    products: Joi.array().required(),
   });
   validateRequest(req, next, schema);
 }
 
 function updateSchema(req, res, next) {
   const schema = Joi.object({
-    name: Joi.string().allow(''),
-    email: Joi.string().allow(''),
-    phone: Joi.string().allow(''),
-    district: Joi.string().allow(''),
-    street: Joi.string().allow(''),
-    block: Joi.string().allow(''),
-    floor: Joi.string().allow(''),
-    unit: Joi.string().allow(''),
-    remark: Joi.string().allow(''),
-    deliveryDate: Joi.date(),
-    paid: Joi.boolean().allow(null),
+    paid: Joi.boolean(),
     finished: Joi.boolean(),
-    products: Joi.array(),
   });
   validateRequest(req, next, schema);
 }
@@ -133,8 +122,8 @@ function getDelivery(req, res, next) {
             clientRemark,
             paid,
             finished,
-            signURL,
-            QTY,
+            signUrl,
+            qty,
             stock,
             salesman,
           }) => ({
@@ -150,8 +139,8 @@ function getDelivery(req, res, next) {
             clientRemark,
             paid,
             finished,
-            signURL: signURL !== '' ? `${protocol}://${host}/${signURL}` : null,
-            QTY,
+            signUrl: signUrl !== '' ? `${protocol}://${host}/${signUrl}` : null,
+            qty,
             invoiceNum:
               'C_' + salesman.prefix + ('000' + invoiceNum).substr(-3),
             model: stock.chairModel ? stock.chairModel.name : null,
@@ -207,7 +196,7 @@ function signDelivery(req, res, next) {
     .then((salesOrder) => {
       res.json({
         success: true,
-        url: `${protocol}://${host}/${salesOrder.signURL}`,
+        url: `${protocol}://${host}/${salesOrder.signUrl}`,
       });
     })
     .catch(next);

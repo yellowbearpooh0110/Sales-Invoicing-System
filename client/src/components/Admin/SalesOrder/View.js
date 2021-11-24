@@ -297,7 +297,13 @@ export default connect(mapStateToProps)((props) => {
   }, []);
 
   return (
-    <>
+    <Box
+      sx={{
+        height: '100%',
+        overflow: 'auto',
+        padding: '10px 20px',
+      }}
+    >
       <Button
         component={RouterLink}
         to="/admin/order/create"
@@ -307,7 +313,7 @@ export default connect(mapStateToProps)((props) => {
         New Order
       </Button>
       <DataGrid
-        title="Chair Orders"
+        title="Salement Orders"
         rows={orders.map(
           (
             {
@@ -382,7 +388,7 @@ export default connect(mapStateToProps)((props) => {
                   event.stopPropagation();
                   event.preventDefault();
                   axios
-                    .put(`/salesOrder/${id}`, {
+                    .put(`/salesOrder/withoutStock/${id}`, {
                       paid: !paid,
                     })
                     .then(() => {
@@ -410,7 +416,7 @@ export default connect(mapStateToProps)((props) => {
                   event.stopPropagation();
                   event.preventDefault();
                   axios
-                    .put(`/salesOrder/${id}`, {
+                    .put(`/salesOrder/withoutStock/${id}`, {
                       finished: !finished,
                     })
                     .then(() => {
@@ -723,6 +729,6 @@ export default connect(mapStateToProps)((props) => {
           </Button>
         </DialogActions>
       </Dialog>
-    </>
+    </Box>
   );
 });
