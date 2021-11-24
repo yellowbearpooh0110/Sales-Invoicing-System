@@ -10,6 +10,11 @@ function model(sequelize) {
       allowNull: false,
       primaryKey: true,
     },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
+    },
     color: {
       type: DataTypes.STRING,
       allowNull: false,

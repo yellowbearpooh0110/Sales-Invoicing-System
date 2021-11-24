@@ -60,8 +60,8 @@ const columns = [
     label: 'Order',
   },
   {
-    id: 'deliveryDate',
-    label: 'Delivery',
+    id: 'timeLine',
+    label: 'TimeLine',
   },
   {
     id: 'isPreOrder',
@@ -279,7 +279,6 @@ export default connect(mapStateToProps)((props) => {
       .get('/salesOrder', { cancelToken })
       .then((response) => {
         // handle success
-        console.log(response.data);
         setOrders(response.data);
       })
       .catch(function (error) {
@@ -327,7 +326,7 @@ export default connect(mapStateToProps)((props) => {
               seller,
               isPreOrder,
               createdAt,
-              deliveryDate,
+              timeLine,
               paid,
               finished,
               ChairStocks,
@@ -340,6 +339,10 @@ export default connect(mapStateToProps)((props) => {
             id,
             index,
             seller: (seller.firstName || '').concat(' ', seller.lastName || ''),
+            timeLine:
+              timeLine % 7 !== 0
+                ? `${timeLine} day${timeLine === 1 ? '' : 's'}`
+                : `${timeLine / 7} week${timeLine / 7 === 1 ? '' : 's'}`,
             orderDate: (() => {
               const createdTime = new Date(createdAt);
               createdTime.setMinutes(
@@ -347,13 +350,7 @@ export default connect(mapStateToProps)((props) => {
               );
               return createdTime.toISOString().split('T')[0];
             })(),
-            deliveryDate: (() => {
-              const createdTime = new Date(deliveryDate);
-              createdTime.setMinutes(
-                createdTime.getMinutes() - createdTime.getTimezoneOffset()
-              );
-              return createdTime.toISOString().split('T')[0];
-            })(),
+
             clientAddress: [district, street, block, floor, unit].join(', '),
             isPreOrder:
               (!orders[index].ChairStocks.length ||

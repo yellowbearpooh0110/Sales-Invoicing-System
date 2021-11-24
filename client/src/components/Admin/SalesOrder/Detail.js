@@ -9,11 +9,15 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
+  FormControlLabel,
   IconButton,
   List,
   ListItem,
   ListItemText,
   Paper,
+  Radio,
+  RadioGroup,
   Step,
   Stepper,
   StepLabel,
@@ -22,7 +26,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { blue, red, yellow } from '@mui/material/colors';
+import { blue, pink, purple, red, yellow } from '@mui/material/colors';
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
@@ -188,6 +192,10 @@ const accessoryColumns = [
     id: 'thumbnail',
     sx: { width: 50 },
     nonSort: true,
+  },
+  {
+    id: 'name',
+    label: 'Name',
   },
   {
     id: 'color',
@@ -471,15 +479,6 @@ export default connect(mapStateToProps)((props) => {
               width: '30%',
             },
             {
-              name: 'deliveryDate',
-              label: 'Delivery Date',
-              type: 'date',
-              defaultValue: initialClient.deliveryDate,
-              width: '100%',
-              required: true,
-              InputLabelProps: { shrink: true },
-            },
-            {
               name: 'remark',
               label: 'Remark',
               muliline: 'true',
@@ -509,6 +508,30 @@ export default connect(mapStateToProps)((props) => {
               />
             )
           )}
+          <TextField
+            margin="dense"
+            variant="outlined"
+            size="small"
+            sx={{ flexBasis: ['100%', '30%'], minWidth: ['100%', '30%'] }}
+            name="timeLine"
+            label="TimeLine"
+            type="number"
+            inputProps={{ min: 0 }}
+            defaultValue={initialClient.timeLine || 0}
+          />
+          <RadioGroup
+            row
+            name="timeLineFormat"
+            defaultValue="day"
+            sx={{
+              flexBasis: ['100%', '70%'],
+              minWidth: ['100%', '70%'],
+              justifyContent: 'flex-end',
+            }}
+          >
+            <FormControlLabel value="day" control={<Radio />} label="Days" />
+            <FormControlLabel value="week" control={<Radio />} label="Weeks" />
+          </RadioGroup>
         </Paper>
         <Button
           variant="outlined"
@@ -522,15 +545,15 @@ export default connect(mapStateToProps)((props) => {
         <>
           {cart.length > 0 && (
             <Paper>
-              <List>
+              <List sx={{ px: '10px' }}>
                 {cart.map((item, index) => (
                   <ListItem
                     key={index}
                     sx={{
-                      bgcolor: yellow[400],
+                      bgcolor: yellow[600],
                       boxShadow: `0px 2px 1px -1px rgb(0 0 0 / 20%)`,
-                      color: blue[700],
                       my: '10px',
+                      flexWrap: 'wrap',
                     }}
                     secondaryAction={
                       <IconButton
@@ -568,21 +591,41 @@ export default connect(mapStateToProps)((props) => {
                       />
                     )}
                     <Box
+                      flexBasis="100%"
                       display="flex"
+                      flexWrap="wrap"
                       alignItems="center"
-                      justifyContent="center"
-                      variant="span"
-                      color={red[900]}
-                      bgcolor={red[100]}
-                      sx={{
-                        flexShrink: 0,
-                        width: 40,
-                        height: 40,
-                        marginRight: '10px',
-                        borderRadius: '50%',
-                      }}
                     >
-                      {item.productAmount}
+                      <Typography
+                        variant="span"
+                        color={pink[100]}
+                        bgcolor={pink[500]}
+                        sx={{
+                          fontSize: ['6px, 8px'],
+                          padding: '3px 10px',
+                          margin: '3px 0',
+                          flexShrink: 0,
+                          marginRight: '10px',
+                          borderRadius: '2px',
+                        }}
+                      >
+                        {`${item.productPrice} HKD`}
+                      </Typography>
+                      <Typography
+                        variant="span"
+                        color={red[100]}
+                        bgcolor={red[500]}
+                        sx={{
+                          fontSize: ['6px, 8px'],
+                          padding: '3px 10px',
+                          margin: '3px 0',
+                          flexShrink: 0,
+                          marginRight: '10px',
+                          borderRadius: '2px',
+                        }}
+                      >
+                        {`Qty: ${item.productAmount}`}
+                      </Typography>
                     </Box>
                   </ListItem>
                 ))}
@@ -1022,7 +1065,9 @@ export default connect(mapStateToProps)((props) => {
                     block: data.get('block'),
                     floor: data.get('floor'),
                     unit: data.get('unit'),
-                    deliveryDate: data.get('deliveryDate') || null,
+                    timeLine:
+                      data.get('timeLine') *
+                      (data.get('timeLineFormat') === 'day' ? 1 : 7),
                     remark: data.get('remark'),
                     products: cart.map(({ productDetail, ...restProps }) => ({
                       productId: productDetail.id,
@@ -1057,7 +1102,9 @@ export default connect(mapStateToProps)((props) => {
                     block: data.get('block'),
                     floor: data.get('floor'),
                     unit: data.get('unit'),
-                    deliveryDate: data.get('deliveryDate') || null,
+                    timeLine:
+                      data.get('timeLine') *
+                      (data.get('timeLineFormat') === 'day' ? 1 : 7),
                     remark: data.get('remark'),
                     products: cart.map(({ productDetail, ...restProps }) => ({
                       productId: productDetail.id,
@@ -1088,9 +1135,54 @@ export default connect(mapStateToProps)((props) => {
           </Button>
         </>
       )}
-      <Dialog open={addOpen} maxWidth="sm" fullWidth>
-        <DialogTitle>Amount</DialogTitle>
+      <Dialog
+        open={addOpen}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          component: 'form',
+          onSubmit: (e) => {
+            e.preventDefault();
+            console.log(e.currentTarget);
+            setAddOpen(false);
+            if (
+              cart.find(
+                (item) =>
+                  item.productType === 'chair' &&
+                  item.productDetail.id === productDetail.id
+              )
+            ) {
+              Swal.fire({
+                icon: 'warning',
+                title: 'Warning',
+                text: 'This product is already added.',
+                allowOutsideClick: false,
+              });
+              return;
+            }
+            setCart(cart.concat({ productType, productDetail, productAmount }));
+          },
+        }}
+      >
+        <DialogTitle>Price and Amount</DialogTitle>
         <DialogContent sx={{ textAlign: 'center' }}>
+          <FormControlLabel
+            value="HKD"
+            fullWidth
+            control={
+              <TextField
+                margin="dense"
+                variant="outlined"
+                size="small"
+                // sx={{ flexBasis: width, minWidth: width }}
+                label="Unit Price"
+                name="unitPrice"
+                defaultValue={1000}
+              />
+            }
+            label="Days"
+          />
+
           <IconButton
             onClick={(e) => {
               e.preventDefault();
@@ -1119,32 +1211,7 @@ export default connect(mapStateToProps)((props) => {
           >
             Cancle
           </Button>
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              setAddOpen(false);
-              if (
-                cart.find(
-                  (item) =>
-                    item.productType === 'chair' &&
-                    item.productDetail.id === productDetail.id
-                )
-              ) {
-                Swal.fire({
-                  icon: 'warning',
-                  title: 'Warning',
-                  text: 'This product is already added.',
-                  allowOutsideClick: false,
-                });
-                return;
-              }
-              setCart(
-                cart.concat({ productType, productDetail, productAmount })
-              );
-            }}
-          >
-            OK
-          </Button>
+          <Button type="submit">OK</Button>
         </DialogActions>
       </Dialog>
     </Box>

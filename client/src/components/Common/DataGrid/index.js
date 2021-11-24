@@ -181,7 +181,7 @@ EnhancedTableToolbar.propTypes = {
 const useDataGridStyles = makeStyles((theme) => ({
   table: {
     [`& .MuiTableCell-root.${tableCellClasses.head}`]: {
-      backgroundColor: yellow[300],
+      backgroundColor: yellow[600],
       fontSize: 12,
       fontWeight: 600,
     },

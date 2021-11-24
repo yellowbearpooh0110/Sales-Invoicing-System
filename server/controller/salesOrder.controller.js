@@ -126,7 +126,7 @@ async function update(id, params) {
       stock.qty += ChairStocks[index].ChairToOrder.qty;
       await stock.save();
     }
-    salesOrder.removeChairStock(ChairStocks[index]);
+    await salesOrder.removeChairStock(ChairStocks[index]);
   }
   for (var index = 0; index < DeskStocks.length; index++) {
     if (!DeskStocks[index].DeskToOrder.preOrder) {
@@ -135,7 +135,7 @@ async function update(id, params) {
       stock.qty += DeskStocks[index].DeskToOrder.qty;
       await stock.save();
     }
-    salesOrder.remove(DeskStocks[index].id);
+    await salesOrder.removeDeskStock(DeskStocks[index].id);
   }
   for (var index = 0; index < AccessoryStocks.length; index++) {
     if (!AccessoryStocks[index].AccessoryToOrder.preOrder) {
@@ -146,7 +146,7 @@ async function update(id, params) {
       stock.qty += AccessoryStocks[index].AccessoryToOrder.qty;
       await stock.save();
     }
-    salesOrder.remove(AccessoryStocks[index].id);
+    await salesOrder.removeAccessoryStock(AccessoryStocks[index].id);
   }
   for (var index = 0; index < products.length; index++) {
     if (products[index].productType === 'chair') {

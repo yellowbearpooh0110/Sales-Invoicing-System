@@ -33,7 +33,7 @@ function createSchema(req, res, next) {
     floor: Joi.string().allow('').required(),
     unit: Joi.string().allow('').required(),
     remark: Joi.string().allow('').required(),
-    deliveryDate: Joi.date().allow(null).required(),
+    timeLine: Joi.number().integer().min(0).required(),
     products: Joi.array().required(),
   });
   validateRequest(req, next, schema);

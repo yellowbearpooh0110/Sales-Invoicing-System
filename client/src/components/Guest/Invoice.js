@@ -193,12 +193,19 @@ const Invoice = () => {
                 cells: [
                   { content: 'QTY', width: '15%' },
                   {
-                    content: order.deliveryDate.split('T')[0],
+                    content:
+                      order.timeLine % 7 === 0
+                        ? `Est ${order.timeLine / 7} working week${
+                            order.timeLine / 7 === 1 ? '' : 's'
+                          } after payment`
+                        : `Est ${order.timeLine} working day${
+                            order.timeLine === 1 ? '' : 's'
+                          } after payment`,
                     width: '55%',
                   },
                   { content: '', width: '15%' },
                   {
-                    content: order.deliveryDate.split('T')[0],
+                    content: `Paid`,
                     width: '15%',
                   },
                 ],
@@ -300,7 +307,7 @@ const Invoice = () => {
                     width: '15%',
                   },
                   {
-                    content: `Accessory: ${item.color}<br />${item.remark}`,
+                    content: `Accessory: ${item.color}\n${item.remark}`,
                     width: '55%',
                   },
                   {

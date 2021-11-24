@@ -31,10 +31,10 @@ function model(sequelize) {
     unit: { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
     phone: { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
     email: { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
-    deliveryDate: {
-      type: DataTypes.DATE,
+    timeLine: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: DataTypes.NOW,
+      defaultValue: 10,
     },
     remark: {
       type: DataTypes.STRING,

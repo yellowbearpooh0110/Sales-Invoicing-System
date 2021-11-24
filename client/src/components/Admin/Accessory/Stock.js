@@ -34,6 +34,10 @@ const columns = [
     nonSort: true,
   },
   {
+    id: 'name',
+    label: 'Name',
+  },
+  {
     id: 'color',
     label: 'Color',
   },
@@ -95,6 +99,13 @@ const Stock = connect(mapStateToProps)((props) => {
     if (index < stocks.length && index >= 0) {
       setID(stocks[index].id);
       setFormProps([
+        {
+          name: 'name',
+          label: 'Name',
+          type: 'text',
+          defaultValue: stocks[index].name,
+          width: '48%',
+        },
         {
           name: 'color',
           label: 'Color',
@@ -226,6 +237,7 @@ const Stock = connect(mapStateToProps)((props) => {
     }
     axios
       .put(`/accessoryStock/${id}`, {
+        name: data.get('name'),
         color: data.get('color'),
         remark: data.get('remark'),
         thumbnailUrl,
@@ -279,6 +291,7 @@ const Stock = connect(mapStateToProps)((props) => {
     }
     axios
       .post(`/accessoryStock/create`, {
+        name: data.get('name'),
         color: data.get('color'),
         remark: data.get('remark'),
         thumbnailUrl,
@@ -362,6 +375,12 @@ const Stock = connect(mapStateToProps)((props) => {
         startIcon={<AddIcon />}
         onClick={() => {
           setFormProps([
+            {
+              name: 'name',
+              label: 'Name',
+              type: 'text',
+              width: '48%',
+            },
             {
               name: 'color',
               label: 'Color',
