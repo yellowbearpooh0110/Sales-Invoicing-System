@@ -6,9 +6,9 @@ module.exports = {
 
 async function upload(req, res, next) {
   try {
-    if (req.file == undefined) next(new Error('Please upload a file!'));
+    await uploadFile(req, res);
+    if (req.file === undefined) next(new Error('Please upload a file!'));
     else {
-      await uploadFile(req, res);
       const host = req.get('host');
       const protocol = req.protocol;
 
