@@ -9,12 +9,14 @@ import {
   DialogContentText,
   DialogTitle,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
   Stack,
   TextField,
 } from '@mui/material';
+import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
@@ -38,8 +40,22 @@ const columns = [
     label: 'Type',
   },
   {
+    id: 'prefix',
+    label: 'Prefix',
+  },
+  {
     id: 'isActive',
     label: 'Active',
+  },
+  {
+    nonSort: true,
+    id: 'edit',
+    sx: { maxWidth: 45, width: 45 },
+  },
+  {
+    nonSort: true,
+    id: 'delete',
+    sx: { maxWidth: 45, width: 45 },
   },
 ];
 
@@ -53,17 +69,38 @@ export default connect(mapStateToProps)((props) => {
   const [editOpen, setEditOpen] = useState(false);
 
   const [id, setID] = useState('');
-  const [email, setEmail] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [formProps, setFormProps] = useState([]);
   const [type, setType] = useState('');
 
   const handleEditClick = (index) => {
     if (index < users.length && index >= 0) {
       setID(users[index].id);
-      setEmail(users[index].email);
-      setFirstName(users[index].firstName);
-      setLastName(users[index].lastName);
+      setFormProps([
+        {
+          name: 'email',
+          defaultValue: users[index].email,
+          label: 'Email',
+          width: '100%',
+        },
+        {
+          name: 'firstName',
+          defaultValue: users[index].firstName,
+          label: 'First Name',
+          width: '100%',
+        },
+        {
+          name: 'lastName',
+          defaultValue: users[index].lastName,
+          label: 'Last Name',
+          width: '100%',
+        },
+        {
+          name: 'prefix',
+          defaultValue: users[index].prefix,
+          label: 'Prefix',
+          width: '100%',
+        },
+      ]);
       setType(users[index].type);
     }
     setEditOpen(true);
@@ -143,14 +180,16 @@ export default connect(mapStateToProps)((props) => {
     setEditOpen(false);
   };
 
-  const handleSave = () => {
-    axios
-      .put(`/user/${id}`, {
-        email,
-        firstName,
-        lastName,
-        type,
-      })
+  const handleSave = (e) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    new axios.put(`/user/${id}`, {
+      email: data.get('email'),
+      firstName: data.get('firstName'),
+      lastName: data.get('lastName'),
+      type: type,
+      prefix: data.get('prefix'),
+    })
       .then((response) => {
         // handle success
         setEditOpen(false);
@@ -200,8 +239,8 @@ export default connect(mapStateToProps)((props) => {
     <>
       <DataGrid
         title="Users"
-        rows={users.map(({ id, isActive, ...restProps }, index) => ({
-          id: index,
+        rows={users.map(({ isActive, ...restProps }, index) => ({
+          index,
           isActive: (
             <Checkbox
               checked={isActive}
@@ -209,7 +248,7 @@ export default connect(mapStateToProps)((props) => {
                 event.stopPropagation();
                 event.preventDefault();
                 axios
-                  .put(`/user/${id}`, {
+                  .put(`/user/${restProps.id}`, {
                     isActive: !isActive,
                   })
                   .then(() => {
@@ -230,6 +269,26 @@ export default connect(mapStateToProps)((props) => {
               }}
             />
           ),
+          edit: (
+            <IconButton
+              onClick={(event) => {
+                event.preventDefault();
+                handleEditClick(index);
+              }}
+            >
+              <EditIcon />
+            </IconButton>
+          ),
+          delete: (
+            <IconButton
+              onClick={(event) => {
+                event.preventDefault();
+                handleRemoveClick(index);
+              }}
+            >
+              <DeleteIcon />
+            </IconButton>
+          ),
           ...restProps,
         }))}
         columns={columns}
@@ -237,45 +296,24 @@ export default connect(mapStateToProps)((props) => {
         onRemoveClick={handleRemoveClick}
         onBulkRemoveClick={handleBulkRemoveClick}
       />
-      <Dialog open={editOpen}>
+      <Dialog
+        open={editOpen}
+        PaperProps={{ component: 'form', onSubmit: handleSave }}
+      >
         <DialogTitle>Edit User</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
             <DialogContentText>
               Please Edit the User information and Click Save button.
             </DialogContentText>
-            {[
-              {
-                value: email,
-                setValue: setEmail,
-                label: 'Email',
-                width: '100%',
-              },
-              {
-                value: firstName,
-                setValue: setFirstName,
-                label: 'First Name',
-                width: '100%',
-              },
-              {
-                value: lastName,
-                setValue: setLastName,
-                label: 'Last Name',
-                width: '100%',
-              },
-            ].map(({ value, values, setValue, label, width }, index) => (
+            {formProps.map(({ width, ...restProps }, index) => (
               <TextField
                 key={index}
                 sx={{ flexBasis: width, minWidth: width }}
-                value={value}
-                onChange={(event) => {
-                  event.preventDefault();
-                  setValue(event.target.value);
-                }}
                 margin="dense"
-                label={label}
                 variant="outlined"
                 size="small"
+                {...restProps}
               />
             ))}
             <FormControl>
@@ -304,7 +342,7 @@ export default connect(mapStateToProps)((props) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSave}>Save</Button>
+          <Button type="submit">Save</Button>
         </DialogActions>
       </Dialog>
     </>

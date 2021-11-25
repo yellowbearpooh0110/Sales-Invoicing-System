@@ -11,7 +11,6 @@ const quotationController = require('server/controller/quotation.controller');
 
 router.post('/create', authorize(), createSchema, create);
 router.get('/', admin(), getAll);
-router.get('/getDelivery', authorize(), getDelivery);
 router.get('/current', salesman(), getCurrent);
 router.get('/:id', authorize(), getById);
 router.put('/withoutStock/:id', salesman(), updateSchema, updateWithoutStock);
@@ -74,8 +73,8 @@ function getAll(req, res, next) {
     .then((quotations) =>
       res.json(
         quotations.map((item) => {
-          item.invoiceNum =
-            item.seller.prefix + ('000' + item.invoiceNum).substr(-3);
+          item.quotationNum =
+            item.seller.prefix + ('000' + item.quotationNum).substr(-3);
           return item;
         })
       )

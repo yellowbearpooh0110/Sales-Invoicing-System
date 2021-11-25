@@ -20,6 +20,7 @@ router.use('/chairStock', require('server/routes/chairStock.routes'));
 router.use('/deskStock', require('server/routes/deskStock.routes'));
 router.use('/accessoryStock', require('server/routes/accessoryStock.routes'));
 router.use('/salesOrder', require('server/routes/salesOrder.routes'));
+router.use('/quotation', require('server/routes/quotation.routes'));
 router.use('/user', require('server/routes/user.routes'));
 router.use('/email', require('server/routes/email.routes'));
 router.use('/whatsapp', require('server/routes/whatsapp.routes'));

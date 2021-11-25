@@ -17,6 +17,7 @@ import { ChairStock } from './Chair';
 import { DeskStock } from './Desk';
 import { AccessoryStock } from './Accessory';
 import { SalesOrderCreate, SalesOrderEdit, SalesOrderView } from './SalesOrder';
+import { QuotationCreate, QuotationEdit, QuotationView } from './Quotation';
 
 function mapStateToProps(state) {
   const { auth } = state;
@@ -30,20 +31,20 @@ const menuLists = [
   {
     category: 'Chair',
     content: [
-      { path: '/admin/chair/stock', icon: <StorefrontIcon />, label: 'Stock' },
+      { to: '/admin/chair/stock', icon: <StorefrontIcon />, label: 'Stock' },
     ],
   },
   {
     category: 'Desk',
     content: [
-      { path: '/admin/desk/stock', icon: <StorefrontIcon />, label: 'Stock' },
+      { to: '/admin/desk/stock', icon: <StorefrontIcon />, label: 'Stock' },
     ],
   },
   {
     category: 'Accessory',
     content: [
       {
-        path: '/admin/accessory/stock',
+        to: '/admin/accessory/stock',
         icon: <StorefrontIcon />,
         label: 'Stock',
       },
@@ -52,12 +53,17 @@ const menuLists = [
   {
     category: 'Salement',
     content: [
-      { path: '/admin/order', icon: <BookOnlineIcon />, label: 'Order' },
+      { to: '/admin/order', icon: <BookOnlineIcon />, label: 'Order' },
+      {
+        to: '/admin/quotation',
+        icon: <BookOnlineIcon />,
+        label: 'Quotation',
+      },
     ],
   },
   {
     category: 'User',
-    content: [{ path: '/admin/user', icon: <PeopleAltIcon />, label: 'Users' }],
+    content: [{ to: '/admin/user', icon: <PeopleAltIcon />, label: 'Users' }],
   },
 ];
 
@@ -146,6 +152,17 @@ const Admin = (props) => {
               path={`${path}/order/edit`}
               exact
               component={SalesOrderEdit}
+            />
+            <Route path={`${path}/quotation`} exact component={QuotationView} />
+            <Route
+              path={`${path}/quotation/create`}
+              exact
+              component={QuotationCreate}
+            />
+            <Route
+              path={`${path}/quotation/edit`}
+              exact
+              component={QuotationEdit}
             />
           </Switch>
         </Box>

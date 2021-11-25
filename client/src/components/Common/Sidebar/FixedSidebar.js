@@ -128,9 +128,8 @@ const FixedSidebar = ({ drawerWidth, handleLogout, lists }) => {
             ) : (
               <NavLink
                 key={`listitem-${itemIndex}`}
-                to={listitem.path}
-                exact
                 activeClassName="active"
+                {...listitem}
               >
                 <ListItem button className={classes.navlink}>
                   <ListItemIcon>{listitem.icon}</ListItemIcon>

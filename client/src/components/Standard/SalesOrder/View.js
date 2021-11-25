@@ -94,24 +94,24 @@ const columns = [
     nonSort: true,
     label: 'Con',
     align: 'right',
-    sx: { maxWidth: 40, width: 40 },
+    sx: { maxWidth: 45, width: 45 },
   },
   {
     id: 'whatsappIcon',
     nonSort: true,
     label: 'tact',
     align: 'left',
-    sx: { maxWidth: 40, width: 40, paddingLeft: 0 },
+    sx: { maxWidth: 45, width: 45, paddingLeft: 0 },
   },
   {
     id: 'edit',
     nonSort: true,
-    sx: { maxWidth: 40, width: 40 },
+    sx: { maxWidth: 45, width: 45 },
   },
   {
     nonSort: true,
     id: 'delete',
-    sx: { maxWidth: 40, width: 40 },
+    sx: { maxWidth: 45, width: 45 },
   },
 ];
 

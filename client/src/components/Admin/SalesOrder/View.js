@@ -81,10 +81,6 @@ const columns = [
     label: 'Paid',
   },
   {
-    id: 'finished',
-    label: 'Finished',
-  },
-  {
     id: 'invoicePDF',
     nonSort: true,
     label: 'Invoice',
@@ -95,24 +91,24 @@ const columns = [
     nonSort: true,
     label: 'Con',
     align: 'right',
-    sx: { maxWidth: 40, width: 40 },
+    sx: { maxWidth: 45, width: 45 },
   },
   {
     id: 'whatsappIcon',
     nonSort: true,
     label: 'tact',
     align: 'left',
-    sx: { maxWidth: 40, width: 40, paddingLeft: 0 },
+    sx: { maxWidth: 45, width: 45, paddingLeft: 0 },
   },
   {
     id: 'edit',
     nonSort: true,
-    sx: { maxWidth: 40, width: 40 },
+    sx: { maxWidth: 45, width: 45 },
   },
   {
     nonSort: true,
     id: 'delete',
-    sx: { maxWidth: 40, width: 40 },
+    sx: { maxWidth: 45, width: 45 },
   },
 ];
 
@@ -329,7 +325,6 @@ export default connect(mapStateToProps)((props) => {
               createdAt,
               timeLine,
               paid,
-              finished,
               ChairStocks,
               DeskStocks,
               AccessoryStocks,
@@ -394,34 +389,6 @@ export default connect(mapStateToProps)((props) => {
                   axios
                     .put(`/salesOrder/withoutStock/${id}`, {
                       paid: !paid,
-                    })
-                    .then(() => {
-                      getOrders();
-                    })
-                    .catch(function (error) {
-                      // handle error
-                      Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: error.response.data.message,
-                        allowOutsideClick: false,
-                      });
-                    })
-                    .then(function () {
-                      // always executed
-                    });
-                }}
-              />
-            ),
-            finished: (
-              <Checkbox
-                checked={finished}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  event.preventDefault();
-                  axios
-                    .put(`/salesOrder/withoutStock/${id}`, {
-                      finished: !finished,
                     })
                     .then(() => {
                       getOrders();
@@ -568,7 +535,7 @@ export default connect(mapStateToProps)((props) => {
               margin="dense"
               variant="outlined"
               size="small"
-              defaultValue={`Hello ${name},\nThank you for your order! Please find here (payment link URL) for your payment. Once finished, your order will be processed.\nOnce finished, your order will be processed accordingly.`}
+              defaultValue={`Hello ${name},\nThank you for your order! Please find here (payment link URL) for your payment.\nOnce finished, your order will be processed accordingly.`}
               multiline
               minRows={4}
               maxRows={10}
@@ -618,7 +585,7 @@ export default connect(mapStateToProps)((props) => {
               margin="dense"
               variant="outlined"
               size="small"
-              defaultValue={`Hello ${name},\nThank you for your order! Please find here (payment link URL) for your payment. Once finished, your order will be processed.\nOnce finished, your order will be processed accordingly.`}
+              defaultValue={`Hello ${name},\nThank you for your order! Please find here (payment link URL) for your payment.\nOnce finished, your order will be processed accordingly.`}
               multiline
               minRows={4}
               maxRows={10}

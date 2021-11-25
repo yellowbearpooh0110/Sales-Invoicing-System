@@ -1048,6 +1048,15 @@ export default connect(mapStateToProps)((props) => {
             sx={{ float: 'right' }}
             onClick={(e) => {
               e.preventDefault();
+              if (cart.length === 0) {
+                Swal.fire({
+                  icon: 'warning',
+                  title: 'Warning',
+                  text: 'Products list cannot be empty',
+                  allowOutsideClick: false,
+                });
+                return;
+              }
               setCurrentStep(2);
             }}
           >
@@ -1063,15 +1072,6 @@ export default connect(mapStateToProps)((props) => {
         fullWidth
         onSubmit={(e) => {
           e.preventDefault();
-          if (cart.length === 0) {
-            Swal.fire({
-              icon: 'warning',
-              title: 'Warning',
-              text: 'Products list cannot be empty',
-              allowOutsideClick: false,
-            });
-            return;
-          }
           const clientData = new FormData(clientForm.current);
           const paymentData = new FormData(e.currentTarget);
           console.log(paymentData.get('paid'));

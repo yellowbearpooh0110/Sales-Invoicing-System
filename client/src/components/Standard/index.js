@@ -29,20 +29,20 @@ const menuLists = [
   {
     category: 'Chair',
     content: [
-      { path: '/user/chair/stock', icon: <StorefrontIcon />, label: 'Stock' },
+      { to: '/user/chair/stock', icon: <StorefrontIcon />, label: 'Stock' },
     ],
   },
   {
     category: 'Desk',
     content: [
-      { path: '/user/desk/stock', icon: <StorefrontIcon />, label: 'Stock' },
+      { to: '/user/desk/stock', icon: <StorefrontIcon />, label: 'Stock' },
     ],
   },
   {
     category: 'Accessory',
     content: [
       {
-        path: '/user/accessory/stock',
+        to: '/user/accessory/stock',
         icon: <StorefrontIcon />,
         label: 'Stock',
       },
@@ -50,9 +50,7 @@ const menuLists = [
   },
   {
     category: 'Salement',
-    content: [
-      { path: '/user/order', icon: <BookOnlineIcon />, label: 'Order' },
-    ],
+    content: [{ to: '/user/order', icon: <BookOnlineIcon />, label: 'Order' }],
   },
 ];
 

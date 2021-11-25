@@ -10,7 +10,7 @@ function model(sequelize) {
       allowNull: false,
       primaryKey: true,
     },
-    invoiceNum: {
+    quotationNum: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       unique: true,
@@ -37,11 +37,6 @@ function model(sequelize) {
       defaultValue: 10,
     },
     remark: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: '',
-    },
-    signUrl: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: '',

@@ -16,7 +16,7 @@ module.exports = {
 async function getAll(where) {
   return await db.SalesOrder.findAll({
     where,
-    order: ['createdAt'],
+    order: [['createdAt', 'DESC']],
     include: [
       {
         model: db.User,

@@ -8,7 +8,6 @@ module.exports = {
   create,
   update,
   updateWithoutStock,
-  signDelivery,
   delete: _delete,
   bulkDelete: _bulkDelete,
 };
@@ -16,7 +15,7 @@ module.exports = {
 async function getAll(where) {
   return await db.Quotation.findAll({
     where,
-    order: ['createdAt'],
+    order: [['createdAt', 'DESC']],
     include: [
       {
         model: db.User,

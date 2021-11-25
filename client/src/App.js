@@ -11,7 +11,7 @@ import { Provider } from 'react-redux';
 import store from 'store';
 import axios from 'axios';
 
-import { Invoice, SignIn, SignUp } from 'components/Guest';
+import { Invoice, Quotation, SignIn, SignUp } from 'components/Guest';
 import Admin from 'components/Admin';
 import Standard from 'components/Standard';
 import { AdminRoute, GuestRoute, PrivateRoute } from 'components/Common/Routes';
@@ -23,9 +23,9 @@ if (store.getState().auth.isLoggedIn)
 
 const theme = createTheme();
 
-axios.defaults.baseURL = 'http://localhost:4000/api';
+// axios.defaults.baseURL = 'http://localhost:4000/api';
 // axios.defaults.baseURL = 'http://97.74.83.170/api';
-// axios.defaults.baseURL = 'http://blueoceanblue.com/api';
+axios.defaults.baseURL = 'http://blueoceanblue.com/api';
 
 axios.interceptors.request.use(
   function (config) {
@@ -80,6 +80,7 @@ const App = () => {
                 <Redirect to="/signin" />
               </Route>
               <Route path="/invoice/:id" exact component={Invoice} />
+              <Route path="/quotation/:id" exact component={Quotation} />
               <GuestRoute path="/signin" exact component={SignIn} />
               <GuestRoute path="/signup" exact component={SignUp} />
               <AdminRoute path="/admin" component={Admin} />

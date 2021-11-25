@@ -32,7 +32,7 @@ async function initialize() {
   db.DeskStock = require('server/model/deskStock.model')(sequelize);
   db.AccessoryStock = require('server/model/accessoryStock.model')(sequelize);
   db.SalesOrder = require('server/model/salesOrder.model')(sequelize);
-  db.Quotataion = require('server/model/quotataion.model')(sequelize);
+  db.Quotation = require('server/model/quotation.model')(sequelize);
 
   db.ChairToOrder = require('server/model/chairToOrder.model')(sequelize);
   db.DeskToOrder = require('server/model/deskToOrder.model')(sequelize);
@@ -75,6 +75,10 @@ async function initialize() {
   });
 
   db.SalesOrder.belongsTo(db.User, {
+    as: 'seller',
+    foreignKey: { name: 'sellerId', allowNull: false },
+  });
+  db.Quotation.belongsTo(db.User, {
     as: 'seller',
     foreignKey: { name: 'sellerId', allowNull: false },
   });
