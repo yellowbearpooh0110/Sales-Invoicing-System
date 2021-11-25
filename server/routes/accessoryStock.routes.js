@@ -7,7 +7,6 @@ const authorize = require('server/middleware/authorize');
 const validateRequest = require('server/middleware/validate-request');
 const accessoryStockController = require('server/controller/accessoryStock.controller');
 const uploadController = require('server/controller/upload.controller');
-const uploadController = require('server/controller/upload.controller');
 
 router.post('/create', admin(), createSchema, accessoryStockController.create);
 router.post('/upload', admin(), uploadController.upload);
