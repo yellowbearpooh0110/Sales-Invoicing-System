@@ -6,8 +6,10 @@ const admin = require('server/middleware/admin');
 const authorize = require('server/middleware/authorize');
 const validateRequest = require('server/middleware/validate-request');
 const deskStockController = require('server/controller/deskStock.controller');
+const uploadController = require('server/controller/upload.controller');
 
 router.post('/create', admin(), createSchema, create);
+router.post('/upload', admin(), uploadController.upload);
 router.get('/', authorize(), getAll);
 router.get('/features', authorize(), getFeatures);
 router.get('/:id', authorize(), getById);

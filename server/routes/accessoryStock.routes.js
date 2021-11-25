@@ -7,16 +7,16 @@ const authorize = require('server/middleware/authorize');
 const validateRequest = require('server/middleware/validate-request');
 const accessoryStockController = require('server/controller/accessoryStock.controller');
 const uploadController = require('server/controller/upload.controller');
+const uploadController = require('server/controller/upload.controller');
 
 router.post('/create', admin(), createSchema, accessoryStockController.create);
+router.post('/upload', admin(), uploadController.upload);
 router.get('/', authorize(), getAll);
 router.get('/features', authorize(), getFeatures);
 router.get('/:id', authorize(), getById);
 router.put('/:id', admin(), createSchema, update);
 router.delete('/:id', admin(), _delete);
 router.delete('/', admin(), bulkDeleteSchema, _bulkDelete);
-
-router.post('/upload', admin(), uploadController.upload);
 
 module.exports = router;
 
