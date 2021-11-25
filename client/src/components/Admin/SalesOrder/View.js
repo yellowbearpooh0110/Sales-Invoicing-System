@@ -18,8 +18,9 @@ import {
   ListItemText,
   Stack,
   TextField,
+  Typography,
 } from '@mui/material';
-import { blue, red, yellow } from '@mui/material/colors';
+import { blue, pink, red, yellow } from '@mui/material/colors';
 import {
   Add as AddIcon,
   Deck as DeckIcon,
@@ -653,10 +654,10 @@ export default connect(mapStateToProps)((props) => {
                 <ListItem
                   key={index}
                   sx={{
-                    bgcolor: yellow[400],
+                    bgcolor: yellow[600],
                     boxShadow: `0px 2px 1px -1px rgb(0 0 0 / 20%)`,
-                    color: blue[700],
                     my: '10px',
+                    flexWrap: 'wrap',
                   }}
                 >
                   <ListItemText
@@ -666,21 +667,41 @@ export default connect(mapStateToProps)((props) => {
                     }`}
                   />
                   <Box
+                    flexBasis="100%"
                     display="flex"
+                    flexWrap="wrap"
                     alignItems="center"
-                    justifyContent="center"
-                    variant="span"
-                    color={red[900]}
-                    bgcolor={red[100]}
-                    sx={{
-                      flexShrink: 0,
-                      width: 40,
-                      height: 40,
-                      marginRight: '10px',
-                      borderRadius: '50%',
-                    }}
                   >
-                    {item.ChairToOrder.qty}
+                    <Typography
+                      variant="span"
+                      color={pink[100]}
+                      bgcolor={pink[500]}
+                      sx={{
+                        fontSize: ['6px, 8px'],
+                        padding: '3px 10px',
+                        margin: '3px 0',
+                        flexShrink: 0,
+                        marginRight: '10px',
+                        borderRadius: '2px',
+                      }}
+                    >
+                      {`${item.ChairToOrder.unitPrice} HKD`}
+                    </Typography>
+                    <Typography
+                      variant="span"
+                      color={red[100]}
+                      bgcolor={red[500]}
+                      sx={{
+                        fontSize: ['6px, 8px'],
+                        padding: '3px 10px',
+                        margin: '3px 0',
+                        flexShrink: 0,
+                        marginRight: '10px',
+                        borderRadius: '2px',
+                      }}
+                    >
+                      {`Amount: ${item.ChairToOrder.qty}`}
+                    </Typography>
                   </Box>
                 </ListItem>
               ))}
@@ -689,10 +710,10 @@ export default connect(mapStateToProps)((props) => {
                 <ListItem
                   key={index}
                   sx={{
-                    bgcolor: yellow[400],
+                    bgcolor: yellow[600],
                     boxShadow: `0px 2px 1px -1px rgb(0 0 0 / 20%)`,
-                    color: blue[700],
                     my: '10px',
+                    flexWrap: 'wrap',
                   }}
                 >
                   <ListItemText
@@ -700,21 +721,41 @@ export default connect(mapStateToProps)((props) => {
                     secondary={`${item.topMaterial}, ${item.topColor}, ${item.topSize}`}
                   />
                   <Box
+                    flexBasis="100%"
                     display="flex"
+                    flexWrap="wrap"
                     alignItems="center"
-                    justifyContent="center"
-                    variant="span"
-                    color={red[900]}
-                    bgcolor={red[100]}
-                    sx={{
-                      flexShrink: 0,
-                      width: 40,
-                      height: 40,
-                      marginRight: '10px',
-                      borderRadius: '50%',
-                    }}
                   >
-                    {item.DeskToOrder.qty}
+                    <Typography
+                      variant="span"
+                      color={pink[100]}
+                      bgcolor={pink[500]}
+                      sx={{
+                        fontSize: ['6px, 8px'],
+                        padding: '3px 10px',
+                        margin: '3px 0',
+                        flexShrink: 0,
+                        marginRight: '10px',
+                        borderRadius: '2px',
+                      }}
+                    >
+                      {`${item.DeskToOrder.unitPrice} HKD`}
+                    </Typography>
+                    <Typography
+                      variant="span"
+                      color={red[100]}
+                      bgcolor={red[500]}
+                      sx={{
+                        fontSize: ['6px, 8px'],
+                        padding: '3px 10px',
+                        margin: '3px 0',
+                        flexShrink: 0,
+                        marginRight: '10px',
+                        borderRadius: '2px',
+                      }}
+                    >
+                      {`Amount: ${item.DeskToOrder.qty}`}
+                    </Typography>
                   </Box>
                 </ListItem>
               ))}
@@ -723,10 +764,10 @@ export default connect(mapStateToProps)((props) => {
                 <ListItem
                   key={index}
                   sx={{
-                    bgcolor: yellow[400],
+                    bgcolor: yellow[600],
                     boxShadow: `0px 2px 1px -1px rgb(0 0 0 / 20%)`,
-                    color: blue[700],
                     my: '10px',
+                    flexWrap: 'wrap',
                   }}
                 >
                   <ListItemText
@@ -734,21 +775,41 @@ export default connect(mapStateToProps)((props) => {
                     secondary={`${item.remark}`}
                   />
                   <Box
+                    flexBasis="100%"
                     display="flex"
+                    flexWrap="wrap"
                     alignItems="center"
-                    justifyContent="center"
-                    variant="span"
-                    color={red[900]}
-                    bgcolor={red[100]}
-                    sx={{
-                      flexShrink: 0,
-                      width: 40,
-                      height: 40,
-                      marginRight: '10px',
-                      borderRadius: '50%',
-                    }}
                   >
-                    {item.AccessoryToOrder.qty}
+                    <Typography
+                      variant="span"
+                      color={pink[100]}
+                      bgcolor={pink[500]}
+                      sx={{
+                        fontSize: ['6px, 8px'],
+                        padding: '3px 10px',
+                        margin: '3px 0',
+                        flexShrink: 0,
+                        marginRight: '10px',
+                        borderRadius: '2px',
+                      }}
+                    >
+                      {`${item.AccessoryToOrder.unitPrice} HKD`}
+                    </Typography>
+                    <Typography
+                      variant="span"
+                      color={red[100]}
+                      bgcolor={red[500]}
+                      sx={{
+                        fontSize: ['6px, 8px'],
+                        padding: '3px 10px',
+                        margin: '3px 0',
+                        flexShrink: 0,
+                        marginRight: '10px',
+                        borderRadius: '2px',
+                      }}
+                    >
+                      {`Amount: ${item.AccessoryToOrder.qty}`}
+                    </Typography>
                   </Box>
                 </ListItem>
               ))}

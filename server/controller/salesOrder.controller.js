@@ -68,7 +68,7 @@ async function create(params) {
       }
       await salesOrder.addChairStock(stock, {
         through: {
-          unitPrice: products[index].unitPrice,
+          unitPrice: products[index].productPrice,
           qty: products[index].productAmount,
           preOrder,
         },
@@ -86,7 +86,7 @@ async function create(params) {
       }
       await salesOrder.addDeskStock(stock, {
         through: {
-          unitPrice: products[index].unitPrice,
+          unitPrice: products[index].productPrice,
           qty: products[index].productAmount,
           preOrder,
         },
@@ -104,7 +104,7 @@ async function create(params) {
       }
       await salesOrder.addAccessoryStock(stock, {
         through: {
-          unitPrice: products[index].unitPrice,
+          unitPrice: products[index].productPrice,
           qty: products[index].productAmount,
           preOrder,
         },
@@ -162,7 +162,7 @@ async function update(id, params) {
       }
       await salesOrder.addChairStock(stock, {
         through: {
-          unitPrice: products[index].unitPrice,
+          unitPrice: products[index].productPrice,
           qty: products[index].productAmount,
           preOrder,
         },
@@ -180,7 +180,7 @@ async function update(id, params) {
       }
       await salesOrder.addDeskStock(stock, {
         through: {
-          unitPrice: products[index].unitPrice,
+          unitPrice: products[index].productPrice,
           qty: products[index].productAmount,
           preOrder,
         },
@@ -198,7 +198,7 @@ async function update(id, params) {
       }
       await salesOrder.addAccessoryStock(stock, {
         through: {
-          unitPrice: products[index].unitPrice,
+          unitPrice: products[index].productPrice,
           qty: products[index].productAmount,
           preOrder,
         },

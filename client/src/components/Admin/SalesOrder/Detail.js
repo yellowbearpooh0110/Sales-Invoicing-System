@@ -5,11 +5,11 @@ import {
   Autocomplete,
   Box,
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
   FormControlLabel,
   IconButton,
   List,
@@ -229,7 +229,11 @@ const accessoryColumns = [
 export default connect(mapStateToProps)((props) => {
   const { componentType, initialClient, initialCart } = props;
 
-  const steps = ['Input Client Info', 'Select Products'];
+  const steps = [
+    'Input Client Info',
+    'Select Products',
+    'Input Payment Detailss',
+  ];
   const clientForm = useRef(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [addOpen, setAddOpen] = useState(false);
@@ -242,6 +246,8 @@ export default connect(mapStateToProps)((props) => {
   const [deskStocks, setDeskStocks] = useState([]);
   const [accessoryStocks, setAccessoryStocks] = useState([]);
   const [stocksIndex, setStocksIndex] = useState(0);
+
+  const [paid, setPaid] = useState(true);
 
   const [chairFeatures, setChairFeatures] = useState([]);
   const [deskFeatures, setDeskFeatures] = useState([]);
@@ -375,7 +381,7 @@ export default connect(mapStateToProps)((props) => {
         padding: '20px 20px 10px 20px',
       }}
     >
-      <Stepper activeStep={currentStep} sx={{ mb: '20px' }}>
+      <Stepper activeStep={currentStep} sx={{ flexWrap: 'wrap' }}>
         {steps.map((label, index) => {
           const labelProps = {};
           if (isStepFailed(index)) {
@@ -389,7 +395,7 @@ export default connect(mapStateToProps)((props) => {
           }
 
           return (
-            <Step key={label}>
+            <Step key={label} sx={{ my: '10px' }}>
               <StepLabel {...labelProps}>{label}</StepLabel>
             </Step>
           );
@@ -624,7 +630,7 @@ export default connect(mapStateToProps)((props) => {
                           borderRadius: '2px',
                         }}
                       >
-                        {`Qty: ${item.productAmount}`}
+                        {`Amount: ${item.productAmount}`}
                       </Typography>
                     </Box>
                   </ListItem>
@@ -1044,97 +1050,283 @@ export default connect(mapStateToProps)((props) => {
             sx={{ float: 'right' }}
             onClick={(e) => {
               e.preventDefault();
-              if (cart.length === 0) {
-                Swal.fire({
-                  icon: 'warning',
-                  title: 'Warning',
-                  text: 'Products list cannot be empty',
-                  allowOutsideClick: false,
-                });
-                return;
-              }
-              const data = new FormData(clientForm.current);
-              if (componentType === 'create')
-                axios
-                  .post(`/salesOrder/create`, {
-                    name: data.get('name'),
-                    phone: data.get('phone'),
-                    email: data.get('email'),
-                    district: data.get('district'),
-                    street: data.get('street'),
-                    block: data.get('block'),
-                    floor: data.get('floor'),
-                    unit: data.get('unit'),
-                    timeLine:
-                      data.get('timeLine') *
-                      (data.get('timeLineFormat') === 'day' ? 1 : 7),
-                    remark: data.get('remark'),
-                    products: cart.map(({ productDetail, ...restProps }) => ({
-                      productId: productDetail.id,
-                      ...restProps,
-                    })),
-                  })
-                  .then((response) => {
-                    // handle success
-                    props.history.push('/admin/order');
-                  })
-                  .catch(function (error) {
-                    // handle error
-                    Swal.fire({
-                      icon: 'error',
-                      title: 'Error',
-                      text: error.response.data.message,
-                      allowOutsideClick: false,
-                    }).then(() => {});
-                    console.log(error);
-                  })
-                  .then(function () {
-                    // always executed
-                  });
-              else {
-                axios
-                  .put(`/salesOrder/${initialClient.id}`, {
-                    name: data.get('name'),
-                    phone: data.get('phone'),
-                    email: data.get('email'),
-                    district: data.get('district'),
-                    street: data.get('street'),
-                    block: data.get('block'),
-                    floor: data.get('floor'),
-                    unit: data.get('unit'),
-                    timeLine:
-                      data.get('timeLine') *
-                      (data.get('timeLineFormat') === 'day' ? 1 : 7),
-                    remark: data.get('remark'),
-                    products: cart.map(({ productDetail, ...restProps }) => ({
-                      productId: productDetail.id,
-                      ...restProps,
-                    })),
-                  })
-                  .then((response) => {
-                    // handle success
-                    props.history.push('/admin/order');
-                  })
-                  .catch(function (error) {
-                    // handle error
-                    Swal.fire({
-                      icon: 'error',
-                      title: 'Error',
-                      text: error.response.data.message,
-                      allowOutsideClick: false,
-                    }).then(() => {});
-                    console.log(error);
-                  })
-                  .then(function () {
-                    // always executed
-                  });
-              }
+              setCurrentStep(2);
             }}
           >
-            Finish
+            Next
           </Button>
         </>
       )}
+      <Box
+        sx={{ mx: 'auto', mt: '50px' }}
+        hidden={currentStep !== 2}
+        component="form"
+        maxWidth="sm"
+        fullWidth
+        onSubmit={(e) => {
+          e.preventDefault();
+          setCurrentStep(1);
+        }}
+      >
+        <Paper
+          sx={{
+            p: '10px',
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Typography variant="h6" sx={{ flexBasis: '100%', minWidth: '100%' }}>
+            Payment Details
+          </Typography>
+          <TextField
+            margin="dense"
+            variant="outlined"
+            size="small"
+            sx={{ flexBasis: '100%', minWidth: '100%' }}
+            label="Payment Terms"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={paid}
+                onChange={() => {
+                  setPaid(!paid);
+                }}
+              />
+            }
+            label="Paid"
+          />
+          <TextField
+            margin="dense"
+            variant="outlined"
+            size="small"
+            type="date"
+            disabled={paid}
+            label="Due Date"
+            defaultValue={Date.now().toString().split('T')[0]}
+            InputLabelProps={{ shrink: true }}
+          />
+          {/* {[
+            {
+              name: 'name',
+              label: 'Name',
+              type: 'text',
+              defaultValue: initialClient.name,
+              width: '100%',
+              required: true,
+            },
+            {
+              name: 'phone',
+              label: 'Phone',
+              type: 'text',
+              value: initialClient.phone,
+              onChange: initialClient.setPhone,
+              width: '48%',
+            },
+            {
+              name: 'email',
+              label: 'Email',
+              type: 'email',
+              defaultValue: initialClient.email,
+              width: '48%',
+              required: true,
+            },
+            {
+              name: 'district',
+              label: 'District',
+              type: 'text',
+              defaultValue: initialClient.district,
+              width: '55%',
+            },
+            {
+              name: 'street',
+              label: 'Street',
+              type: 'text',
+              defaultValue: initialClient.street,
+              width: '40%',
+            },
+            {
+              name: 'block',
+              label: 'Block',
+              type: 'text',
+              defaultValue: initialClient.block,
+              width: '30%',
+            },
+            {
+              name: 'floor',
+              label: 'Floor',
+              type: 'text',
+              defaultValue: initialClient.floor,
+              width: '30%',
+            },
+            {
+              name: 'unit',
+              label: 'Unit',
+              type: 'text',
+              defaultValue: initialClient.unit,
+              width: '30%',
+            },
+            {
+              name: 'remark',
+              label: 'Remark',
+              muliline: 'true',
+              type: 'text',
+              defaultValue: initialClient.remark,
+              width: '100%',
+            },
+          ].map(({ setValue, width, ...restProps }, index) =>
+            restProps.label === 'Phone' ? (
+              <MuiPhoneNumber
+                key={index}
+                defaultCountry={'hk'}
+                sx={{ flexBasis: width, minWidth: width }}
+                variant="outlined"
+                margin="dense"
+                size="small"
+                {...restProps}
+              />
+            ) : (
+              <TextField
+                key={index}
+                margin="dense"
+                variant="outlined"
+                size="small"
+                sx={{ flexBasis: width, minWidth: width }}
+                {...restProps}
+              />
+            )
+          )} */}
+          {/* <TextField
+            margin="dense"
+            variant="outlined"
+            size="small"
+            sx={{ flexBasis: ['100%', '30%'], minWidth: ['100%', '30%'] }}
+            name="timeLine"
+            label="TimeLine"
+            type="number"
+            inputProps={{ min: 0 }}
+            defaultValue={initialClient.timeLine || 0}
+          />
+          <RadioGroup
+            row
+            name="timeLineFormat"
+            defaultValue="day"
+            sx={{
+              flexBasis: ['100%', '70%'],
+              minWidth: ['100%', '70%'],
+              justifyContent: 'flex-end',
+            }}
+          >
+            <FormControlLabel value="day" control={<Radio />} label="Days" />
+            <FormControlLabel value="week" control={<Radio />} label="Weeks" />
+          </RadioGroup> */}
+        </Paper>
+        <Button
+          variant="outlined"
+          sx={{ marginTop: '10px' }}
+          onClick={(e) => {
+            e.preventDefault();
+            setCurrentStep(1);
+          }}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="outlined"
+          sx={{ float: 'right', marginTop: '10px' }}
+          onClick={(e) => {
+            e.preventDefault();
+            if (cart.length === 0) {
+              Swal.fire({
+                icon: 'warning',
+                title: 'Warning',
+                text: 'Products list cannot be empty',
+                allowOutsideClick: false,
+              });
+              return;
+            }
+            const data = new FormData(clientForm.current);
+            if (componentType === 'create')
+              axios
+                .post(`/salesOrder/create`, {
+                  name: data.get('name'),
+                  phone: data.get('phone'),
+                  email: data.get('email'),
+                  district: data.get('district'),
+                  street: data.get('street'),
+                  block: data.get('block'),
+                  floor: data.get('floor'),
+                  unit: data.get('unit'),
+                  timeLine:
+                    Math.max(data.get('timeLine'), 0) *
+                    (data.get('timeLineFormat') === 'day' ? 1 : 7),
+                  remark: data.get('remark'),
+                  products: cart.map(({ productDetail, ...restProps }) => ({
+                    productId: productDetail.id,
+                    ...restProps,
+                  })),
+                })
+                .then(() => {
+                  // handle success
+                  props.history.push('/admin/order');
+                })
+                .catch(function (error) {
+                  // handle error
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.response.data.message,
+                    allowOutsideClick: false,
+                  }).then(() => {});
+                  console.log(error);
+                })
+                .then(function () {
+                  // always executed
+                });
+            else {
+              axios
+                .put(`/salesOrder/${initialClient.id}`, {
+                  name: data.get('name'),
+                  phone: data.get('phone'),
+                  email: data.get('email'),
+                  district: data.get('district'),
+                  street: data.get('street'),
+                  block: data.get('block'),
+                  floor: data.get('floor'),
+                  unit: data.get('unit'),
+                  timeLine:
+                    data.get('timeLine') *
+                    (data.get('timeLineFormat') === 'day' ? 1 : 7),
+                  remark: data.get('remark'),
+                  products: cart.map(({ productDetail, ...restProps }) => ({
+                    productId: productDetail.id,
+                    ...restProps,
+                  })),
+                })
+                .then((response) => {
+                  // handle success
+                  props.history.push('/admin/order');
+                })
+                .catch(function (error) {
+                  // handle error
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.response.data.message,
+                    allowOutsideClick: false,
+                  }).then(() => {});
+                  console.log(error);
+                })
+                .then(function () {
+                  // always executed
+                });
+            }
+          }}
+        >
+          Finish
+        </Button>
+      </Box>
       <Dialog
         open={addOpen}
         maxWidth="sm"
@@ -1143,7 +1335,6 @@ export default connect(mapStateToProps)((props) => {
           component: 'form',
           onSubmit: (e) => {
             e.preventDefault();
-            console.log(e.currentTarget);
             setAddOpen(false);
             if (
               cart.find(
@@ -1160,48 +1351,74 @@ export default connect(mapStateToProps)((props) => {
               });
               return;
             }
-            setCart(cart.concat({ productType, productDetail, productAmount }));
+            setCart(
+              cart.concat({
+                productType,
+                productDetail,
+                productAmount,
+                productPrice: Math.max(e.currentTarget.unitPrice.value, 0),
+              })
+            );
           },
         }}
       >
         <DialogTitle>Price and Amount</DialogTitle>
         <DialogContent sx={{ textAlign: 'center' }}>
           <FormControlLabel
-            value="HKD"
-            fullWidth
+            sx={{
+              width: '200px',
+              alignItems: 'baseline',
+              m: 0,
+            }}
             control={
               <TextField
-                margin="dense"
-                variant="outlined"
-                size="small"
-                // sx={{ flexBasis: width, minWidth: width }}
                 label="Unit Price"
+                variant="outlined"
+                margin="dense"
+                type="number"
                 name="unitPrice"
                 defaultValue={1000}
+                fullWidth
+                sx={{ m: '10px 5px 0 0' }}
               />
             }
-            label="Days"
+            label="HKD"
           />
-
-          <IconButton
-            onClick={(e) => {
-              e.preventDefault();
-              setProductAmount(Math.max(productAmount - 1, 1));
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              width: '200px',
+              border: '1px solid #0000003b',
+              borderRadius: '4px',
+              mt: '10px',
+              mx: 'auto',
+              p: '5px 3px',
             }}
           >
-            <RemoveIcon />
-          </IconButton>
-          <Typography variant="span" mx="10px">
-            {productAmount}
-          </Typography>
-          <IconButton
-            onClick={(e) => {
-              e.preventDefault();
-              setProductAmount(Math.min(productAmount + 1, 9));
-            }}
-          >
-            <AddIcon />
-          </IconButton>
+            <Typography variant="span" sx={{ flexGrow: 1 }}>
+              Amount
+            </Typography>
+            <IconButton
+              onClick={(e) => {
+                e.preventDefault();
+                setProductAmount(Math.max(productAmount - 1, 1));
+              }}
+            >
+              <RemoveIcon />
+            </IconButton>
+            <Typography variant="span" mx="10px">
+              {productAmount}
+            </Typography>
+            <IconButton
+              onClick={(e) => {
+                e.preventDefault();
+                setProductAmount(Math.min(productAmount + 1, 9));
+              }}
+            >
+              <AddIcon />
+            </IconButton>
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button
