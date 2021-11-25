@@ -14,7 +14,6 @@ async function getFeatures() {
   return await db.DeskStock.findAll({
     attributes: ['model', 'color'],
     group: ['model', 'color'],
-    order: ['createdAt'],
   });
 }
 

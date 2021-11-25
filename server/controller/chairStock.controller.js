@@ -14,7 +14,6 @@ async function getFeatures() {
   return await db.ChairStock.findAll({
     attributes: ['brand', 'model'],
     group: ['brand', 'model'],
-    order: ['createdAt'],
   });
 }
 

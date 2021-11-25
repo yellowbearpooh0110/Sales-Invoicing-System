@@ -14,7 +14,6 @@ async function getFeatures() {
   return await db.AccessoryStock.findAll({
     attributes: ['color'],
     group: ['color'],
-    order: ['createdAt'],
   });
 }
 
