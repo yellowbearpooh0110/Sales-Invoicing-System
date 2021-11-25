@@ -486,7 +486,7 @@ export default connect(mapStateToProps)((props) => {
                               <QRCode
                                 value={`${response.data.qrcode}`}
                                 level="H"
-                              ></QRCode>
+                              />
                             ),
                             allowOutsideClick: false,
                           });

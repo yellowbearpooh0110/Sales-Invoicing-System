@@ -203,9 +203,9 @@ const Invoice = () => {
                           } after payment`,
                     width: '55%',
                   },
-                  { content: '', width: '15%' },
+                  { content: order.paymentTerms, width: '15%' },
                   {
-                    content: `Paid`,
+                    content: order.paid ? 'Paid' : order.dueDate,
                     width: '15%',
                   },
                 ],
@@ -491,7 +491,7 @@ const Invoice = () => {
                   border: '2px solid #888888',
                   borderRadius: 2,
                 }}
-              ></View>
+              />
               <View
                 style={{
                   flexGrow: 1,
@@ -541,7 +541,7 @@ const Invoice = () => {
                   margin: '5px 10px 0 0',
                   backgroundColor: '#888888',
                 }}
-              ></View>
+              />
               <View
                 style={{
                   flexGrow: 1,

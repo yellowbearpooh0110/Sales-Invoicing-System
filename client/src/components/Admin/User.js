@@ -236,7 +236,7 @@ export default connect(mapStateToProps)((props) => {
         onEditClick={handleEditClick}
         onRemoveClick={handleRemoveClick}
         onBulkRemoveClick={handleBulkRemoveClick}
-      ></DataGrid>
+      />
       <Dialog open={editOpen}>
         <DialogTitle>Edit User</DialogTitle>
         <DialogContent>

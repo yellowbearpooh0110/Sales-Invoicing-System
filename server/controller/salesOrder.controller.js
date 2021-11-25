@@ -215,7 +215,7 @@ async function updateWithoutStock(id, params) {
 
 async function _delete(id) {
   const salesOrder = await getSalesOrder(id);
-  const { ChairStocks, DeskStocks } = salesOrder;
+  const { ChairStocks, DeskStocks, AccessoryStocks } = salesOrder;
   for (var index = 0; index < ChairStocks.length; index++) {
     if (!ChairStocks[index].ChairToOrder.preOrder) {
       const stock = await chairStockController.getById(ChairStocks[index].id);
@@ -229,6 +229,16 @@ async function _delete(id) {
       const stock = await deskStockController.getById(DeskStocks[index].id);
       stock.balance += DeskStocks[index].DeskToOrder.qty;
       stock.qty += DeskStocks[index].DeskToOrder.qty;
+      await stock.save();
+    }
+  }
+  for (var index = 0; index < AccessoryStocks.length; index++) {
+    if (!AccessoryStocks[index].AccessoryToOrder.preOrder) {
+      const stock = await deskStockController.getById(
+        AccessoryStocks[index].id
+      );
+      stock.balance += AccessoryStocks[index].AccessoryToOrder.qty;
+      stock.qty += AccessoryStocks[index].AccessoryToOrder.qty;
       await stock.save();
     }
   }

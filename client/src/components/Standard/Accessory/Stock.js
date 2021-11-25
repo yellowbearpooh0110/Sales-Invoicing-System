@@ -466,7 +466,7 @@ const Stock = connect(mapStateToProps)((props) => {
         onEditClick={handleEditClick}
         onRemoveClick={handleRemoveClick}
         onBulkRemoveClick={handleBulkRemoveClick}
-      ></DataGrid>
+      />
       <Dialog
         fullWidth
         fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}

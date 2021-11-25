@@ -247,8 +247,6 @@ export default connect(mapStateToProps)((props) => {
   const [accessoryStocks, setAccessoryStocks] = useState([]);
   const [stocksIndex, setStocksIndex] = useState(0);
 
-  const [paid, setPaid] = useState(true);
-
   const [chairFeatures, setChairFeatures] = useState([]);
   const [deskFeatures, setDeskFeatures] = useState([]);
   const [accessoryFeatures, setAccessoryFeatures] = useState([]);
@@ -790,7 +788,7 @@ export default connect(mapStateToProps)((props) => {
                     })
                   )}
                 columns={chairColumns}
-              ></DataGrid>
+              />
             </TabPanel>
             <TabPanel value={stocksIndex} index={1}>
               <Paper
@@ -1065,7 +1063,100 @@ export default connect(mapStateToProps)((props) => {
         fullWidth
         onSubmit={(e) => {
           e.preventDefault();
-          setCurrentStep(1);
+          if (cart.length === 0) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Warning',
+              text: 'Products list cannot be empty',
+              allowOutsideClick: false,
+            });
+            return;
+          }
+          const clientData = new FormData(clientForm.current);
+          const paymentData = new FormData(e.currentTarget);
+          console.log(paymentData.get('paid'));
+          console.log(Boolean(paymentData.get('paid')));
+          if (componentType === 'create')
+            axios
+              .post(`/salesOrder/create`, {
+                name: clientData.get('name'),
+                phone: clientData.get('phone'),
+                email: clientData.get('email'),
+                district: clientData.get('district'),
+                street: clientData.get('street'),
+                block: clientData.get('block'),
+                floor: clientData.get('floor'),
+                unit: clientData.get('unit'),
+                timeLine:
+                  Math.max(clientData.get('timeLine'), 0) *
+                  (clientData.get('timeLineFormat') === 'day' ? 1 : 7),
+                remark: clientData.get('remark'),
+                products: cart.map(({ productDetail, ...restProps }) => ({
+                  productId: productDetail.id,
+                  ...restProps,
+                })),
+                paymentTerms: paymentData.get('paymentTerms'),
+                paid: Boolean(paymentData.get('paid')),
+                dueDate: paymentData.get('dueDate'),
+              })
+              .then(() => {
+                // handle success
+                props.history.push('/admin/order');
+              })
+              .catch(function (error) {
+                // handle error
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: error.response.data.message,
+                  allowOutsideClick: false,
+                }).then(() => {});
+                console.log(error);
+              })
+              .then(function () {
+                // always executed
+              });
+          else {
+            axios
+              .put(`/salesOrder/${initialClient.id}`, {
+                name: clientData.get('name'),
+                phone: clientData.get('phone'),
+                email: clientData.get('email'),
+                district: clientData.get('district'),
+                street: clientData.get('street'),
+                block: clientData.get('block'),
+                floor: clientData.get('floor'),
+                unit: clientData.get('unit'),
+                timeLine:
+                  clientData.get('timeLine') *
+                  (clientData.get('timeLineFormat') === 'day' ? 1 : 7),
+                remark: clientData.get('remark'),
+                products: cart.map(({ productDetail, ...restProps }) => ({
+                  productId: productDetail.id,
+                  ...restProps,
+                })),
+                paymentTerms: paymentData.get('paymentTerms'),
+                paid: Boolean(paymentData.get('paid')),
+                dueDate: paymentData.get('dueDate'),
+              })
+              .then((response) => {
+                // handle success
+                props.history.push('/admin/order');
+              })
+              .catch(function (error) {
+                // handle error
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: error.response.data.message,
+                  allowOutsideClick: false,
+                }).then(() => {});
+                console.log(error);
+              })
+              .then(function () {
+                // always executed
+              });
+          }
         }}
       >
         <Paper
@@ -1080,6 +1171,7 @@ export default connect(mapStateToProps)((props) => {
             Payment Details
           </Typography>
           <TextField
+            name="paymentTerms"
             margin="dense"
             variant="outlined"
             size="small"
@@ -1088,12 +1180,7 @@ export default connect(mapStateToProps)((props) => {
           />
           <FormControlLabel
             control={
-              <Checkbox
-                checked={paid}
-                onChange={() => {
-                  setPaid(!paid);
-                }}
-              />
+              <Checkbox name="paid" defaultChecked={initialClient.paid} />
             }
             label="Paid"
           />
@@ -1102,125 +1189,12 @@ export default connect(mapStateToProps)((props) => {
             variant="outlined"
             size="small"
             type="date"
-            disabled={paid}
+            disabled={initialClient.paid}
+            name="dueDate"
             label="Due Date"
-            defaultValue={Date.now().toString().split('T')[0]}
+            defaultValue={initialClient.dueDate}
             InputLabelProps={{ shrink: true }}
           />
-          {/* {[
-            {
-              name: 'name',
-              label: 'Name',
-              type: 'text',
-              defaultValue: initialClient.name,
-              width: '100%',
-              required: true,
-            },
-            {
-              name: 'phone',
-              label: 'Phone',
-              type: 'text',
-              value: initialClient.phone,
-              onChange: initialClient.setPhone,
-              width: '48%',
-            },
-            {
-              name: 'email',
-              label: 'Email',
-              type: 'email',
-              defaultValue: initialClient.email,
-              width: '48%',
-              required: true,
-            },
-            {
-              name: 'district',
-              label: 'District',
-              type: 'text',
-              defaultValue: initialClient.district,
-              width: '55%',
-            },
-            {
-              name: 'street',
-              label: 'Street',
-              type: 'text',
-              defaultValue: initialClient.street,
-              width: '40%',
-            },
-            {
-              name: 'block',
-              label: 'Block',
-              type: 'text',
-              defaultValue: initialClient.block,
-              width: '30%',
-            },
-            {
-              name: 'floor',
-              label: 'Floor',
-              type: 'text',
-              defaultValue: initialClient.floor,
-              width: '30%',
-            },
-            {
-              name: 'unit',
-              label: 'Unit',
-              type: 'text',
-              defaultValue: initialClient.unit,
-              width: '30%',
-            },
-            {
-              name: 'remark',
-              label: 'Remark',
-              muliline: 'true',
-              type: 'text',
-              defaultValue: initialClient.remark,
-              width: '100%',
-            },
-          ].map(({ setValue, width, ...restProps }, index) =>
-            restProps.label === 'Phone' ? (
-              <MuiPhoneNumber
-                key={index}
-                defaultCountry={'hk'}
-                sx={{ flexBasis: width, minWidth: width }}
-                variant="outlined"
-                margin="dense"
-                size="small"
-                {...restProps}
-              />
-            ) : (
-              <TextField
-                key={index}
-                margin="dense"
-                variant="outlined"
-                size="small"
-                sx={{ flexBasis: width, minWidth: width }}
-                {...restProps}
-              />
-            )
-          )} */}
-          {/* <TextField
-            margin="dense"
-            variant="outlined"
-            size="small"
-            sx={{ flexBasis: ['100%', '30%'], minWidth: ['100%', '30%'] }}
-            name="timeLine"
-            label="TimeLine"
-            type="number"
-            inputProps={{ min: 0 }}
-            defaultValue={initialClient.timeLine || 0}
-          />
-          <RadioGroup
-            row
-            name="timeLineFormat"
-            defaultValue="day"
-            sx={{
-              flexBasis: ['100%', '70%'],
-              minWidth: ['100%', '70%'],
-              justifyContent: 'flex-end',
-            }}
-          >
-            <FormControlLabel value="day" control={<Radio />} label="Days" />
-            <FormControlLabel value="week" control={<Radio />} label="Weeks" />
-          </RadioGroup> */}
         </Paper>
         <Button
           variant="outlined"
@@ -1235,94 +1209,7 @@ export default connect(mapStateToProps)((props) => {
         <Button
           variant="outlined"
           sx={{ float: 'right', marginTop: '10px' }}
-          onClick={(e) => {
-            e.preventDefault();
-            if (cart.length === 0) {
-              Swal.fire({
-                icon: 'warning',
-                title: 'Warning',
-                text: 'Products list cannot be empty',
-                allowOutsideClick: false,
-              });
-              return;
-            }
-            const data = new FormData(clientForm.current);
-            if (componentType === 'create')
-              axios
-                .post(`/salesOrder/create`, {
-                  name: data.get('name'),
-                  phone: data.get('phone'),
-                  email: data.get('email'),
-                  district: data.get('district'),
-                  street: data.get('street'),
-                  block: data.get('block'),
-                  floor: data.get('floor'),
-                  unit: data.get('unit'),
-                  timeLine:
-                    Math.max(data.get('timeLine'), 0) *
-                    (data.get('timeLineFormat') === 'day' ? 1 : 7),
-                  remark: data.get('remark'),
-                  products: cart.map(({ productDetail, ...restProps }) => ({
-                    productId: productDetail.id,
-                    ...restProps,
-                  })),
-                })
-                .then(() => {
-                  // handle success
-                  props.history.push('/admin/order');
-                })
-                .catch(function (error) {
-                  // handle error
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: error.response.data.message,
-                    allowOutsideClick: false,
-                  }).then(() => {});
-                  console.log(error);
-                })
-                .then(function () {
-                  // always executed
-                });
-            else {
-              axios
-                .put(`/salesOrder/${initialClient.id}`, {
-                  name: data.get('name'),
-                  phone: data.get('phone'),
-                  email: data.get('email'),
-                  district: data.get('district'),
-                  street: data.get('street'),
-                  block: data.get('block'),
-                  floor: data.get('floor'),
-                  unit: data.get('unit'),
-                  timeLine:
-                    data.get('timeLine') *
-                    (data.get('timeLineFormat') === 'day' ? 1 : 7),
-                  remark: data.get('remark'),
-                  products: cart.map(({ productDetail, ...restProps }) => ({
-                    productId: productDetail.id,
-                    ...restProps,
-                  })),
-                })
-                .then((response) => {
-                  // handle success
-                  props.history.push('/admin/order');
-                })
-                .catch(function (error) {
-                  // handle error
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: error.response.data.message,
-                    allowOutsideClick: false,
-                  }).then(() => {});
-                  console.log(error);
-                })
-                .then(function () {
-                  // always executed
-                });
-            }
-          }}
+          type="submit"
         >
           Finish
         </Button>

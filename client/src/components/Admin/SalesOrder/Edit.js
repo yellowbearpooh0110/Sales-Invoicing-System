@@ -13,7 +13,9 @@ const Edit = (props) => {
     sellerId,
     ...client
   } = order || {};
+
   const [phone, setPhone] = useState(client.phone);
+
   return order ? (
     <Detail
       componentType="edit"
@@ -21,14 +23,6 @@ const Edit = (props) => {
         ...client,
         phone,
         setPhone,
-        deliveryDate: (() => {
-          const createdTime = new Date(client.deliveryDate);
-          createdTime.setMinutes(
-            createdTime.getMinutes() - createdTime.getTimezoneOffset()
-          );
-          // return createdTime.toISOString().split('T')[0];
-          return '';
-        })(),
       }}
       initialCart={ChairStocks.map(({ ChairToOrder, ...restProps }) => ({
         productType: 'chair',

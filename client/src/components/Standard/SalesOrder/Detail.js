@@ -741,7 +741,7 @@ export default connect(mapStateToProps)((props) => {
                     })
                   )}
                 columns={chairColumns}
-              ></DataGrid>
+              />
             </TabPanel>
             <TabPanel value={stocksIndex} index={1}>
               <Paper

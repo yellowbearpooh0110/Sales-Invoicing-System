@@ -32,11 +32,21 @@ async function initialize() {
   db.DeskStock = require('server/model/deskStock.model')(sequelize);
   db.AccessoryStock = require('server/model/accessoryStock.model')(sequelize);
   db.SalesOrder = require('server/model/salesOrder.model')(sequelize);
+  db.Quotataion = require('server/model/quotataion.model')(sequelize);
+
   db.ChairToOrder = require('server/model/chairToOrder.model')(sequelize);
+  db.DeskToOrder = require('server/model/deskToOrder.model')(sequelize);
   db.AccessoryToOrder = require('server/model/accessoryToOrder.model')(
     sequelize
   );
-  db.DeskToOrder = require('server/model/deskToOrder.model')(sequelize);
+
+  db.ChairToQuotation = require('server/model/chairToQuotation.model')(
+    sequelize
+  );
+  db.DeskToQuotation = require('server/model/deskToQuotation.model')(sequelize);
+  db.AccessoryToQuotation = require('server/model/accessoryToQuotation.model')(
+    sequelize
+  );
 
   db.ChairStock.belongsToMany(db.SalesOrder, { through: db.ChairToOrder });
   db.SalesOrder.belongsToMany(db.ChairStock, { through: db.ChairToOrder });
@@ -49,6 +59,19 @@ async function initialize() {
   });
   db.SalesOrder.belongsToMany(db.AccessoryStock, {
     through: db.AccessoryToOrder,
+  });
+
+  db.ChairStock.belongsToMany(db.Quotation, { through: db.ChairToQuotation });
+  db.Quotation.belongsToMany(db.ChairStock, { through: db.ChairToQuotation });
+
+  db.DeskStock.belongsToMany(db.Quotation, { through: db.DeskToQuotation });
+  db.Quotation.belongsToMany(db.DeskStock, { through: db.DeskToQuotation });
+
+  db.AccessoryStock.belongsToMany(db.Quotation, {
+    through: db.AccessoryToQuotation,
+  });
+  db.Quotation.belongsToMany(db.AccessoryStock, {
+    through: db.AccessoryToQuotation,
   });
 
   db.SalesOrder.belongsTo(db.User, {

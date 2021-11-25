@@ -603,22 +603,8 @@ const Stock = connect(mapStateToProps)((props) => {
                   <DeleteIcon />
                 </IconButton>
               ),
-              shipmentDate: (() => {
-                if (shipmentDate === null) return 'No';
-                const createdTime = new Date(shipmentDate);
-                createdTime.setMinutes(
-                  createdTime.getMinutes() - createdTime.getTimezoneOffset()
-                );
-                return createdTime.toISOString().split('T')[0];
-              })(),
-              arrivalDate: (() => {
-                if (arrivalDate === null) return 'No';
-                const createdTime = new Date(arrivalDate);
-                createdTime.setMinutes(
-                  createdTime.getMinutes() - createdTime.getTimezoneOffset()
-                );
-                return createdTime.toISOString().split('T')[0];
-              })(),
+              shipmentDate: shipmentDate || 'No',
+              arrivalDate: arrivalDate || 'No',
               ...restProps,
             })
           )}
@@ -626,7 +612,7 @@ const Stock = connect(mapStateToProps)((props) => {
         onEditClick={handleEditClick}
         onRemoveClick={handleRemoveClick}
         onBulkRemoveClick={handleBulkRemoveClick}
-      ></DataGrid>
+      />
       <Dialog
         fullWidth
         fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
