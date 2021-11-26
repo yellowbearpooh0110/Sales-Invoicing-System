@@ -21,11 +21,40 @@ if (store.getState().auth.isLoggedIn)
     store.getState().auth.token
   }`;
 
-const theme = createTheme();
+const defaultTheme = createTheme();
 
-// axios.defaults.baseURL = 'http://localhost:4000/api';
+const theme = createTheme({
+  components: {
+    MuiButton: {
+      variants: [
+        {
+          props: { color: 'aaaa' },
+          style: {
+            root: { color: `#888888` },
+          },
+        },
+      ],
+      defaultProps: {
+        variant: 'outlined',
+      },
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+        },
+      },
+    },
+    MuiTextField: {
+      defaultProps: {
+        variant: 'outlined',
+        size: 'small',
+      },
+    },
+  },
+});
+
+axios.defaults.baseURL = 'http://localhost:4000/api';
 // axios.defaults.baseURL = 'http://97.74.83.170/api';
-axios.defaults.baseURL = 'http://blueoceanblue.com/api';
+// axios.defaults.baseURL = 'http://blueoceanblue.com/api';
 
 axios.interceptors.request.use(
   function (config) {

@@ -493,10 +493,10 @@ export default connect(mapStateToProps)((props) => {
           ].map(({ setValue, width, ...restProps }, index) =>
             restProps.label === 'Phone' ? (
               <MuiPhoneNumber
+                variant="outlined"
                 key={index}
                 defaultCountry={'hk'}
                 sx={{ flexBasis: width, minWidth: width }}
-                variant="outlined"
                 margin="dense"
                 size="small"
                 {...restProps}
@@ -505,7 +505,6 @@ export default connect(mapStateToProps)((props) => {
               <TextField
                 key={index}
                 margin="dense"
-                variant="outlined"
                 size="small"
                 sx={{ flexBasis: width, minWidth: width }}
                 {...restProps}
@@ -514,7 +513,6 @@ export default connect(mapStateToProps)((props) => {
           )}
           <TextField
             margin="dense"
-            variant="outlined"
             size="small"
             sx={{ flexBasis: ['100%', '30%'], minWidth: ['100%', '30%'] }}
             name="timeLine"
@@ -537,11 +535,7 @@ export default connect(mapStateToProps)((props) => {
             <FormControlLabel value="week" control={<Radio />} label="Weeks" />
           </RadioGroup>
         </Paper>
-        <Button
-          variant="outlined"
-          type="submit"
-          sx={{ marginTop: '10px', float: 'right' }}
-        >
+        <Button type="submit" sx={{ marginTop: '10px', float: 'right' }}>
           Next
         </Button>
       </Box>
@@ -698,7 +692,6 @@ export default connect(mapStateToProps)((props) => {
                         margin="dense"
                         {...params}
                         label={label}
-                        variant="outlined"
                         size="small"
                       />
                     )}
@@ -837,7 +830,6 @@ export default connect(mapStateToProps)((props) => {
                         margin="dense"
                         {...params}
                         label={label}
-                        variant="outlined"
                         size="small"
                       />
                     )}
@@ -950,7 +942,6 @@ export default connect(mapStateToProps)((props) => {
                         margin="dense"
                         {...params}
                         label={label}
-                        variant="outlined"
                         size="small"
                       />
                     )}
@@ -1035,7 +1026,6 @@ export default connect(mapStateToProps)((props) => {
             </TabPanel>
           </Paper>
           <Button
-            variant="outlined"
             onClick={(e) => {
               e.preventDefault();
               setCurrentStep(0);
@@ -1044,7 +1034,6 @@ export default connect(mapStateToProps)((props) => {
             Previous
           </Button>
           <Button
-            variant="outlined"
             sx={{ float: 'right' }}
             onClick={(e) => {
               e.preventDefault();
@@ -1173,7 +1162,6 @@ export default connect(mapStateToProps)((props) => {
           <TextField
             name="paymentTerms"
             margin="dense"
-            variant="outlined"
             size="small"
             sx={{ flexBasis: '100%', minWidth: '100%' }}
             label="Payment Terms"
@@ -1186,7 +1174,6 @@ export default connect(mapStateToProps)((props) => {
           />
           <TextField
             margin="dense"
-            variant="outlined"
             size="small"
             type="date"
             disabled={initialClient.paid}
@@ -1197,7 +1184,6 @@ export default connect(mapStateToProps)((props) => {
           />
         </Paper>
         <Button
-          variant="outlined"
           sx={{ marginTop: '10px' }}
           onClick={(e) => {
             e.preventDefault();
@@ -1206,11 +1192,7 @@ export default connect(mapStateToProps)((props) => {
         >
           Previous
         </Button>
-        <Button
-          variant="outlined"
-          sx={{ float: 'right', marginTop: '10px' }}
-          type="submit"
-        >
+        <Button sx={{ float: 'right', marginTop: '10px' }} type="submit">
           Finish
         </Button>
       </Box>
@@ -1260,7 +1242,6 @@ export default connect(mapStateToProps)((props) => {
             control={
               <TextField
                 label="Unit Price"
-                variant="outlined"
                 margin="dense"
                 type="number"
                 name="unitPrice"

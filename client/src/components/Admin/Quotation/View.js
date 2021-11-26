@@ -304,7 +304,6 @@ export default connect(mapStateToProps)((props) => {
       <Button
         component={RouterLink}
         to="/admin/quotation/create"
-        variant="outlined"
         startIcon={<AddIcon />}
       >
         New Quotation
@@ -517,8 +516,8 @@ export default connect(mapStateToProps)((props) => {
         <DialogContent>
           <Stack spacing={2}>
             <MuiPhoneNumber
-              margin="dense"
               variant="outlined"
+              margin="dense"
               size="small"
               label="Phone Number"
               defaultCountry={'hk'}
@@ -533,7 +532,6 @@ export default connect(mapStateToProps)((props) => {
               label="Message"
               fullWidth
               margin="dense"
-              variant="outlined"
               size="small"
               defaultValue={`Hello ${name},\nThank you for your order! Please find here (payment link URL) for your payment.\nOnce finished, your order will be processed accordingly.`}
               multiline
@@ -568,7 +566,6 @@ export default connect(mapStateToProps)((props) => {
           <Stack spacing={2}>
             <TextField
               margin="dense"
-              variant="outlined"
               size="small"
               label="Email"
               type="email"
@@ -583,7 +580,6 @@ export default connect(mapStateToProps)((props) => {
               label="Message"
               fullWidth
               margin="dense"
-              variant="outlined"
               size="small"
               defaultValue={`Hello ${name},\nThank you for your order! Please find here (payment link URL) for your payment.\nOnce finished, your order will be processed accordingly.`}
               multiline
@@ -784,7 +780,6 @@ export default connect(mapStateToProps)((props) => {
         </DialogContent>
         <DialogActions>
           <Button
-            variant="outlined"
             onClick={(event) => {
               event.preventDefault();
               setDetailOpen(false);

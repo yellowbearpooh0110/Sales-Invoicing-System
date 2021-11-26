@@ -8,6 +8,7 @@ module.exports = {
   create,
   update,
   updateWithoutStock,
+  updateProducts,
   signDelivery,
   delete: _delete,
   bulkDelete: _bulkDelete,
@@ -26,19 +27,49 @@ async function getAll(where) {
       {
         model: db.ChairStock,
         through: {
-          attributes: ['unitPrice', 'qty', 'preOrder'],
+          attributes: [
+            'id',
+            'unitPrice',
+            'qty',
+            'preOrder',
+            'deliveryDate',
+            'from',
+            'to',
+            'delivered',
+            'signUrl',
+          ],
         },
       },
       {
         model: db.DeskStock,
         through: {
-          attributes: ['unitPrice', 'qty', 'preOrder'],
+          attributes: [
+            'id',
+            'unitPrice',
+            'qty',
+            'preOrder',
+            'deliveryDate',
+            'from',
+            'to',
+            'delivered',
+            'signUrl',
+          ],
         },
       },
       {
         model: db.AccessoryStock,
         through: {
-          attributes: ['unitPrice', 'qty', 'preOrder'],
+          attributes: [
+            'id',
+            'unitPrice',
+            'qty',
+            'preOrder',
+            'deliveryDate',
+            'from',
+            'to',
+            'delivered',
+            'signUrl',
+          ],
         },
       },
     ],
@@ -213,6 +244,37 @@ async function updateWithoutStock(id, params) {
   await salesOrder.save();
 }
 
+async function updateProducts(req, res, next) {
+  try {
+    const { chairToOrders, deskToOrders, accessoryToOrders } = req.body;
+    for (var index = 0; index < chairToOrders.length; index++) {
+      const { id, ...params } = chairToOrders[index];
+      const chairToOrder = await db.ChairToOrder.findByPk(
+        chairToOrders[index].id
+      );
+      Object.assign(chairToOrder, params);
+      await chairToOrder.save();
+    }
+    for (index = 0; index < deskToOrders.length; index++) {
+      const { id, ...params } = deskToOrders[index];
+      const deskToOrder = await db.DeskToOrder.findByPk(deskToOrders[index].id);
+      Object.assign(deskToOrder, params);
+      await deskToOrder.save();
+    }
+    for (index = 0; index < accessoryToOrders.length; index++) {
+      const { id, ...params } = accessoryToOrders[index];
+      const accessoryToOrder = await db.AccessoryToOrder.findByPk(
+        accessoryToOrders[index].id
+      );
+      Object.assign(accessoryToOrder, params);
+      await accessoryToOrder.save();
+    }
+    res.json({ message: 'Products were updated successfully.' });
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function _delete(id) {
   const salesOrder = await getSalesOrder(id);
   const { ChairStocks, DeskStocks, AccessoryStocks } = salesOrder;
@@ -306,19 +368,49 @@ async function getSalesOrder(id) {
       {
         model: db.ChairStock,
         through: {
-          attributes: ['unitPrice', 'qty', 'preOrder'],
+          attributes: [
+            'id',
+            'unitPrice',
+            'qty',
+            'preOrder',
+            'deliveryDate',
+            'from',
+            'to',
+            'delivered',
+            'signUrl',
+          ],
         },
       },
       {
         model: db.DeskStock,
         through: {
-          attributes: ['unitPrice', 'qty', 'preOrder'],
+          attributes: [
+            'id',
+            'unitPrice',
+            'qty',
+            'preOrder',
+            'deliveryDate',
+            'from',
+            'to',
+            'delivered',
+            'signUrl',
+          ],
         },
       },
       {
         model: db.AccessoryStock,
         through: {
-          attributes: ['unitPrice', 'qty', 'preOrder'],
+          attributes: [
+            'id',
+            'unitPrice',
+            'qty',
+            'preOrder',
+            'deliveryDate',
+            'from',
+            'to',
+            'delivered',
+            'signUrl',
+          ],
         },
       },
     ],

@@ -13,7 +13,7 @@ import {
   tableCellClasses,
   TableSortLabel,
 } from '@mui/material';
-import { yellow, grey } from '@mui/material/colors';
+import { yellow, grey, teal } from '@mui/material/colors';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
@@ -181,7 +181,8 @@ EnhancedTableToolbar.propTypes = {
 const useDataGridStyles = makeStyles((theme) => ({
   table: {
     [`& .MuiTableCell-root.${tableCellClasses.head}`]: {
-      backgroundColor: yellow[600],
+      backgroundColor: teal[400],
+      '&, & *': { color: teal[50] },
       fontSize: 12,
       fontWeight: 600,
     },

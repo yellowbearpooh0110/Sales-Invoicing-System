@@ -170,7 +170,6 @@ export default connect(mapStateToProps)((props) => {
                   name="type"
                   label="Type"
                   margin="dense"
-                  variant="outlined"
                 >
                   <MenuItem value="salesman">Salesman</MenuItem>
                   <MenuItem value="driver">Driver</MenuItem>

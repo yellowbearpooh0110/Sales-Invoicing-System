@@ -12,7 +12,7 @@ const quotationController = require('server/controller/quotation.controller');
 router.post('/create', authorize(), createSchema, create);
 router.get('/', admin(), getAll);
 router.get('/current', salesman(), getCurrent);
-router.get('/:id', authorize(), getById);
+router.get('/:id', getById);
 router.put('/withoutStock/:id', salesman(), updateSchema, updateWithoutStock);
 router.put('/:id', salesman(), createSchema, update);
 router.delete('/:id', salesman(), _delete);

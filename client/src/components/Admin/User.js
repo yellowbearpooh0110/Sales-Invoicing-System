@@ -311,7 +311,6 @@ export default connect(mapStateToProps)((props) => {
                 key={index}
                 sx={{ flexBasis: width, minWidth: width }}
                 margin="dense"
-                variant="outlined"
                 size="small"
                 {...restProps}
               />
@@ -326,7 +325,6 @@ export default connect(mapStateToProps)((props) => {
                 value={type}
                 label="Type"
                 margin="dense"
-                variant="outlined"
                 size="small"
                 onChange={(event) => {
                   event.preventDefault();

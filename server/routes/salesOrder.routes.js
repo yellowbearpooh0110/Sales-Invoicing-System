@@ -10,10 +10,16 @@ const validateRequest = require('server/middleware/validate-request');
 const salesOrderController = require('server/controller/salesOrder.controller');
 
 router.post('/create', authorize(), createSchema, create);
+router.post(
+  '/products',
+  authorize(),
+  productsSchema,
+  salesOrderController.updateProducts
+);
 router.get('/', admin(), getAll);
 router.get('/getDelivery', authorize(), getDelivery);
 router.get('/current', salesman(), getCurrent);
-router.get('/:id', authorize(), getById);
+router.get('/:id', getById);
 router.put('/withoutStock/:id', salesman(), updateSchema, updateWithoutStock);
 router.put('/:id', salesman(), createSchema, update);
 router.post('/sign', authorize(), signSchema, signDelivery);
@@ -49,6 +55,15 @@ function updateSchema(req, res, next) {
   const schema = Joi.object({
     paid: Joi.boolean(),
     finished: Joi.boolean(),
+  });
+  validateRequest(req, next, schema);
+}
+
+function productsSchema(req, res, next) {
+  const schema = Joi.object({
+    chairToOrders: Joi.array(),
+    deskToOrders: Joi.array(),
+    accessoryToOrders: Joi.array(),
   });
   validateRequest(req, next, schema);
 }

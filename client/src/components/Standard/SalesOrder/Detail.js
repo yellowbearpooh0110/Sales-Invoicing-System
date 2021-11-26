@@ -491,9 +491,9 @@ export default connect(mapStateToProps)((props) => {
             restProps.label === 'Phone' ? (
               <MuiPhoneNumber
                 key={index}
+                variant="outlined"
                 defaultCountry={'hk'}
                 sx={{ flexBasis: width, minWidth: width }}
-                variant="outlined"
                 margin="dense"
                 size="small"
                 {...restProps}
@@ -502,7 +502,6 @@ export default connect(mapStateToProps)((props) => {
               <TextField
                 key={index}
                 margin="dense"
-                variant="outlined"
                 size="small"
                 sx={{ flexBasis: width, minWidth: width }}
                 {...restProps}
@@ -510,11 +509,7 @@ export default connect(mapStateToProps)((props) => {
             )
           )}
         </Paper>
-        <Button
-          variant="outlined"
-          type="submit"
-          sx={{ marginTop: '10px', float: 'right' }}
-        >
+        <Button type="submit" sx={{ marginTop: '10px', float: 'right' }}>
           Next
         </Button>
       </Box>
@@ -651,7 +646,6 @@ export default connect(mapStateToProps)((props) => {
                         margin="dense"
                         {...params}
                         label={label}
-                        variant="outlined"
                         size="small"
                       />
                     )}
@@ -790,7 +784,6 @@ export default connect(mapStateToProps)((props) => {
                         margin="dense"
                         {...params}
                         label={label}
-                        variant="outlined"
                         size="small"
                       />
                     )}
@@ -903,7 +896,6 @@ export default connect(mapStateToProps)((props) => {
                         margin="dense"
                         {...params}
                         label={label}
-                        variant="outlined"
                         size="small"
                       />
                     )}
@@ -988,7 +980,6 @@ export default connect(mapStateToProps)((props) => {
             </TabPanel>
           </Paper>
           <Button
-            variant="outlined"
             onClick={(e) => {
               e.preventDefault();
               setCurrentStep(0);
@@ -997,7 +988,6 @@ export default connect(mapStateToProps)((props) => {
             Previous
           </Button>
           <Button
-            variant="outlined"
             sx={{ float: 'right' }}
             onClick={(e) => {
               e.preventDefault();

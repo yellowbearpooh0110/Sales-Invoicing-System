@@ -371,7 +371,6 @@ const Stock = connect(mapStateToProps)((props) => {
       }}
     >
       <Button
-        variant="outlined"
         startIcon={<AddIcon />}
         onClick={() => {
           setFormProps([
@@ -444,7 +443,6 @@ const Stock = connect(mapStateToProps)((props) => {
                 margin="dense"
                 {...params}
                 label={label}
-                variant="outlined"
                 size="small"
               />
             )}
@@ -529,7 +527,6 @@ const Stock = connect(mapStateToProps)((props) => {
                   <TextField
                     key={index}
                     margin="dense"
-                    variant="outlined"
                     size="small"
                     sx={{ flexBasis: width, minWidth: width }}
                     {...restParams}
@@ -540,7 +537,6 @@ const Stock = connect(mapStateToProps)((props) => {
                   <TextField
                     key={index}
                     margin="dense"
-                    variant="outlined"
                     size="small"
                     type="date"
                     InputLabelProps={{ shrink: true }}
@@ -563,7 +559,6 @@ const Stock = connect(mapStateToProps)((props) => {
             })}
             <TextField
               margin="dense"
-              variant="outlined"
               size="small"
               label="Thumbnail"
               name="thumbnail"
@@ -590,7 +585,6 @@ const Stock = connect(mapStateToProps)((props) => {
               <TextField
                 margin="dense"
                 label="Balance"
-                variant="outlined"
                 size="small"
                 value={balance}
                 type="number"
@@ -624,7 +618,6 @@ const Stock = connect(mapStateToProps)((props) => {
               <TextField
                 margin="dense"
                 label="Shipment"
-                variant="outlined"
                 size="small"
                 value={shipmentQty}
                 type="number"

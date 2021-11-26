@@ -12,10 +12,9 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   IconButton,
-  List,
-  ListItem,
-  ListItemText,
+  Paper,
   Stack,
   TextField,
   Typography,
@@ -38,6 +37,14 @@ import Swal from 'sweetalert2';
 import QRCode from 'react-qr-code';
 
 import DataGrid from 'components/Common/DataGrid';
+import {
+  ProductList,
+  ProductListItem,
+  ProductListItemText,
+  ProductPriceAmount,
+} from './ProductList';
+
+// const ListItem = withStyles(MuiListItem)({});
 
 const columns = [
   {
@@ -133,6 +140,12 @@ export default connect(mapStateToProps)((props) => {
 
   const [orderIndex, setOrderIndex] = useState(0);
 
+  const chairDeliveries = useRef([]);
+  const deskDeliveries = useRef([]);
+  const accessoryDeliveries = useRef([]);
+
+  useEffect(() => {}, [orders]);
+
   const handleFilterClick = (e) => {
     e.preventDefault();
     if (filterAnchor === null) setFilterAnchor(e.currentTarget);
@@ -191,11 +204,6 @@ export default connect(mapStateToProps)((props) => {
       .then(function () {
         // always executed
       });
-  };
-
-  const handleEditClick = (index) => {
-    if (index < orders.length && index >= 0) {
-    }
   };
 
   const handleRemoveClick = (index) => {
@@ -304,7 +312,6 @@ export default connect(mapStateToProps)((props) => {
       <Button
         component={RouterLink}
         to="/admin/order/create"
-        variant="outlined"
         startIcon={<AddIcon />}
       >
         New Order
@@ -364,6 +371,9 @@ export default connect(mapStateToProps)((props) => {
                 sx={{ my: '5px' }}
                 onClick={(event) => {
                   event.preventDefault();
+                  chairDeliveries.current = [];
+                  deskDeliveries.current = [];
+                  accessoryDeliveries.current = [];
                   setOrderIndex(index);
                   setDetailOpen(true);
                 }}
@@ -502,7 +512,6 @@ export default connect(mapStateToProps)((props) => {
           })
         )}
         columns={columns}
-        onEditClick={handleEditClick}
         onRemoveClick={handleRemoveClick}
         onBulkRemoveClick={handleBulkRemoveClick}
         onFilterClick={handleFilterClick}
@@ -517,8 +526,8 @@ export default connect(mapStateToProps)((props) => {
         <DialogContent>
           <Stack spacing={2}>
             <MuiPhoneNumber
-              margin="dense"
               variant="outlined"
+              margin="dense"
               size="small"
               label="Phone Number"
               defaultCountry={'hk'}
@@ -533,7 +542,6 @@ export default connect(mapStateToProps)((props) => {
               label="Message"
               fullWidth
               margin="dense"
-              variant="outlined"
               size="small"
               defaultValue={`Hello ${name},\nThank you for your order! Please find here (payment link URL) for your payment.\nOnce finished, your order will be processed accordingly.`}
               multiline
@@ -568,7 +576,6 @@ export default connect(mapStateToProps)((props) => {
           <Stack spacing={2}>
             <TextField
               margin="dense"
-              variant="outlined"
               size="small"
               label="Email"
               type="email"
@@ -583,7 +590,6 @@ export default connect(mapStateToProps)((props) => {
               label="Message"
               fullWidth
               margin="dense"
-              variant="outlined"
               size="small"
               defaultValue={`Hello ${name},\nThank you for your order! Please find here (payment link URL) for your payment.\nOnce finished, your order will be processed accordingly.`}
               multiline
@@ -607,187 +613,282 @@ export default connect(mapStateToProps)((props) => {
       <Dialog
         maxWidth="sm"
         fullWidth
+        fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
         open={detailOpen}
-        onClose={(event) => {
-          event.preventDefault();
-          setDetailOpen(false);
-        }}
       >
         <DialogTitle>Products Details</DialogTitle>
         <DialogContent>
-          <List>
+          <ProductList>
             {orderIndex < orders.length &&
               orders[orderIndex].ChairStocks.map((item, index) => (
-                <ListItem
-                  key={index}
-                  sx={{
-                    bgcolor: yellow[600],
-                    boxShadow: `0px 2px 1px -1px rgb(0 0 0 / 20%)`,
-                    my: '10px',
-                    flexWrap: 'wrap',
-                  }}
-                >
-                  <ListItemText
+                <ProductListItem key={index}>
+                  <ProductListItemText
                     primary={`Chair: ${item.brand}, ${item.model}, ${item.frameColor}, ${item.backColor}, ${item.seatColor}`}
                     secondary={`${item.withHeadrest ? 'Headrest, ' : ''}${
                       item.withAdArmrest ? 'Armrest' : ''
                     }`}
                   />
-                  <Box
-                    flexBasis="100%"
-                    display="flex"
-                    flexWrap="wrap"
-                    alignItems="center"
-                  >
-                    <Typography
-                      variant="span"
-                      color={pink[100]}
-                      bgcolor={pink[500]}
+                  <ProductPriceAmount
+                    unitPrice={`${item.ChairToOrder.unitPrice} HKD`}
+                    amount={`Amount: ${item.ChairToOrder.qty}`}
+                  />
+                  {orders[orderIndex].paid && (
+                    <Paper
+                      ref={(ref) => chairDeliveries.current.push(ref)}
+                      component="form"
                       sx={{
-                        fontSize: ['6px, 8px'],
-                        padding: '3px 10px',
-                        margin: '3px 0',
-                        flexShrink: 0,
-                        marginRight: '10px',
-                        borderRadius: '2px',
+                        flexBasis: '100%',
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginTop: '10px',
+                        padding: '10px',
                       }}
                     >
-                      {`${item.ChairToOrder.unitPrice} HKD`}
-                    </Typography>
-                    <Typography
-                      variant="span"
-                      color={red[100]}
-                      bgcolor={red[500]}
-                      sx={{
-                        fontSize: ['6px, 8px'],
-                        padding: '3px 10px',
-                        margin: '3px 0',
-                        flexShrink: 0,
-                        marginRight: '10px',
-                        borderRadius: '2px',
-                      }}
-                    >
-                      {`Amount: ${item.ChairToOrder.qty}`}
-                    </Typography>
-                  </Box>
-                </ListItem>
+                      <input
+                        name="id"
+                        type="hidden"
+                        value={item.ChairToOrder.id}
+                      />
+                      <TextField
+                        name="deliveryDate"
+                        type="date"
+                        label="Actual Date"
+                        defaultValue={item.ChairToOrder.deliveryDate}
+                        InputLabelProps={{ shrink: true }}
+                        sx={{
+                          flexBasis: '100%',
+                          my: '5px',
+                        }}
+                      />
+                      <TextField
+                        name="from"
+                        type="time"
+                        label="From"
+                        defaultValue={item.ChairToOrder.from}
+                        InputLabelProps={{ shrink: true }}
+                        sx={{ flexBasis: '48%', my: '5px' }}
+                      />
+                      <TextField
+                        name="to"
+                        type="time"
+                        label="To"
+                        defaultValue={item.ChairToOrder.to}
+                        InputLabelProps={{ shrink: true }}
+                        sx={{ flexBasis: '48%', my: '5px' }}
+                      />
+                      <FormControlLabel
+                        key={index}
+                        control={
+                          <Checkbox
+                            name="delivered"
+                            defaultChecked={item.ChairToOrder.delivered}
+                          />
+                        }
+                        label="Delivered"
+                      />
+                    </Paper>
+                  )}
+                </ProductListItem>
               ))}
             {orderIndex < orders.length &&
               orders[orderIndex].DeskStocks.map((item, index) => (
-                <ListItem
-                  key={index}
-                  sx={{
-                    bgcolor: yellow[600],
-                    boxShadow: `0px 2px 1px -1px rgb(0 0 0 / 20%)`,
-                    my: '10px',
-                    flexWrap: 'wrap',
-                  }}
-                >
-                  <ListItemText
+                <ProductListItem key={index}>
+                  <ProductListItemText
                     primary={`Desk: ${item.supplierCode}, ${item.model}, ${item.color}, ${item.armSize}, ${item.feetSize}, ${item.beamSize}`}
                     secondary={`${item.topMaterial}, ${item.topColor}, ${item.topSize}`}
                   />
-                  <Box
-                    flexBasis="100%"
-                    display="flex"
-                    flexWrap="wrap"
-                    alignItems="center"
-                  >
-                    <Typography
-                      variant="span"
-                      color={pink[100]}
-                      bgcolor={pink[500]}
+                  <ProductPriceAmount
+                    unitPrice={`${item.DeskToOrder.unitPrice} HKD`}
+                    amount={`Amount: ${item.DeskToOrder.qty}`}
+                  />
+                  {orders[orderIndex].paid && (
+                    <Paper
+                      ref={(ref) => deskDeliveries.current.push(ref)}
+                      component="form"
                       sx={{
-                        fontSize: ['6px, 8px'],
-                        padding: '3px 10px',
-                        margin: '3px 0',
-                        flexShrink: 0,
-                        marginRight: '10px',
-                        borderRadius: '2px',
+                        flexBasis: '100%',
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginTop: '10px',
+                        padding: '10px',
                       }}
                     >
-                      {`${item.DeskToOrder.unitPrice} HKD`}
-                    </Typography>
-                    <Typography
-                      variant="span"
-                      color={red[100]}
-                      bgcolor={red[500]}
-                      sx={{
-                        fontSize: ['6px, 8px'],
-                        padding: '3px 10px',
-                        margin: '3px 0',
-                        flexShrink: 0,
-                        marginRight: '10px',
-                        borderRadius: '2px',
-                      }}
-                    >
-                      {`Amount: ${item.DeskToOrder.qty}`}
-                    </Typography>
-                  </Box>
-                </ListItem>
+                      <input
+                        name="id"
+                        type="hidden"
+                        value={item.DeskToOrder.id}
+                      />
+                      <TextField
+                        name="deliveryDate"
+                        type="date"
+                        label="Actual Date"
+                        defaultValue={item.DeskToOrder.deliveryDate}
+                        InputLabelProps={{ shrink: true }}
+                        sx={{
+                          flexBasis: '100%',
+                          my: '5px',
+                        }}
+                      />
+                      <TextField
+                        name="from"
+                        type="time"
+                        label="From"
+                        defaultValue={item.DeskToOrder.from}
+                        InputLabelProps={{ shrink: true }}
+                        sx={{ flexBasis: '48%', my: '5px' }}
+                      />
+                      <TextField
+                        name="to"
+                        type="time"
+                        label="To"
+                        defaultValue={item.DeskToOrder.to}
+                        InputLabelProps={{ shrink: true }}
+                        sx={{ flexBasis: '48%', my: '5px' }}
+                      />
+                      <FormControlLabel
+                        key={index}
+                        control={
+                          <Checkbox
+                            name="delivered"
+                            defaultChecked={item.DeskToOrder.delivered}
+                          />
+                        }
+                        label="Delivered"
+                      />
+                    </Paper>
+                  )}
+                </ProductListItem>
               ))}
             {orderIndex < orders.length &&
               orders[orderIndex].AccessoryStocks.map((item, index) => (
-                <ListItem
-                  key={index}
-                  sx={{
-                    bgcolor: yellow[600],
-                    boxShadow: `0px 2px 1px -1px rgb(0 0 0 / 20%)`,
-                    my: '10px',
-                    flexWrap: 'wrap',
-                  }}
-                >
-                  <ListItemText
+                <ProductListItem key={index}>
+                  <ProductListItemText
                     primary={`Accessory: ${item.color}`}
                     secondary={`${item.remark}`}
                   />
-                  <Box
-                    flexBasis="100%"
-                    display="flex"
-                    flexWrap="wrap"
-                    alignItems="center"
-                  >
-                    <Typography
-                      variant="span"
-                      color={pink[100]}
-                      bgcolor={pink[500]}
+                  <ProductPriceAmount
+                    unitPrice={`${item.AccessoryToOrder.unitPrice} HKD`}
+                    amount={`Amount: ${item.AccessoryToOrder.qty}`}
+                  />
+                  {orders[orderIndex].paid && (
+                    <Paper
+                      ref={(ref) => accessoryDeliveries.current.push(ref)}
+                      component="form"
                       sx={{
-                        fontSize: ['6px, 8px'],
-                        padding: '3px 10px',
-                        margin: '3px 0',
-                        flexShrink: 0,
-                        marginRight: '10px',
-                        borderRadius: '2px',
+                        flexBasis: '100%',
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginTop: '10px',
+                        padding: '10px',
                       }}
                     >
-                      {`${item.AccessoryToOrder.unitPrice} HKD`}
-                    </Typography>
-                    <Typography
-                      variant="span"
-                      color={red[100]}
-                      bgcolor={red[500]}
-                      sx={{
-                        fontSize: ['6px, 8px'],
-                        padding: '3px 10px',
-                        margin: '3px 0',
-                        flexShrink: 0,
-                        marginRight: '10px',
-                        borderRadius: '2px',
-                      }}
-                    >
-                      {`Amount: ${item.AccessoryToOrder.qty}`}
-                    </Typography>
-                  </Box>
-                </ListItem>
+                      <input
+                        name="id"
+                        type="hidden"
+                        value={item.AccessoryToOrder.id}
+                      />
+                      <TextField
+                        name="deliveryDate"
+                        type="date"
+                        label="Actual Date"
+                        defaultValue={item.AccessoryToOrder.deliveryDate}
+                        InputLabelProps={{ shrink: true }}
+                        sx={{
+                          flexBasis: '100%',
+                          my: '5px',
+                        }}
+                      />
+                      <TextField
+                        name="from"
+                        type="time"
+                        label="From"
+                        defaultValue={item.AccessoryToOrder.from}
+                        InputLabelProps={{ shrink: true }}
+                        sx={{ flexBasis: '48%', my: '5px' }}
+                      />
+                      <TextField
+                        name="to"
+                        type="time"
+                        label="To"
+                        defaultValue={item.AccessoryToOrder.to}
+                        InputLabelProps={{ shrink: true }}
+                        sx={{ flexBasis: '48%', my: '5px' }}
+                      />
+                      <FormControlLabel
+                        key={index}
+                        control={
+                          <Checkbox
+                            name="delivered"
+                            defaultChecked={item.AccessoryToOrder.delivered}
+                          />
+                        }
+                        label="Delivered"
+                      />
+                    </Paper>
+                  )}
+                </ProductListItem>
               ))}
-          </List>
+          </ProductList>
         </DialogContent>
         <DialogActions>
           <Button
-            variant="outlined"
             onClick={(event) => {
               event.preventDefault();
               setDetailOpen(false);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={(event) => {
+              event.preventDefault();
+              const chairToOrders = chairDeliveries.current.map((item) => ({
+                id: item.id.value,
+                deliveryDate: item.deliveryDate.value || null,
+                from: item.from.value || null,
+                to: item.to.value || null,
+                delivered: item.delivered.checked,
+              }));
+              const deskToOrders = deskDeliveries.current.map((item) => ({
+                id: item.id.value,
+                deliveryDate: item.deliveryDate.value || null,
+                from: item.from.value || null,
+                to: item.to.value || null,
+                delivered: item.delivered.checked,
+              }));
+              const accessoryToOrders = accessoryDeliveries.current.map(
+                (item) => ({
+                  id: item.id.value,
+                  deliveryDate: item.deliveryDate.value || null,
+                  from: item.from.value || null,
+                  to: item.to.value || null,
+                  delivered: item.delivered.checked,
+                })
+              );
+              setDetailOpen(false);
+              axios
+                .post('/salesOrder/products', {
+                  chairToOrders,
+                  deskToOrders,
+                  accessoryToOrders,
+                })
+                .then(() => {
+                  // handle success
+                  getOrders();
+                })
+                .catch(function (error) {
+                  // handle error
+                  console.log(error);
+                })
+                .then(function () {
+                  // always executed
+                });
             }}
           >
             OK

@@ -25,6 +25,25 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: true,
     },
+    deliveryDate: {
+      type: DataTypes.DATEONLY,
+    },
+    from: {
+      type: DataTypes.TIME,
+    },
+    to: {
+      type: DataTypes.TIME,
+    },
+    delivered: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    signUrl: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
+    },
   };
 
   return sequelize.define('AccessoryToOrder', attributes);
