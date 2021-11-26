@@ -16,8 +16,16 @@ import User from './User';
 import { ChairStock } from './Chair';
 import { DeskStock } from './Desk';
 import { AccessoryStock } from './Accessory';
-import { SalesOrderCreate, SalesOrderEdit, SalesOrderView } from './SalesOrder';
-import { QuotationCreate, QuotationEdit, QuotationView } from './Quotation';
+import {
+  SalesOrderCreate,
+  SalesOrderEdit,
+  SalesOrderView,
+} from './Salement/SalesOrder';
+import {
+  QuotationCreate,
+  QuotationEdit,
+  QuotationView,
+} from './Salement/Quotation';
 
 function mapStateToProps(state) {
   const { auth } = state;

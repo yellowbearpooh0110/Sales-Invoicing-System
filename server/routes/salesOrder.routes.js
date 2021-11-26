@@ -44,8 +44,8 @@ function createSchema(req, res, next) {
     paid: Joi.boolean().required(),
     paymentTerms: Joi.string().allow('').required(),
     dueDate: Joi.date().allow(null).required().messages({
-      'any.required': `Shipment Date field is required.`,
-      'date.base': `Shipment Date should be a valid date type.`,
+      'any.required': `Due Date field is required.`,
+      'date.base': `Due Date should be a valid date type.`,
     }),
   });
   validateRequest(req, next, schema);

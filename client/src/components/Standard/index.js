@@ -15,7 +15,16 @@ import { logout } from 'services/auth.service';
 import { ChairStock } from './Chair';
 import { DeskStock } from './Desk';
 import { AccessoryStock } from './Accessory';
-import { SalesOrderCreate, SalesOrderEdit, SalesOrderView } from './SalesOrder';
+import {
+  SalesOrderCreate,
+  SalesOrderEdit,
+  SalesOrderView,
+} from './Salement/SalesOrder';
+import {
+  QuotationCreate,
+  QuotationEdit,
+  QuotationView,
+} from './Salement/Quotation';
 
 function mapStateToProps(state) {
   const { auth } = state;
@@ -50,7 +59,10 @@ const menuLists = [
   },
   {
     category: 'Salement',
-    content: [{ to: '/user/order', icon: <BookOnlineIcon />, label: 'Order' }],
+    content: [
+      { to: '/user/order', icon: <BookOnlineIcon />, label: 'Order' },
+      { to: '/user/quotation', icon: <BookOnlineIcon />, label: 'Quotation' },
+    ],
   },
 ];
 
@@ -136,6 +148,17 @@ const Standard = (props) => {
               path={`${path}/order/edit`}
               exact
               component={SalesOrderEdit}
+            />
+            <Route path={`${path}/quotation`} exact component={QuotationView} />
+            <Route
+              path={`${path}/quotation/create`}
+              exact
+              component={QuotationCreate}
+            />
+            <Route
+              path={`${path}/quotation/edit`}
+              exact
+              component={QuotationEdit}
             />
           </Switch>
         </Box>
