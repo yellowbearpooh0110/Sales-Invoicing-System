@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Hello world!</title>
+  <style>
+    * {
+      font-family: 'Microsoft Sans Serif';
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    .table {
+      margin-top: 20px;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    .table thead tr {
+      background-color: #dbe5f1;
+    }
+
+    .table th {
+      text-transform: uppercase;
+    }
+
+    .table th,
+    .table td {
+      font-size: 14px;
+      padding: 3px 5px;
+    }
+
+    .table tr,
+    .table th,
+    .table td {
+      border: 1px solid #000000;
+    }
+
+    .logo {
+      width: 200px;
+      display: block;
+      margin: 10px auto;
+    }
+
+    .title {
+      margin-bottom: 40px;
+    }
+
+    .desc {
+      margin-bottom: 40px;
+    }
+
+    .contact-info .company {
+      display: inline-block;
+      vertical-align: top;
+      width: 40%;
+    }
+
+    .contact-info .client {
+      display: inline-block;
+      vertical-align: top;
+      width: 30%;
+    }
+
+    .contact-info .sign-img {
+      width: 20%;
+    }
+
+    .table th:first-child,
+    .table td:first-child {
+      width: 15%;
+    }
+
+    .delivery-table th:nth-child(2),
+    .delivery-table td:nth-child(2) {
+      width: 50%;
+    }
+
+    .delivery-table th:last-child,
+    .delivery-table td:last-child {
+      width: 15%;
+    }
+  </style>
+</head>
+
+<body>
+  <img class="logo" src="http://localhost:4000/images/logo_title.png" alt="">
+  <h1 class="title">Delivery</h1>
+  <div class="desc">
+    <p></p>
+    <p></p>
+  </div>
+  <div class="contact-info">
+    <div class="company">
+      <p>Blueocean Int’l (HK) Ltd</p>
+      <p>19/F</p>
+      <p>Bel Trade Commercial Building</p>
+      <p>3 Burrows Street</p>
+      <p>Wanchai, Hong Kong</p>
+      <p>Tel: 2169 3337</p>
+      <p>
+        Email:
+        <span>info@ergoseatings.com</span>
+      </p>
+    </div>
+    <div class="client">
+      {{#with client}}
+      <b>Client’s Name: {{name}}</b>
+      <p>{{unit}}</p>
+      <p>{{floor}}</p>
+      <p>{{block}}</p>
+      <p>{{street}}</p>
+      <p>{{district}}</p>
+      <p>Email: {{email}}</p>
+      <p>Phone: {{phone}}</p>
+      {{/with}}
+    </div>
+    <img class="sign-img" alt="" src="{{signUrl}}">
+  </div>
+  <table class="delivery-table table">
+    <thead>
+      <tr>
+        <th>Salesperson</th>
+        <th>Delivery Date</th>
+        <th>Payment Terms</th>
+        <th>Due Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        {{#with delivery}}
+        <td>{{sellerName}}</td>
+        <td>{{deliveryDate}}</td>
+        <td>{{paymentTerms}}</td>
+        <td>{{dueDate}}</td>
+        {{/with}}
+      </tr>
+    </tbody>
+  </table>
+  <table class="product-table table">
+    <thead>
+      <tr>
+        <th>QTY</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>QTY</td>
+        <td>aa</td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+
+</html>

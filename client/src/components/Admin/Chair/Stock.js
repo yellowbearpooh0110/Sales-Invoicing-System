@@ -30,7 +30,7 @@ import DataGrid from 'components/Common/DataGrid';
 const columns = [
   {
     id: 'thumbnail',
-    sx: { width: 50 },
+    sx: { width: 100 },
     nonSort: true,
   },
   {
@@ -301,7 +301,7 @@ const Stock = connect(mapStateToProps)((props) => {
         shipmentDate: data.get('shipmentDate') || null,
         arrivalDate: data.get('arrivalDate') || null,
         balance: balance,
-        qty: balance + shipmentQty,
+        qty: Number(balance) + Number(shipmentQty),
       })
       .then((response) => {
         // handle success
@@ -356,7 +356,7 @@ const Stock = connect(mapStateToProps)((props) => {
         shipmentDate: data.get('shipmentDate') || null,
         arrivalDate: data.get('arrivalDate') || null,
         balance: balance,
-        qty: balance + shipmentQty,
+        qty: Number(balance) + Number(shipmentQty),
       })
       .then((response) => {
         // handle success
@@ -574,7 +574,7 @@ const Stock = connect(mapStateToProps)((props) => {
               thumbnail: (
                 <img
                   alt=""
-                  width="40px"
+                  width="80px"
                   src={thumbnailUrl}
                   style={{ marginTop: '5px' }}
                 />

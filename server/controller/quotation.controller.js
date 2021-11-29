@@ -19,7 +19,7 @@ async function getAll(where) {
     include: [
       {
         model: db.User,
-        as: 'seller',
+        as: 'Seller',
         attributes: ['id', 'firstName', 'lastName', 'prefix'],
       },
       {
@@ -161,7 +161,7 @@ async function getQuotation(id) {
     include: [
       {
         model: db.User,
-        as: 'seller',
+        as: 'Seller',
         attributes: ['id', 'firstName', 'lastName', 'prefix'],
       },
       {

@@ -21,7 +21,7 @@ async function getAll(where) {
     include: [
       {
         model: db.User,
-        as: 'seller',
+        as: 'Seller',
         attributes: ['id', 'firstName', 'lastName', 'prefix'],
       },
       {
@@ -362,7 +362,7 @@ async function getSalesOrder(id) {
     include: [
       {
         model: db.User,
-        as: 'seller',
+        as: 'Seller',
         attributes: ['id', 'firstName', 'lastName', 'prefix'],
       },
       {

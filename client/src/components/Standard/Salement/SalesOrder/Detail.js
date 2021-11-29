@@ -71,7 +71,7 @@ function mapStateToProps(state) {
 const chairColumns = [
   {
     id: 'thumbnail',
-    sx: { width: 50 },
+    sx: { width: 100 },
     nonSort: true,
   },
   {
@@ -130,7 +130,7 @@ const chairColumns = [
 const deskColumns = [
   {
     id: 'thumbnail',
-    sx: { width: 50 },
+    sx: { width: 100 },
     nonSort: true,
   },
   {
@@ -193,7 +193,7 @@ const deskColumns = [
 const accessoryColumns = [
   {
     id: 'thumbnail',
-    sx: { width: 50 },
+    sx: { width: 100 },
     nonSort: true,
   },
   {
@@ -689,7 +689,7 @@ export default connect(mapStateToProps)((props) => {
                       thumbnail: (
                         <img
                           alt=""
-                          width="40px"
+                          width="80px"
                           src={thumbnailUrl}
                           style={{ marginTop: '5px' }}
                         />
@@ -820,7 +820,7 @@ export default connect(mapStateToProps)((props) => {
                       thumbnail: (
                         <img
                           alt=""
-                          width="40px"
+                          width="80px"
                           src={thumbnailUrl}
                           style={{ marginTop: '5px' }}
                         />
@@ -932,7 +932,7 @@ export default connect(mapStateToProps)((props) => {
                       thumbnail: (
                         <img
                           alt=""
-                          width="40px"
+                          width="80px"
                           src={thumbnailUrl}
                           style={{ marginTop: '5px' }}
                         />

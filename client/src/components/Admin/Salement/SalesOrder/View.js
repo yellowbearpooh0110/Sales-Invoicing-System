@@ -315,7 +315,7 @@ export default connect(mapStateToProps)((props) => {
         New Order
       </Button>
       <DataGrid
-        title="Salement Orders"
+        title="Sales Orders"
         rows={orders.map(
           (
             {
@@ -325,7 +325,7 @@ export default connect(mapStateToProps)((props) => {
               block,
               floor,
               unit,
-              seller,
+              Seller,
               isPreOrder,
               createdAt,
               timeLine,
@@ -339,7 +339,7 @@ export default connect(mapStateToProps)((props) => {
           ) => ({
             id,
             index,
-            seller: (seller.firstName || '').concat(' ', seller.lastName || ''),
+            seller: (Seller.firstName || '').concat(' ', Seller.lastName || ''),
             timeLine:
               timeLine % 7 !== 0
                 ? `${timeLine} day${timeLine === 1 ? '' : 's'}`

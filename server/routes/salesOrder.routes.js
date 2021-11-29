@@ -17,7 +17,6 @@ router.post(
   salesOrderController.updateProducts
 );
 router.get('/', admin(), getAll);
-router.get('/getDelivery', authorize(), getDelivery);
 router.get('/current', salesman(), getCurrent);
 router.get('/:id', getById);
 router.put('/withoutStock/:id', salesman(), updateSchema, updateWithoutStock);
@@ -87,7 +86,7 @@ function signSchema(req, res, next) {
 
 function create(req, res, next) {
   salesOrderController
-    .create({ ...req.body, sellerId: req.user.id })
+    .create({ ...req.body, Id: req.user.id })
     .then(() => {
       res.json({ message: 'New SalesOrder was created successfully.' });
     })
@@ -101,7 +100,7 @@ function getAll(req, res, next) {
       res.json(
         salesOrders.map((item) => {
           item.invoiceNum =
-            item.seller.prefix + ('000' + item.invoiceNum).substr(-3);
+            item.Seller.prefix + ('000' + item.invoiceNum).substr(-3);
           return item;
         })
       )
@@ -109,69 +108,69 @@ function getAll(req, res, next) {
     .catch(next);
 }
 
-function getDelivery(req, res, next) {
-  const host = req.get('host');
-  const protocol = req.protocol;
-  const deliveryDate = new Date(
-    req.query.deliveryDate.replace(/(\d+[/])(\d+[/])/, '$2$1')
-  );
-  const nextDate = new Date(deliveryDate.getTime() + 24 * 60 * 60 * 1000);
+// function getDelivery(req, res, next) {
+//   const host = req.get('host');
+//   const protocol = req.protocol;
+//   const deliveryDate = new Date(
+//     req.query.deliveryDate.replace(/(\d+[/])(\d+[/])/, '$2$1')
+//   );
+//   const nextDate = new Date(deliveryDate.getTime() + 24 * 60 * 60 * 1000);
 
-  const where = {
-    deliveryDate: {
-      [Sequelize.Op.gte]: deliveryDate,
-      [Sequelize.Op.lt]: nextDate,
-    },
-    paid: true,
-  };
-  salesOrderController
-    .getAll(where)
-    .then((salesOrders) =>
-      res.json(
-        salesOrders.map(
-          ({
-            id,
-            invoiceNum,
-            clientName,
-            clientPhone,
-            clientEmail,
-            clientDistrict,
-            clientStreet,
-            clientBlock,
-            clientFloor,
-            clientUnit,
-            clientRemark,
-            paid,
-            finished,
-            signUrl,
-            qty,
-            stock,
-            salesman,
-          }) => ({
-            id,
-            clientName,
-            clientPhone,
-            clientEmail,
-            clientDistrict,
-            clientStreet,
-            clientBlock,
-            clientFloor,
-            clientUnit,
-            clientRemark,
-            paid,
-            finished,
-            signUrl: signUrl !== '' ? `${protocol}://${host}/${signUrl}` : null,
-            qty,
-            invoiceNum:
-              'C_' + salesman.prefix + ('000' + invoiceNum).substr(-3),
-            model: stock.chairModel ? stock.chairModel.name : null,
-            frameColor: stock.frameColor ? stock.frameColor.name : null,
-          })
-        )
-      )
-    )
-    .catch(next);
-}
+//   const where = {
+//     deliveryDate: {
+//       [Sequelize.Op.gte]: deliveryDate,
+//       [Sequelize.Op.lt]: nextDate,
+//     },
+//     paid: true,
+//   };
+//   salesOrderController
+//     .getAll(where)
+//     .then((salesOrders) =>
+//       res.json(
+//         salesOrders.map(
+//           ({
+//             id,
+//             invoiceNum,
+//             clientName,
+//             clientPhone,
+//             clientEmail,
+//             clientDistrict,
+//             clientStreet,
+//             clientBlock,
+//             clientFloor,
+//             clientUnit,
+//             clientRemark,
+//             paid,
+//             finished,
+//             signUrl,
+//             qty,
+//             stock,
+//             salesman,
+//           }) => ({
+//             id,
+//             clientName,
+//             clientPhone,
+//             clientEmail,
+//             clientDistrict,
+//             clientStreet,
+//             clientBlock,
+//             clientFloor,
+//             clientUnit,
+//             clientRemark,
+//             paid,
+//             finished,
+//             signUrl: signUrl !== '' ? `${protocol}://${host}/${signUrl}` : null,
+//             qty,
+//             invoiceNum:
+//               'C_' + salesman.prefix + ('000' + invoiceNum).substr(-3),
+//             model: stock.chairModel ? stock.chairModel.name : null,
+//             frameColor: stock.frameColor ? stock.frameColor.name : null,
+//           })
+//         )
+//       )
+//     )
+//     .catch(next);
+// }
 
 function getCurrent(req, res, next) {
   salesOrderController

@@ -74,7 +74,7 @@ function getAll(req, res, next) {
       res.json(
         quotations.map((item) => {
           item.quotationNum =
-            item.seller.prefix + ('000' + item.quotationNum).substr(-3);
+            item.Seller.prefix + ('000' + item.quotationNum).substr(-3);
           return item;
         })
       )
@@ -84,7 +84,7 @@ function getAll(req, res, next) {
 
 function getCurrent(req, res, next) {
   quotationController
-    .getAll({ sellerId: req.user.id })
+    .getAll({ SellerId: req.user.id })
     .then((quotations) => res.json(quotations))
     .catch(next);
 }
