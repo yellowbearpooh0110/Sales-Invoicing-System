@@ -130,7 +130,9 @@
       <p>Phone: {{phone}}</p>
       {{/with}}
     </div>
+    {{#if signUrl}}
     <img class="sign-img" alt="" src="{{signUrl}}">
+    {{/if}}
   </div>
   <table class="delivery-table table">
     <thead>
@@ -161,8 +163,10 @@
     </thead>
     <tbody>
       <tr>
-        <td>QTY</td>
-        <td>aa</td>
+        {{#with product}}
+        <td>{{qty}}</td>
+        <td>{{{description}}}</td>
+        {{/with}}
       </tr>
     </tbody>
   </table>

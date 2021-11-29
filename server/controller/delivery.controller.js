@@ -6,6 +6,7 @@ module.exports = {
   getChairDelivery,
   getDeskDelivery,
   getAccessoryDelivery,
+  generateDeliveryPDF,
   signDelivery,
 };
 
@@ -48,13 +49,6 @@ async function getChairDelivery(req, res, next) {
     res.json(
       result.map((item) => {
         const { SalesOrder, signUrl, ...restProps } = item.get();
-        if (
-          !fs.existsSync(
-            `server/uploads/deliveryPDFs/Chair-${restProps.id}.pdf`
-          )
-        ) {
-          _generateDeliveryPDF('Chair', restProps.id, '');
-        }
         return {
           clientName: SalesOrder.name,
           clientPhone: SalesOrder.phone,
@@ -63,7 +57,7 @@ async function getChairDelivery(req, res, next) {
           clientBlock: SalesOrder.block,
           clientFloor: SalesOrder.floor,
           clientUnit: SalesOrder.unit,
-          signURL: `${protocol}://${host}/deliveryPDFs/Chair-${restProps.id}.pdf`,
+          pdfURL: `${protocol}://${host}/deliveryPDFs/Chair-${restProps.id}.pdf`,
           ...restProps,
         };
       })
@@ -112,11 +106,6 @@ async function getDeskDelivery(req, res, next) {
     res.json(
       result.map((item) => {
         const { SalesOrder, signUrl, ...restProps } = item.get();
-        if (
-          !fs.existsSync(`server/uploads/deliveryPDFs/Desk-${restProps.id}.pdf`)
-        ) {
-          _generateDeliveryPDF('Desk', restProps.id, '');
-        }
         return {
           clientName: SalesOrder.name,
           clientPhone: SalesOrder.phone,
@@ -125,7 +114,7 @@ async function getDeskDelivery(req, res, next) {
           clientBlock: SalesOrder.block,
           clientFloor: SalesOrder.floor,
           clientUnit: SalesOrder.unit,
-          signURL: `${protocol}://${host}/deliveryPDFs/Desk-${restProps.id}.pdf`,
+          pdfURL: `${protocol}://${host}/deliveryPDFs/Desk-${restProps.id}.pdf`,
           ...restProps,
         };
       })
@@ -174,13 +163,6 @@ async function getAccessoryDelivery(req, res, next) {
     res.json(
       result.map((item) => {
         const { SalesOrder, signUrl, ...restProps } = item.get();
-        if (
-          !fs.existsSync(
-            `server/uploads/deliveryPDFs/Accessory-${restProps.id}.pdf`
-          )
-        ) {
-          _generateDeliveryPDF('Accessory', restProps.id, '');
-        }
         return {
           clientName: SalesOrder.name,
           clientPhone: SalesOrder.phone,
@@ -189,7 +171,7 @@ async function getAccessoryDelivery(req, res, next) {
           clientBlock: SalesOrder.block,
           clientFloor: SalesOrder.floor,
           clientUnit: SalesOrder.unit,
-          signURL: `${protocol}://${host}/deliveryPDFs/Accessory-${restProps.id}.pdf`,
+          pdfURL: `${protocol}://${host}/deliveryPDFs/Accessory-${restProps.id}.pdf`,
           ...restProps,
         };
       })
@@ -215,12 +197,7 @@ async function signDelivery(req, res, next) {
     Object.assign(delivery, { signUrl: filepath, delivered: true });
     await delivery.save();
 
-    await _generateDeliveryPDF(
-      type,
-      delivery.id,
-      `${protocol}://${host}/${filepath}`
-      // `${protocol}://${host}/uploads/signature/1636960957004.png`
-    );
+    await _generateDeliveryPDF(type, delivery.id, `${protocol}://${host}`);
 
     res.json({ success: true });
   } catch (err) {
@@ -228,7 +205,25 @@ async function signDelivery(req, res, next) {
   }
 }
 
-async function _generateDeliveryPDF(type, id, signUrl) {
+async function generateDeliveryPDF(req, res, next) {
+  try {
+    const host = req.get('host');
+    const protocol = req.protocol;
+    var { productType: type, deliveryId: id, signature } = req.body;
+    type = type.charAt(0).toUpperCase() + type.slice(1);
+    if (
+      !fs.existsSync(
+        `server/uploads/deliveryPDFs/Chair-bb1798b2-5ba1-4cf8-b690-06e7f712a61b.pdf`
+      )
+    )
+      await _generateDeliveryPDF(type, id, `${protocol}://${host}`);
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function _generateDeliveryPDF(type, id, host) {
   const html = fs.readFileSync('server/view/doc/delivery.hbs', 'utf8');
 
   const options = {
@@ -310,7 +305,7 @@ async function _generateDeliveryPDF(type, id, signUrl) {
     data: {
       client,
       delivery,
-      signUrl,
+      signUrl: deliveryInfo.signUrl ? `${host}/${deliveryInfo.signUrl}` : null,
     },
     path: `server/uploads/deliveryPDFs/${type}-${deliveryInfo.id}.pdf`,
     type: '',
