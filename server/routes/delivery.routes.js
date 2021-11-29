@@ -10,8 +10,6 @@ router.get('/chair', authorize(), deliveryController.getChairDelivery);
 router.get('/desk', authorize(), deliveryController.getDeskDelivery);
 router.post('/sign', authorize(), signSchema, deliveryController.signDelivery);
 
-router.get('/pdf', deliveryController.getPDFLink);
-
 function signSchema(req, res, next) {
   const schema = Joi.object({
     productType: Joi.string().valid('chair', 'desk', 'accessory'),

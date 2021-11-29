@@ -5,7 +5,6 @@ const fs = require('fs');
 module.exports = {
   getChairDelivery,
   getDeskDelivery,
-  getPDFLink,
   signDelivery,
 };
 
@@ -77,7 +76,7 @@ async function getDeskDelivery(req, res, next) {
   try {
     const fromDate = req.query.fromDate;
     const toDate = req.query.toDate;
-    const desks = await db.DeskToOrder.findAll({
+    const result = await db.DeskToOrder.findAll({
       attributes: ['id', 'deliveryDate', 'from', 'to', 'delivered', 'signUrl'],
       where: {
         deliveryDate: {
@@ -105,28 +104,18 @@ async function getDeskDelivery(req, res, next) {
       ],
       order: [['createdAt', 'DESC']],
     });
-    const accessories = await db.AccessoryToOrder.findAll({
-      attributes: ['id', 'deliveryDate', 'from', 'to'],
-      where: {
-        deliveryDate: {
-          [Sequelize.Op.gte]: fromDate,
-          [Sequelize.Op.lte]: toDate,
-        },
-      },
-      include: [
-        {
-          attributes: ['name', 'phone'],
-          model: db.SalesOrder,
-          where: {
-            paid: true,
-          },
-        },
-      ],
-      order: [['createdAt', 'DESC']],
-    });
+
+    const host = req.get('host');
+    const protocol = req.protocol;
+
     res.json(
-      desks.concat(accessories).map((item) => {
+      result.map((item) => {
         const { SalesOrder, signUrl, ...restProps } = item.get();
+        if (
+          !fs.existsSync(`server/uploads/deliveryPDFs/Desk-${restProps.id}.pdf`)
+        ) {
+          _generateDeliveryPDF('Desk', restProps.id, '');
+        }
         return {
           clientName: SalesOrder.name,
           clientPhone: SalesOrder.phone,
@@ -135,7 +124,7 @@ async function getDeskDelivery(req, res, next) {
           clientBlock: SalesOrder.block,
           clientFloor: SalesOrder.floor,
           clientUnit: SalesOrder.unit,
-          signURL: signUrl,
+          signURL: `${protocol}://${host}/deliveryPDFs/Desk-${restProps.id}.pdf`,
           ...restProps,
         };
       })
@@ -144,17 +133,66 @@ async function getDeskDelivery(req, res, next) {
     next(err);
   }
 }
-async function getPDFLink(req, res, next) {
+
+async function getAccessoryDelivery(req, res, next) {
   try {
-    // Read HTML Template
-    // const { type, id } = req.body;
-    const result = fs.existsSync(
-      `server/uploads/deliveryPDFs/Chair-bb1798b2-5ba1-4cf8-b690-06e7f712a61b.pdf`
+    const fromDate = req.query.fromDate;
+    const toDate = req.query.toDate;
+    const result = await db.AccessoryToOrder.findAll({
+      attributes: ['id', 'deliveryDate', 'from', 'to', 'delivered', 'signUrl'],
+      where: {
+        deliveryDate: {
+          [Sequelize.Op.gte]: fromDate,
+          [Sequelize.Op.lte]: toDate,
+        },
+      },
+      include: [
+        {
+          attributes: [
+            'name',
+            'phone',
+            'email',
+            'district',
+            'street',
+            'block',
+            'floor',
+            'unit',
+          ],
+          model: db.SalesOrder,
+          where: {
+            paid: true,
+          },
+        },
+      ],
+      order: [['createdAt', 'DESC']],
+    });
+
+    const host = req.get('host');
+    const protocol = req.protocol;
+
+    res.json(
+      result.map((item) => {
+        const { SalesOrder, signUrl, ...restProps } = item.get();
+        if (
+          !fs.existsSync(
+            `server/uploads/deliveryPDFs/Accessory-${restProps.id}.pdf`
+          )
+        ) {
+          _generateDeliveryPDF('Accessory', restProps.id, '');
+        }
+        return {
+          clientName: SalesOrder.name,
+          clientPhone: SalesOrder.phone,
+          clientDistrict: SalesOrder.district,
+          clientStreet: SalesOrder.street,
+          clientBlock: SalesOrder.block,
+          clientFloor: SalesOrder.floor,
+          clientUnit: SalesOrder.unit,
+          signURL: `${protocol}://${host}/deliveryPDFs/Accessory-${restProps.id}.pdf`,
+          ...restProps,
+        };
+      })
     );
-    res.json(result);
-    // _generateDeliveryPDF('Chair', 'iii')
-    //   .then(res.json({ message: 'successfully successfully generated' }))
-    //   .catch(next);
   } catch (err) {
     next(err);
   }
@@ -278,7 +316,7 @@ async function _generateDeliveryPDF(type, id, signUrl) {
       delivery,
       signUrl,
     },
-    path: `server/uploads/deliveryPDFs/Chair-${deliveryInfo.id}.pdf`,
+    path: `server/uploads/deliveryPDFs/${type}-${deliveryInfo.id}.pdf`,
     type: '',
   };
 
