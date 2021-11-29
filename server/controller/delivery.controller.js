@@ -302,12 +302,10 @@ async function _generateDeliveryPDF(type, id, signUrl) {
     paymentTerms: deliveryInfo.SalesOrder.paymentTerms,
   };
 
-  // const product = {
-  //   qty: deliveryInfo.SalesOrder.dueDate,
-  //   deliveryDate,
-  //   sellerName: `${deliveryInfo.SalesOrder.Seller.firstName} ${deliveryInfo.SalesOrder.Seller.lastName}`,
-  //   paymentTerms: deliveryInfo.SalesOrder.paymentTerms,
-  // };
+  const product = {
+    qty: deliveryInfo.qty,
+    description: deliveryInfo,
+  };
 
   var document = {
     html,
