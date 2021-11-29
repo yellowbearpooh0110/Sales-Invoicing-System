@@ -244,7 +244,7 @@ async function _generateDeliveryPDF(type, id, signUrl) {
       height: '28mm',
       contents: {
         default:
-          '<div style="text-align: center; font-size: 12px"><span style="color: #444;">{{page}}</span>/<span>{{pages}}</span></div>', // fallback value
+          '<p style="text-align: center;"><span style="color: #444;">{{page}}</span>&nbsp;/&nbsp;<span>{{pages}}</span></p>', // fallback value
       },
     },
   };
