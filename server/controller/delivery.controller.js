@@ -214,7 +214,7 @@ async function signDelivery(req, res, next) {
     Object.assign(delivery, { signUrl: filepath, delivered: true });
     await delivery.save();
 
-    _generateDeliveryPDF(
+    await _generateDeliveryPDF(
       type,
       delivery.id,
       `${protocol}://${host}/${filepath}`
@@ -318,5 +318,5 @@ async function _generateDeliveryPDF(type, id, signUrl) {
     type: '',
   };
 
-  return await pdf.create(document, options);
+  await pdf.create(document, options);
 }
