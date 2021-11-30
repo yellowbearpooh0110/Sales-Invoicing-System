@@ -305,6 +305,7 @@ async function _generateDeliveryPDF(type, id, host) {
     data: {
       client,
       delivery,
+      product,
       signUrl: deliveryInfo.signUrl ? `${host}/${deliveryInfo.signUrl}` : null,
     },
     path: `server/uploads/deliveryPDFs/${type}-${deliveryInfo.id}.pdf`,
