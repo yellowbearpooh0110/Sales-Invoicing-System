@@ -297,7 +297,24 @@ async function _generateDeliveryPDF(type, id, host) {
 
   const product = {
     qty: deliveryInfo.qty,
-    description: deliveryInfo,
+    description:
+      type === 'Chair'
+        ? `Chair: ${deliveryInfo.ChairStock.brand} ${
+            deliveryInfo.ChairStock.model
+          }<br />Frame Color: ${
+            deliveryInfo.ChairStock.frameColor
+          }<br />Back Color: ${
+            deliveryInfo.ChairStock.backColor
+          }<br />Seat Color: ${deliveryInfo.ChairStock.seatColor}<br />${
+            deliveryInfo.ChairStock.withHeadrest ? 'With Headrest<br />' : ''
+          }${
+            deliveryInfo.ChairStock.withAdArmrest ? 'With Headrest<br />' : ''
+          }${deliveryInfo.ChairStock.remark}`
+        : type === 'Desk'
+        ? `Desk: ${deliveryInfo.DeskStock.model}<br />Color: ${deliveryInfo.DeskStock.color}<br />ArmSize: ${deliveryInfo.DeskStock.armSize}<br />FeetSize: ${deliveryInfo.DeskStock.feetSize}<br />Beam Size: ${deliveryInfo.DeskStock.beamSize}`
+        : type === 'Accessory'
+        ? `Accessory: ${deliveryInfo.AccessoryStock.name}<br />Color: ${deliveryInfo.AccessoryStock.color}<br />${deliveryInfo.AccessoryStock.remark}`
+        : '',
   };
 
   var document = {
