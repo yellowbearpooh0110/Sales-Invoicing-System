@@ -66,6 +66,10 @@ const columns = [
     label: 'Special Remark',
   },
   {
+    id: 'unitPrice',
+    label: 'Price',
+  },
+  {
     id: 'balance',
     label: 'Balance',
   },
@@ -104,7 +108,6 @@ const Stock = connect(mapStateToProps)((props) => {
   const [stocks, setStocks] = useState([]);
   const [formOpen, setFormOpen] = useState(false);
   const [formProps, setFormProps] = useState([]);
-  const inputForm = useRef(null);
 
   const [id, setID] = useState('');
 
@@ -273,7 +276,7 @@ const Stock = connect(mapStateToProps)((props) => {
 
   const handleSave = async (event) => {
     event.preventDefault();
-    const data = new FormData(inputForm.current);
+    const data = new FormData(event.currentTarget);
     let thumbnailUrl = '';
     if (data.get('thumbnail')) {
       const uploadData = new FormData();
@@ -298,6 +301,7 @@ const Stock = connect(mapStateToProps)((props) => {
         withAdArmrest: Boolean(data.get('withAdArmrest')),
         remark: data.get('remark'),
         thumbnailUrl,
+        unitPrice: data.get('unitPrice'),
         shipmentDate: data.get('shipmentDate') || null,
         arrivalDate: data.get('arrivalDate') || null,
         balance: balance,
@@ -328,7 +332,7 @@ const Stock = connect(mapStateToProps)((props) => {
 
   const handleCreate = async (event) => {
     event.preventDefault();
-    const data = new FormData(inputForm.current);
+    const data = new FormData(event.currentTarget);
     let thumbnailUrl = '';
     if (data.get('thumbnail')) {
       const uploadData = new FormData();
@@ -353,6 +357,7 @@ const Stock = connect(mapStateToProps)((props) => {
         withAdArmrest: Boolean(data.get('withAdArmrest')),
         remark: data.get('remark'),
         thumbnailUrl,
+        unitPrice: data.get('unitPrice'),
         shipmentDate: data.get('shipmentDate') || null,
         arrivalDate: data.get('arrivalDate') || null,
         balance: balance,
@@ -617,7 +622,6 @@ const Stock = connect(mapStateToProps)((props) => {
         maxWidth="sm"
         open={formOpen}
         PaperProps={{
-          ref: inputForm,
           component: 'form',
           onSubmit: formMode === 'create' ? handleCreate : handleSave,
         }}
@@ -677,17 +681,37 @@ const Stock = connect(mapStateToProps)((props) => {
               label="Thumbnail"
               name="thumbnail"
               type="file"
-              sx={{ flexBasis: '100%', minWidth: '100%' }}
+              sx={{ flexBasis: ['100%', '48%'], minWidth: ['100%', '48%'] }}
               inputProps={{
                 accept: 'image/png, image/gif, image/jpeg',
               }}
               InputLabelProps={{ shrink: true }}
             />
+            <FormControlLabel
+              sx={{
+                flexBasis: ['100%', '48%'],
+                minWidth: ['100%', '48%'],
+                alignItems: 'baseline',
+                m: 0,
+              }}
+              control={
+                <TextField
+                  label="Unit Price"
+                  margin="dense"
+                  type="number"
+                  name="unitPrice"
+                  defaultValue={1000}
+                  fullWidth
+                  sx={{ m: '10px 5px 0 0' }}
+                />
+              }
+              label="HKD"
+            />
             <Box
               display="flex"
               justifyContent="center"
               alignItems="center"
-              sx={{ flexBasis: '48%', minWidth: '48%' }}
+              sx={{ flexBasis: ['100%', '48%'], minWidth: ['100%', '48%'] }}
             >
               <IconButton
                 onClick={() => {
@@ -720,7 +744,7 @@ const Stock = connect(mapStateToProps)((props) => {
               display="flex"
               justifyContent="center"
               alignItems="center"
-              sx={{ flexBasis: '48%', minWidth: '48%' }}
+              sx={{ flexBasis: ['100%', '48%'], minWidth: ['100%', '48%'] }}
             >
               <IconButton
                 onClick={() => {

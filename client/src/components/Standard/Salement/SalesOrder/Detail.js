@@ -107,6 +107,10 @@ const chairColumns = [
     label: 'Special Remark',
   },
   {
+    id: 'unitPrice',
+    label: 'Price',
+  },
+  {
     id: 'balance',
     label: 'Balance',
   },
@@ -170,6 +174,14 @@ const deskColumns = [
     label: 'topSize',
   },
   {
+    id: 'remark',
+    label: 'Special Remark',
+  },
+  {
+    id: 'unitPrice',
+    label: 'Price',
+  },
+  {
     id: 'balance',
     label: 'Balance',
   },
@@ -209,6 +221,10 @@ const accessoryColumns = [
     label: 'Special Remark',
   },
   {
+    id: 'unitPrice',
+    label: 'Price',
+  },
+  {
     id: 'balance',
     label: 'Balance',
   },
@@ -235,13 +251,14 @@ export default connect(mapStateToProps)((props) => {
   const steps = [
     'Input Client Info',
     'Select Products',
-    'Input Payment Detailss',
+    'Input Payment Details',
   ];
   const clientForm = useRef(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [addOpen, setAddOpen] = useState(false);
   const [productType, setProductType] = useState('chair');
   const [productDetail, setProductDetail] = useState('');
+  const [productPrice, setProductPrice] = useState(1000);
   const [productAmount, setProductAmount] = useState(0);
   const [cart, setCart] = useState(initialCart);
 
@@ -700,9 +717,6 @@ export default connect(mapStateToProps)((props) => {
                         <IconButton
                           onClick={(event) => {
                             event.preventDefault();
-                            setProductType('chair');
-                            setProductDetail(chairStocks[index]);
-                            setProductAmount(1);
                             if (
                               cart.find(
                                 (item) =>
@@ -719,6 +733,10 @@ export default connect(mapStateToProps)((props) => {
                               });
                               return;
                             }
+                            setProductType('chair');
+                            setProductDetail(chairStocks[index]);
+                            setProductPrice(chairStocks[index].unitPrice);
+                            setProductAmount(1);
                             setAddOpen(true);
                           }}
                         >
@@ -1029,8 +1047,6 @@ export default connect(mapStateToProps)((props) => {
           e.preventDefault();
           const clientData = new FormData(clientForm.current);
           const paymentData = new FormData(e.currentTarget);
-          console.log(paymentData.get('paid'));
-          console.log(Boolean(paymentData.get('paid')));
           if (componentType === 'create')
             axios
               .post(`/salesOrder/create`, {
@@ -1053,10 +1069,14 @@ export default connect(mapStateToProps)((props) => {
                 paymentTerms: paymentData.get('paymentTerms'),
                 paid: Boolean(paymentData.get('paid')),
                 dueDate: paymentData.get('dueDate') || null,
+                discount: Math.max(
+                  Math.min(paymentData.get('discount'), 100),
+                  0
+                ),
               })
               .then(() => {
                 // handle success
-                props.history.push('/admin/order');
+                props.history.push('/user/order');
               })
               .catch(function (error) {
                 // handle error
@@ -1093,10 +1113,14 @@ export default connect(mapStateToProps)((props) => {
                 paymentTerms: paymentData.get('paymentTerms'),
                 paid: Boolean(paymentData.get('paid')),
                 dueDate: paymentData.get('dueDate') || null,
+                discount: Math.max(
+                  Math.min(paymentData.get('discount'), 100),
+                  0
+                ),
               })
-              .then((response) => {
+              .then(() => {
                 // handle success
-                props.history.push('/admin/order');
+                props.history.push('/user/order');
               })
               .catch(function (error) {
                 // handle error
@@ -1133,10 +1157,15 @@ export default connect(mapStateToProps)((props) => {
             label="Payment Terms"
           />
           <FormControlLabel
+            sx={{
+              flexBasis: '30%',
+              minWidth: '30%',
+              marginRight: 0,
+            }}
             control={
               <Checkbox
                 name="paid"
-                defaultChecked={initialClient.paid}
+                defaultChecked={paid}
                 onChange={(e) => {
                   setPaid(e.target.checked);
                 }}
@@ -1151,8 +1180,36 @@ export default connect(mapStateToProps)((props) => {
             disabled={paid}
             name="dueDate"
             label="Due Date"
+            sx={{
+              flexBasis: '70%',
+              minWidth: '70%',
+            }}
             defaultValue={initialClient.dueDate}
             InputLabelProps={{ shrink: true }}
+          />
+          <FormControlLabel
+            sx={{
+              flexBasis: '100%',
+              minWidth: '100%',
+              alignItems: 'baseline',
+              m: 0,
+            }}
+            control={
+              <TextField
+                label="Discount"
+                margin="dense"
+                type="number"
+                name="discount"
+                inputProps={{
+                  max: 100,
+                  min: 0,
+                }}
+                defaultValue={initialClient.discount}
+                fullWidth
+                sx={{ m: '10px 5px 0 0' }}
+              />
+            }
+            label="%"
           />
         </Paper>
         <Button
@@ -1217,7 +1274,8 @@ export default connect(mapStateToProps)((props) => {
                 margin="dense"
                 type="number"
                 name="unitPrice"
-                defaultValue={1000}
+                inputProps={{ readOnly: true }}
+                value={productPrice}
                 fullWidth
                 sx={{ m: '10px 5px 0 0' }}
               />

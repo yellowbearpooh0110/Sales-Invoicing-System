@@ -73,8 +73,9 @@ axios.interceptors.response.use(
     return response;
   },
   function (error) {
-    if (error.response.status === 401) store.dispatch({ type: 'auth/logout' });
     store.dispatch({ type: 'loading/endLoading' });
+    if (error.response && error.response.status === 401)
+      store.dispatch({ type: 'auth/logout' });
     return Promise.reject(error);
   }
 );

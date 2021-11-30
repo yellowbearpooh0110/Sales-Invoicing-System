@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import {
   Document,
   Image,
@@ -107,16 +108,48 @@ Font.register({
   src: microsoft_sans_serif,
 });
 
-const Invoice = () => {
-  const [loading, setLoading] = useState(true);
+const monthNames = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
+const mapStateToProps = (state) => {
+  const loading = state.loading.value;
+  return { loading };
+};
+
+export default connect(mapStateToProps)((props) => {
+  const { loading } = props;
   const [success, setSuccess] = useState(false);
-  const [order, setOrder] = useState({});
+  const [order, setOrder] = useState({
+    Seller: {},
+    ChairStocks: [],
+    DeskStocks: [],
+    AccessoryStocks: [],
+  });
   const { id } = useParams();
   useEffect(() => {
     const source = axios.CancelToken.source();
     getOrder({ id, cancelToken: source.token });
     return () => source.cancel('Brand Component got unmounted');
   }, [id]);
+
+  const getDateString = (time) => {
+    const tmp = new Date(time);
+    return `${
+      monthNames[tmp.getMonth()]
+    } ${tmp.getDate()}, ${tmp.getFullYear()}`;
+  };
 
   const getOrder = ({ id, cancelToken }) => {
     axios
@@ -129,11 +162,6 @@ const Invoice = () => {
       .catch(function (error) {
         // handle error
         setSuccess(false);
-        console.log(error);
-      })
-      .then(function () {
-        // always executed
-        setLoading(false);
       });
   };
 
@@ -151,9 +179,10 @@ const Invoice = () => {
           <Image style={styles.header} src={logoTitle} />
           <Text style={styles.title}>Invoice</Text>
           <View style={styles.detail}>
-            <Text>No: 20211127</Text>
-            <Text>Date: October 15, 2021</Text>
-            <Text>PO No: 9500011259</Text>
+            <Text>
+              No: {order.Seller.prefix + ('000' + order.invoiceNum).substr(-3)}
+            </Text>
+            <Text>Date: {getDateString(order.createdAt)}</Text>
           </View>
           <View style={styles.info}>
             <View style={styles.companyInfo}>
@@ -175,6 +204,9 @@ const Invoice = () => {
               <Text>{order.street}</Text>
               <Text>{order.district}</Text>
               <Text>Phone: {order.phone}</Text>
+              <Text>
+                Email: <Tspan style={styles.email}>{order.email}</Tspan>
+              </Text>
             </View>
           </View>
           <View style={styles.table}>
@@ -191,7 +223,10 @@ const Invoice = () => {
               },
               {
                 cells: [
-                  { content: 'QTY', width: '15%' },
+                  {
+                    content: `${order.Seller.firstName} ${order.Seller.lastName}`,
+                    width: '15%',
+                  },
                   {
                     content:
                       order.timeLine % 7 === 0
@@ -263,17 +298,23 @@ const Invoice = () => {
                     width: '15%',
                   },
                   {
-                    content: `Chair: ${item.brand} ${item.model} ${item.frameColor} ${item.backColor} ${item.seatColor}`,
+                    content: `Chair: ${item.brand} ${item.model}\nFrameColor: ${
+                      item.frameColor
+                    }\nBack Color: ${item.backColor}\nSeat Color: ${
+                      item.seatColor
+                    }\n${item.withHeadrest ? 'With Headrest\n' : ''}${
+                      item.withAdArmrest ? 'With Headrest\n' : ''
+                    }${item.remark}`,
                     width: '55%',
                   },
                   {
-                    content: `${item.ChairToOrder.unitPrice} HKD`,
+                    content: `${item.ChairToOrder.unitPrice}`,
                     width: '15%',
                   },
                   {
                     content: `${
                       item.ChairToOrder.unitPrice * item.ChairToOrder.qty
-                    } HKD`,
+                    }`,
                     width: '15%',
                   },
                 ],
@@ -285,17 +326,17 @@ const Invoice = () => {
                     width: '15%',
                   },
                   {
-                    content: `Desk: ${item.model} ${item.color} ${item.armSize} ${item.feetSize} ${item.beamSize}`,
+                    content: `Desk: ${item.model}\nColor: ${item.color}\nArmSize: ${item.armSize}\nFeetSize: ${item.feetSize}\nBeam Size: ${item.beamSize}`,
                     width: '55%',
                   },
                   {
-                    content: `${item.DeskToOrder.unitPrice} HKD`,
+                    content: `${item.DeskToOrder.unitPrice}`,
                     width: '15%',
                   },
                   {
                     content: `${
                       item.DeskToOrder.unitPrice * item.DeskToOrder.qty
-                    } HKD`,
+                    }`,
                     width: '15%',
                   },
                 ],
@@ -307,18 +348,18 @@ const Invoice = () => {
                     width: '15%',
                   },
                   {
-                    content: `Accessory: ${item.color}\n${item.remark}`,
+                    content: `Accessory: ${item.name}\nColor: ${item.color}\n${item.remark}`,
                     width: '55%',
                   },
                   {
-                    content: `${item.AccessoryToOrder.unitPrice} HKD`,
+                    content: `${item.AccessoryToOrder.unitPrice}`,
                     width: '15%',
                   },
                   {
                     content: `${
                       item.AccessoryToOrder.unitPrice *
                       item.AccessoryToOrder.qty
-                    } HKD`,
+                    }`,
                     width: '15%',
                   },
                 ],
@@ -369,7 +410,7 @@ const Invoice = () => {
                               item.AccessoryToOrder.qty
                           ).reduce((acc, cur) => acc + cur)
                         : 0)
-                    } HKD`,
+                    }`,
                     width: '15%',
                     borderBottom: '0.5px solid #808080',
                   },
@@ -385,7 +426,31 @@ const Invoice = () => {
                   },
                   { content: 'SALES TAX', width: '15%' },
                   {
-                    content: '0 HKD',
+                    content: `${
+                      (((order.ChairStocks.length
+                        ? order.ChairStocks.map(
+                            (item) =>
+                              item.ChairToOrder.unitPrice *
+                              item.ChairToOrder.qty
+                          ).reduce((acc, cur) => acc + cur)
+                        : 0) +
+                        (order.DeskStocks.length
+                          ? order.DeskStocks.map(
+                              (item) =>
+                                item.DeskToOrder.unitPrice *
+                                item.DeskToOrder.qty
+                            ).reduce((acc, cur) => acc + cur)
+                          : 0) +
+                        (order.AccessoryStocks.length
+                          ? order.AccessoryStocks.map(
+                              (item) =>
+                                item.AccessoryToOrder.unitPrice *
+                                item.AccessoryToOrder.qty
+                            ).reduce((acc, cur) => acc + cur)
+                          : 0)) *
+                        order.discount) /
+                      100
+                    }`,
                     width: '15%',
                     borderBottom: '0.5px solid #808080',
                   },
@@ -402,27 +467,30 @@ const Invoice = () => {
                   { content: 'TOTAL', width: '15%' },
                   {
                     content: `${
-                      (order.ChairStocks.length
+                      (((order.ChairStocks.length
                         ? order.ChairStocks.map(
                             (item) =>
                               item.ChairToOrder.unitPrice *
                               item.ChairToOrder.qty
                           ).reduce((acc, cur) => acc + cur)
                         : 0) +
-                      (order.DeskStocks.length
-                        ? order.DeskStocks.map(
-                            (item) =>
-                              item.DeskToOrder.unitPrice * item.DeskToOrder.qty
-                          ).reduce((acc, cur) => acc + cur)
-                        : 0) +
-                      (order.AccessoryStocks.length
-                        ? order.AccessoryStocks.map(
-                            (item) =>
-                              item.AccessoryToOrder.unitPrice *
-                              item.AccessoryToOrder.qty
-                          ).reduce((acc, cur) => acc + cur)
-                        : 0)
-                    } HKD`,
+                        (order.DeskStocks.length
+                          ? order.DeskStocks.map(
+                              (item) =>
+                                item.DeskToOrder.unitPrice *
+                                item.DeskToOrder.qty
+                            ).reduce((acc, cur) => acc + cur)
+                          : 0) +
+                        (order.AccessoryStocks.length
+                          ? order.AccessoryStocks.map(
+                              (item) =>
+                                item.AccessoryToOrder.unitPrice *
+                                item.AccessoryToOrder.qty
+                            ).reduce((acc, cur) => acc + cur)
+                          : 0)) *
+                        (100 - order.discount)) /
+                      100
+                    }`,
                     width: '15%',
                   },
                 ],
@@ -622,6 +690,4 @@ const Invoice = () => {
       <Typography>This url is not a valid invoice url.</Typography>
     </Backdrop>
   );
-};
-
-export default Invoice;
+});

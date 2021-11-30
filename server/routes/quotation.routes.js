@@ -39,6 +39,7 @@ function createSchema(req, res, next) {
       'any.required': `Shipment Date field is required.`,
       'date.base': `Shipment Date should be a valid date type.`,
     }),
+    discount: Joi.number().min(0).max(100).required(),
   });
   validateRequest(req, next, schema);
 }

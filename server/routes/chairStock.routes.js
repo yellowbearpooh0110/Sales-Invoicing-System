@@ -20,7 +20,6 @@ router.delete('/', admin(), bulkDeleteSchema, _bulkDelete);
 module.exports = router;
 
 function createSchema(req, res, next) {
-  console.log(req.file);
   const schema = Joi.object({
     brand: Joi.string().allow('').required(),
     model: Joi.string().allow('').required(),
@@ -31,6 +30,7 @@ function createSchema(req, res, next) {
     withAdArmrest: Joi.boolean().required(),
     remark: Joi.string().allow('').required(),
     thumbnailUrl: Joi.string().empty(''),
+    unitPrice: Joi.number().min(0).required(),
     balance: Joi.number().integer().min(0).required(),
     qty: Joi.number().integer().min(0).required(),
     shipmentDate: Joi.date().allow(null).required().messages({

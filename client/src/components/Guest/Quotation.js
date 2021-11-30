@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import {
   Document,
   Image,
@@ -107,16 +108,48 @@ Font.register({
   src: microsoft_sans_serif,
 });
 
-const Quotation = () => {
-  const [loading, setLoading] = useState(true);
+const monthNames = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
+const mapStateToProps = (state) => {
+  const loading = state.loading.value;
+  return { loading };
+};
+
+export default connect(mapStateToProps)((props) => {
+  const { loading } = props;
   const [success, setSuccess] = useState(false);
-  const [quotation, setQuotation] = useState({});
+  const [quotation, setQuotation] = useState({
+    Seller: {},
+    ChairStocks: [],
+    DeskStocks: [],
+    AccessoryStocks: [],
+  });
   const { id } = useParams();
   useEffect(() => {
     const source = axios.CancelToken.source();
     getQuotation({ id, cancelToken: source.token });
     return () => source.cancel('Brand Component got unmounted');
   }, [id]);
+
+  const getDateString = (time) => {
+    const tmp = new Date(time);
+    return `${
+      monthNames[tmp.getMonth()]
+    } ${tmp.getDate()}, ${tmp.getFullYear()}`;
+  };
 
   const getQuotation = ({ id, cancelToken }) => {
     axios
@@ -129,11 +162,6 @@ const Quotation = () => {
       .catch(function (error) {
         // handle error
         setSuccess(false);
-        console.log(error);
-      })
-      .then(function () {
-        // always executed
-        setLoading(false);
       });
   };
 
@@ -151,9 +179,12 @@ const Quotation = () => {
           <Image style={styles.header} src={logoTitle} />
           <Text style={styles.title}>Quotation</Text>
           <View style={styles.detail}>
-            <Text>No: 20211127</Text>
-            <Text>Date: October 15, 2021</Text>
-            <Text>PO No: 9500011259</Text>
+            <Text>
+              No:{' '}
+              {quotation.Seller.prefix +
+                ('000' + quotation.quotationNum).substr(-3)}
+            </Text>
+            <Text>Date: {getDateString(quotation.createdAt)}</Text>
           </View>
           <View style={styles.info}>
             <View style={styles.companyInfo}>
@@ -175,6 +206,9 @@ const Quotation = () => {
               <Text>{quotation.street}</Text>
               <Text>{quotation.district}</Text>
               <Text>Phone: {quotation.phone}</Text>
+              <Text>
+                Email: <Tspan style={styles.email}>{quotation.email}</Tspan>
+              </Text>
             </View>
           </View>
           <View style={styles.table}>
@@ -191,7 +225,10 @@ const Quotation = () => {
               },
               {
                 cells: [
-                  { content: 'QTY', width: '15%' },
+                  {
+                    content: `${quotation.Seller.firstName} ${quotation.Seller.lastName}`,
+                    width: '15%',
+                  },
                   {
                     content:
                       quotation.timeLine % 7 === 0
@@ -263,18 +300,24 @@ const Quotation = () => {
                     width: '15%',
                   },
                   {
-                    content: `Chair: ${item.brand} ${item.model} ${item.frameColor} ${item.backColor} ${item.seatColor}`,
+                    content: `Chair: ${item.brand} ${item.model}\nFrameColor: ${
+                      item.frameColor
+                    }\nBack Color: ${item.backColor}\nSeat Color: ${
+                      item.seatColor
+                    }\n${item.withHeadrest ? 'With Headrest\n' : ''}${
+                      item.withAdArmrest ? 'With Headrest\n' : ''
+                    }${item.remark}`,
                     width: '55%',
                   },
                   {
-                    content: `${item.ChairToQuotation.unitPrice} HKD`,
+                    content: `${item.ChairToQuotation.unitPrice}`,
                     width: '15%',
                   },
                   {
                     content: `${
                       item.ChairToQuotation.unitPrice *
                       item.ChairToQuotation.qty
-                    } HKD`,
+                    }`,
                     width: '15%',
                   },
                 ],
@@ -286,17 +329,17 @@ const Quotation = () => {
                     width: '15%',
                   },
                   {
-                    content: `Desk: ${item.model} ${item.color} ${item.armSize} ${item.feetSize} ${item.beamSize}`,
+                    content: `Desk: ${item.model}\nColor: ${item.color}\nArmSize: ${item.armSize}\nFeetSize: ${item.feetSize}\nBeam Size: ${item.beamSize}`,
                     width: '55%',
                   },
                   {
-                    content: `${item.DeskToQuotation.unitPrice} HKD`,
+                    content: `${item.DeskToQuotation.unitPrice}`,
                     width: '15%',
                   },
                   {
                     content: `${
                       item.DeskToQuotation.unitPrice * item.DeskToQuotation.qty
-                    } HKD`,
+                    }`,
                     width: '15%',
                   },
                 ],
@@ -308,18 +351,18 @@ const Quotation = () => {
                     width: '15%',
                   },
                   {
-                    content: `Accessory: ${item.color}\n${item.remark}`,
+                    content: `Accessory: ${item.name}\nColor: ${item.color}\n${item.remark}`,
                     width: '55%',
                   },
                   {
-                    content: `${item.AccessoryToQuotation.unitPrice} HKD`,
+                    content: `${item.AccessoryToQuotation.unitPrice}`,
                     width: '15%',
                   },
                   {
                     content: `${
                       item.AccessoryToQuotation.unitPrice *
                       item.AccessoryToQuotation.qty
-                    } HKD`,
+                    }`,
                     width: '15%',
                   },
                 ],
@@ -371,7 +414,7 @@ const Quotation = () => {
                               item.AccessoryToQuotation.qty
                           ).reduce((acc, cur) => acc + cur)
                         : 0)
-                    } HKD`,
+                    }`,
                     width: '15%',
                     borderBottom: '0.5px solid #808080',
                   },
@@ -387,7 +430,31 @@ const Quotation = () => {
                   },
                   { content: 'SALES TAX', width: '15%' },
                   {
-                    content: '0 HKD',
+                    content: `${
+                      (((quotation.ChairStocks.length
+                        ? quotation.ChairStocks.map(
+                            (item) =>
+                              item.ChairToQuotation.unitPrice *
+                              item.ChairToQuotation.qty
+                          ).reduce((acc, cur) => acc + cur)
+                        : 0) +
+                        (quotation.DeskStocks.length
+                          ? quotation.DeskStocks.map(
+                              (item) =>
+                                item.DeskToQuotation.unitPrice *
+                                item.DeskToQuotation.qty
+                            ).reduce((acc, cur) => acc + cur)
+                          : 0) +
+                        (quotation.AccessoryStocks.length
+                          ? quotation.AccessoryStocks.map(
+                              (item) =>
+                                item.AccessoryToQuotation.unitPrice *
+                                item.AccessoryToQuotation.qty
+                            ).reduce((acc, cur) => acc + cur)
+                          : 0)) *
+                        quotation.discount) /
+                      100
+                    }`,
                     width: '15%',
                     borderBottom: '0.5px solid #808080',
                   },
@@ -404,28 +471,30 @@ const Quotation = () => {
                   { content: 'TOTAL', width: '15%' },
                   {
                     content: `${
-                      (quotation.ChairStocks.length
+                      (((quotation.ChairStocks.length
                         ? quotation.ChairStocks.map(
                             (item) =>
                               item.ChairToQuotation.unitPrice *
                               item.ChairToQuotation.qty
                           ).reduce((acc, cur) => acc + cur)
                         : 0) +
-                      (quotation.DeskStocks.length
-                        ? quotation.DeskStocks.map(
-                            (item) =>
-                              item.DeskToQuotation.unitPrice *
-                              item.DeskToQuotation.qty
-                          ).reduce((acc, cur) => acc + cur)
-                        : 0) +
-                      (quotation.AccessoryStocks.length
-                        ? quotation.AccessoryStocks.map(
-                            (item) =>
-                              item.AccessoryToQuotation.unitPrice *
-                              item.AccessoryToQuotation.qty
-                          ).reduce((acc, cur) => acc + cur)
-                        : 0)
-                    } HKD`,
+                        (quotation.DeskStocks.length
+                          ? quotation.DeskStocks.map(
+                              (item) =>
+                                item.DeskToQuotation.unitPrice *
+                                item.DeskToQuotation.qty
+                            ).reduce((acc, cur) => acc + cur)
+                          : 0) +
+                        (quotation.AccessoryStocks.length
+                          ? quotation.AccessoryStocks.map(
+                              (item) =>
+                                item.AccessoryToQuotation.unitPrice *
+                                item.AccessoryToQuotation.qty
+                            ).reduce((acc, cur) => acc + cur)
+                          : 0)) *
+                        (100 - quotation.discount)) /
+                      100
+                    }`,
                     width: '15%',
                   },
                 ],
@@ -625,6 +694,4 @@ const Quotation = () => {
       <Typography>This url is not a valid quotation url.</Typography>
     </Backdrop>
   );
-};
-
-export default Quotation;
+});

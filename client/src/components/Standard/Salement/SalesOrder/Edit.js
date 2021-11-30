@@ -49,7 +49,7 @@ const Edit = (props) => {
       {...props}
     />
   ) : (
-    <Redirect to="/admin/order" />
+    <Redirect to="/user/order" />
   );
 };
 

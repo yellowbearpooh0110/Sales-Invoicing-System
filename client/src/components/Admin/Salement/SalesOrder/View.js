@@ -78,6 +78,10 @@ const columns = [
     label: 'Remark',
   },
   {
+    id: 'discount',
+    label: 'Discount',
+  },
+  {
     id: 'products',
     label: 'Products',
   },
@@ -327,6 +331,7 @@ export default connect(mapStateToProps)((props) => {
               unit,
               Seller,
               isPreOrder,
+              discount,
               createdAt,
               timeLine,
               paid,
@@ -351,7 +356,7 @@ export default connect(mapStateToProps)((props) => {
               );
               return createdTime.toISOString().split('T')[0];
             })(),
-
+            discount: `${discount}%`,
             clientAddress: [district, street, block, floor, unit].join(', '),
             isPreOrder:
               (!orders[index].ChairStocks.length ||

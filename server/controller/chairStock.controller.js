@@ -64,7 +64,6 @@ async function create(req, res, next) {
 }
 
 async function update(id, params) {
-  console.log(params);
   const chairStock = await getChairStock(id);
   const {
     thumbnailUrl,

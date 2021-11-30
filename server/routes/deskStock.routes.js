@@ -32,6 +32,7 @@ function createSchema(req, res, next) {
     topSize: Joi.string().allow('').required(),
     remark: Joi.string().allow('').required(),
     thumbnailUrl: Joi.string().empty(''),
+    unitPrice: Joi.number().min(0).required(),
     balance: Joi.number().integer().min(0).required(),
     qty: Joi.number().integer().min(0).required(),
     shipmentDate: Joi.date().allow(null).required().messages({

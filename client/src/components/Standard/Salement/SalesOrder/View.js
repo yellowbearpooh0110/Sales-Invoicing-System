@@ -78,6 +78,10 @@ const columns = [
     label: 'Remark',
   },
   {
+    id: 'discount',
+    label: 'Discount',
+  },
+  {
     id: 'products',
     label: 'Products',
   },
@@ -309,13 +313,13 @@ export default connect(mapStateToProps)((props) => {
     >
       <Button
         component={RouterLink}
-        to="/admin/order/create"
+        to="/user/order/create"
         startIcon={<AddIcon />}
       >
         New Order
       </Button>
       <DataGrid
-        title="Salement Orders"
+        title="Sales Orders"
         rows={orders.map(
           (
             {
@@ -327,6 +331,7 @@ export default connect(mapStateToProps)((props) => {
               unit,
               Seller,
               isPreOrder,
+              discount,
               createdAt,
               timeLine,
               paid,
@@ -351,7 +356,7 @@ export default connect(mapStateToProps)((props) => {
               );
               return createdTime.toISOString().split('T')[0];
             })(),
-
+            discount: `${discount}%`,
             clientAddress: [district, street, block, floor, unit].join(', '),
             isPreOrder:
               (!orders[index].ChairStocks.length ||
@@ -489,7 +494,7 @@ export default connect(mapStateToProps)((props) => {
               <IconButton
                 component={RouterLink}
                 to={{
-                  pathname: '/admin/order/edit',
+                  pathname: '/user/order/edit',
                   state: { order: orders[index] },
                 }}
               >

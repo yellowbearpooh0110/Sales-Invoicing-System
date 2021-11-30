@@ -59,6 +59,11 @@ function model(sequelize) {
     dueDate: {
       type: DataTypes.DATEONLY,
     },
+    discount: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+      defaultValue: 0,
+    },
     finished: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

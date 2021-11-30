@@ -65,6 +65,11 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: '',
     },
+    unitPrice: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+      defaultValue: 1000,
+    },
     isRegistered: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

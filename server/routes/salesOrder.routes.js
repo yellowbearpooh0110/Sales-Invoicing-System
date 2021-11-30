@@ -46,6 +46,7 @@ function createSchema(req, res, next) {
       'any.required': `Due Date field is required.`,
       'date.base': `Due Date should be a valid date type.`,
     }),
+    discount: Joi.number().min(0).max(100).required(),
   });
   validateRequest(req, next, schema);
 }

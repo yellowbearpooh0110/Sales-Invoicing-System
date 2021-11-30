@@ -209,7 +209,7 @@ async function generateDeliveryPDF(req, res, next) {
   try {
     const host = req.get('host');
     const protocol = req.protocol;
-    var { productType: type, deliveryId: id, signature } = req.body;
+    var { productType: type, deliveryId: id } = req.body;
     type = type.charAt(0).toUpperCase() + type.slice(1);
     if (
       !fs.existsSync(

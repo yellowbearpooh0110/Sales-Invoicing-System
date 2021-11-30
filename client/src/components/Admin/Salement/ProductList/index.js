@@ -29,44 +29,28 @@ export const ProductListItemText = styled(ListItemText)(({ theme }) => ({
 export const ProductPriceAmount = ({ unitPrice, amount }) => {
   return (
     <Box flexBasis="100%" display="flex" flexWrap="wrap" alignItems="center">
-      <Typography
-        variant="span"
-        sx={{
-          color: 'white',
-          width: 80,
-          whiteSpace: 'noWrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          textAlign: 'center',
-          backgroundColor: indigo[400],
-          fontSize: ['10px', '12px'],
-          padding: '3px 0',
-          margin: '3px 10px 3px 0',
-          flexShrink: 0,
-          borderRadius: '2px',
-        }}
-      >
-        {unitPrice}
-      </Typography>
-      <Typography
-        variant="span"
-        sx={{
-          color: 'white',
-          width: 80,
-          whiteSpace: 'noWrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          textAlign: 'center',
-          backgroundColor: indigo[400],
-          fontSize: ['10px', '12px'],
-          padding: '3px 0',
-          margin: '3px 10px 3px 0',
-          flexShrink: 0,
-          borderRadius: '2px',
-        }}
-      >
-        {amount}
-      </Typography>
+      {[unitPrice, amount].map((item, index) => (
+        <Typography
+          key={index}
+          variant="span"
+          sx={{
+            color: 'white',
+            width: 80,
+            whiteSpace: 'noWrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            textAlign: 'center',
+            backgroundColor: indigo[400],
+            fontSize: ['10px', '12px'],
+            padding: '3px 0',
+            margin: '3px 10px 3px 0',
+            flexShrink: 0,
+            borderRadius: '2px',
+          }}
+        >
+          {item}
+        </Typography>
+      ))}
     </Box>
   );
 };
