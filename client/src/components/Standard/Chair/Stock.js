@@ -184,14 +184,7 @@ const Stock = connect(mapStateToProps)((props) => {
           <Autocomplete
             key={index}
             sx={{ flexBasis: '200px', maxWidth: '200px' }}
-            renderInput={(params) => (
-              <TextField
-                margin="dense"
-                {...params}
-                label={label}
-                size="small"
-              />
-            )}
+            renderInput={(params) => <TextField {...params} label={label} />}
             {...props}
           />
         ))}

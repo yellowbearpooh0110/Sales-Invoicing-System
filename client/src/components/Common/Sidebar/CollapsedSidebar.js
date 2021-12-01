@@ -120,7 +120,6 @@ const FixedSidebar = ({
                         key={childIndex}
                         to={child.path}
                         exact
-                        onClick={handleDrawerClose}
                         activeClassName="active"
                       >
                         <ListItem button className={classes.navlink}>
@@ -136,7 +135,6 @@ const FixedSidebar = ({
               <NavLink
                 key={`listitem-${itemIndex}`}
                 {...listitem}
-                onClick={handleDrawerClose}
                 activeClassName="active"
               >
                 <ListItem button className={classes.navlink}>

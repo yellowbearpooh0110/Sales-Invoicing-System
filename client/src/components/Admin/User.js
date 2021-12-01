@@ -310,8 +310,6 @@ export default connect(mapStateToProps)((props) => {
               <TextField
                 key={index}
                 sx={{ flexBasis: width, minWidth: width }}
-                margin="dense"
-                size="small"
                 {...restProps}
               />
             ))}
@@ -324,8 +322,6 @@ export default connect(mapStateToProps)((props) => {
                 id="user-type-select"
                 value={type}
                 label="Type"
-                margin="dense"
-                size="small"
                 onChange={(event) => {
                   event.preventDefault();
                   setType(event.target.value);

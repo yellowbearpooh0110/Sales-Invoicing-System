@@ -530,8 +530,6 @@ export default connect(mapStateToProps)((props) => {
           <Stack spacing={2}>
             <MuiPhoneNumber
               variant="outlined"
-              margin="dense"
-              size="small"
               label="Phone Number"
               defaultCountry={'hk'}
               value={phone}
@@ -544,8 +542,6 @@ export default connect(mapStateToProps)((props) => {
               inputRef={whatsAppMessage}
               label="Message"
               fullWidth
-              margin="dense"
-              size="small"
               defaultValue={`Hello ${name},\nThank you for your order! Please find here (payment link URL) for your payment.\nOnce finished, your order will be processed accordingly.`}
               multiline
               minRows={4}
@@ -578,8 +574,6 @@ export default connect(mapStateToProps)((props) => {
         <DialogContent>
           <Stack spacing={2}>
             <TextField
-              margin="dense"
-              size="small"
               label="Email"
               type="email"
               value={email}
@@ -592,8 +586,6 @@ export default connect(mapStateToProps)((props) => {
               inputRef={emailContent}
               label="Message"
               fullWidth
-              margin="dense"
-              size="small"
               defaultValue={`Hello ${name},\nThank you for your order! Please find here (payment link URL) for your payment.\nOnce finished, your order will be processed accordingly.`}
               multiline
               minRows={4}

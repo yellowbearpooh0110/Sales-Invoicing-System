@@ -46,6 +46,13 @@ const theme = createTheme({
     MuiTextField: {
       defaultProps: {
         variant: 'outlined',
+        margin: 'dense',
+        size: 'small',
+      },
+    },
+    MuiSelect: {
+      defaultProps: {
+        margin: 'dense',
         size: 'small',
       },
     },

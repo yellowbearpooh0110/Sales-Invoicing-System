@@ -10,11 +10,16 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
+  FormControl,
   FormControlLabel,
   IconButton,
+  InputLabel,
+  MenuItem,
   Paper,
   Radio,
   RadioGroup,
+  Select,
   Step,
   Stepper,
   StepLabel,
@@ -29,6 +34,8 @@ import {
   Delete as DeleteIcon,
   Remove as RemoveIcon,
 } from '@mui/icons-material';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import MuiPhoneNumber from 'material-ui-phone-number';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -246,6 +253,7 @@ const accessoryColumns = [
 ];
 
 export default connect(mapStateToProps)((props) => {
+  const theme = useTheme();
   const { componentType, initialClient, initialCart } = props;
 
   const steps = [
@@ -256,6 +264,7 @@ export default connect(mapStateToProps)((props) => {
   const clientForm = useRef(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [addOpen, setAddOpen] = useState(false);
+  const [deskAddOpen, setDeskAddOpen] = useState(false);
   const [productType, setProductType] = useState('chair');
   const [productDetail, setProductDetail] = useState('');
   const [productPrice, setProductPrice] = useState(1000);
@@ -526,16 +535,12 @@ export default connect(mapStateToProps)((props) => {
             ) : (
               <TextField
                 key={index}
-                margin="dense"
-                size="small"
                 sx={{ flexBasis: width, minWidth: width }}
                 {...restProps}
               />
             )
           )}
           <TextField
-            margin="dense"
-            size="small"
             sx={{ flexBasis: ['100%', '30%'], minWidth: ['100%', '30%'] }}
             name="timeLine"
             label="TimeLine"
@@ -671,12 +676,7 @@ export default connect(mapStateToProps)((props) => {
                     key={index}
                     sx={{ flexBasis: '200px', maxWidth: '200px' }}
                     renderInput={(params) => (
-                      <TextField
-                        margin="dense"
-                        {...params}
-                        label={label}
-                        size="small"
-                      />
+                      <TextField {...params} label={label} />
                     )}
                     {...props}
                   />
@@ -810,12 +810,7 @@ export default connect(mapStateToProps)((props) => {
                     key={index}
                     sx={{ flexBasis: '200px', maxWidth: '200px' }}
                     renderInput={(params) => (
-                      <TextField
-                        margin="dense"
-                        {...params}
-                        label={label}
-                        size="small"
-                      />
+                      <TextField {...params} label={label} />
                     )}
                     {...props}
                   />
@@ -865,7 +860,7 @@ export default connect(mapStateToProps)((props) => {
                               });
                               return;
                             }
-                            setAddOpen(true);
+                            setDeskAddOpen(true);
                           }}
                         >
                           <AddIcon />
@@ -922,12 +917,7 @@ export default connect(mapStateToProps)((props) => {
                     key={index}
                     sx={{ flexBasis: '200px', maxWidth: '200px' }}
                     renderInput={(params) => (
-                      <TextField
-                        margin="dense"
-                        {...params}
-                        label={label}
-                        size="small"
-                      />
+                      <TextField {...params} label={label} />
                     )}
                     {...props}
                   />
@@ -1151,7 +1141,6 @@ export default connect(mapStateToProps)((props) => {
           </Typography>
           <TextField
             name="paymentTerms"
-            margin="dense"
             size="small"
             sx={{ flexBasis: '100%', minWidth: '100%' }}
             label="Payment Terms"
@@ -1174,8 +1163,6 @@ export default connect(mapStateToProps)((props) => {
             label="Paid"
           />
           <TextField
-            margin="dense"
-            size="small"
             type="date"
             disabled={paid}
             name="dueDate"
@@ -1197,7 +1184,6 @@ export default connect(mapStateToProps)((props) => {
             control={
               <TextField
                 label="Discount"
-                margin="dense"
                 type="number"
                 name="discount"
                 inputProps={{
@@ -1229,6 +1215,7 @@ export default connect(mapStateToProps)((props) => {
         open={addOpen}
         maxWidth="sm"
         fullWidth
+        fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
         PaperProps={{
           component: 'form',
           onSubmit: (e) => {
@@ -1271,7 +1258,6 @@ export default connect(mapStateToProps)((props) => {
             control={
               <TextField
                 label="Unit Price"
-                margin="dense"
                 type="number"
                 name="unitPrice"
                 inputProps={{ readOnly: true }}
@@ -1322,6 +1308,245 @@ export default connect(mapStateToProps)((props) => {
           <Button
             onClick={(e) => {
               setAddOpen(false);
+            }}
+          >
+            Cancle
+          </Button>
+          <Button type="submit">OK</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={deskAddOpen}
+        maxWidth="sm"
+        fullWidth
+        fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
+        PaperProps={{
+          component: 'form',
+          onSubmit: (e) => {
+            e.preventDefault();
+            setAddOpen(false);
+            if (
+              cart.find(
+                (item) =>
+                  item.productType === 'chair' &&
+                  item.productDetail.id === productDetail.id
+              )
+            ) {
+              Swal.fire({
+                icon: 'warning',
+                title: 'Warning',
+                text: 'This product is already added.',
+                allowOutsideClick: false,
+              });
+              return;
+            }
+            setCart(
+              cart.concat({
+                productType,
+                productDetail,
+                productAmount,
+                productPrice: Math.max(e.currentTarget.unitPrice.value, 0),
+              })
+            );
+          },
+        }}
+      >
+        <DialogTitle>Price and Amount</DialogTitle>
+        <DialogContent sx={{ textAlign: 'center' }}>
+          <FormControlLabel
+            sx={{
+              width: '200px',
+              alignItems: 'baseline',
+              m: 0,
+            }}
+            control={
+              <TextField
+                label="Unit Price"
+                type="number"
+                name="unitPrice"
+                inputProps={{ readOnly: true }}
+                value={productPrice}
+                fullWidth
+                sx={{ m: '10px 5px 0 0' }}
+              />
+            }
+            label="HKD"
+          />
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              width: '200px',
+              border: '1px solid #0000003b',
+              borderRadius: '4px',
+              mt: '10px',
+              mx: 'auto',
+              p: '5px 3px',
+            }}
+          >
+            <Typography variant="span" sx={{ flexGrow: 1 }}>
+              Amount
+            </Typography>
+            <IconButton
+              onClick={(e) => {
+                e.preventDefault();
+                setProductAmount(Math.max(productAmount - 1, 1));
+              }}
+            >
+              <RemoveIcon />
+            </IconButton>
+            <Typography variant="span" mx="10px">
+              {productAmount}
+            </Typography>
+            <IconButton
+              onClick={(e) => {
+                e.preventDefault();
+                setProductAmount(Math.min(productAmount + 1, 9));
+              }}
+            >
+              <AddIcon />
+            </IconButton>
+          </Box>
+          <Divider sx={{ my: '10px' }} />
+          <FormControlLabel
+            control={<Checkbox name={'hasTalbeTop'} defaultChecked={false} />}
+            label="Table Top"
+            sx={{ flexBasis: '100%', minWidth: '100%' }}
+          />
+          <Box display="flex" flexWrap="wrap" justifyContent="space-between">
+            {[
+              {
+                name: 'topMaterial',
+                label: 'Material',
+                type: 'autocomplete',
+                options: [
+                  'Melamine',
+                  'Laminate',
+                  'North American Walnut',
+                  'South American Walnut',
+                  'Red Oak',
+                  'Maple, Bamboo',
+                  'Melamine with glass top',
+                ],
+                width: '65%',
+              },
+              {
+                name: 'topColor',
+                label: 'Color',
+                type: 'text',
+                width: '30%',
+              },
+              {
+                name: 'topLength',
+                label: 'Length',
+                type: 'number',
+                inputProps: { min: 0 },
+                width: '30%',
+              },
+              {
+                name: 'topWidth',
+                label: 'Width',
+                type: 'number',
+                inputProps: { min: 0 },
+                width: '30%',
+              },
+              {
+                name: 'topThickness',
+                label: 'Thickness',
+                type: 'number',
+                inputProps: { min: 0 },
+                width: '30%',
+              },
+              {
+                name: 'roundedCorners',
+                label: 'Rounded Corners',
+                type: 'select',
+                defaultValue: 0,
+                options: [0, 1, 2, 3, 4],
+                width: '48%',
+              },
+              {
+                name: 'cornerRadius',
+                label: 'Corner Radius',
+                type: 'number',
+                inputProps: { min: 0 },
+                width: '48%',
+              },
+              {
+                name: 'holeCount',
+                label: 'Number of Holes',
+                type: 'select',
+                defaultValue: 0,
+                options: [0, 1, 2, 3],
+                width: '48%',
+              },
+              {
+                name: 'holeType',
+                label: 'Type of Holes',
+                type: 'select',
+                defaultValue: 'Rounded',
+                options: ['Rounded', 'Rectangular'],
+                width: '48%',
+              },
+              {
+                name: 'remark',
+                label: 'Remark',
+                type: 'text',
+                width: '100%',
+              },
+            ].map(({ type, width, ...restParams }, index) => {
+              if (type === 'autocomplete') {
+                const { name, label, ...autocomParams } = restParams;
+                return (
+                  <Autocomplete
+                    key={index}
+                    sx={{ flexBasis: width, minWidth: width }}
+                    renderInput={(params) => (
+                      <TextField {...params} name={name} label={label} />
+                    )}
+                    {...autocomParams}
+                  />
+                );
+              } else if (type === 'select') {
+                const { name, label, options, ...selectParams } = restParams;
+                return (
+                  <FormControl sx={{ flexBasis: width, minWidth: width }}>
+                    <InputLabel id={`desk-top-${name}-select-label`}>
+                      {label}
+                    </InputLabel>
+                    <Select
+                      labelId={`desk-top-${name}-select-label`}
+                      id={`desk-top-${name}-select`}
+                      name={name}
+                      label={label}
+                      size="small"
+                      {...selectParams}
+                    >
+                      {options.map((selectOption, selectOptionIndex) => (
+                        <MenuItem key={selectOptionIndex} value={selectOption}>
+                          {selectOption}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                );
+              } else
+                return (
+                  <TextField
+                    key={index}
+                    type={type}
+                    sx={{ flexBasis: width, minWidth: width }}
+                    {...restParams}
+                  />
+                );
+            })}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              setDeskAddOpen(false);
             }}
           >
             Cancle

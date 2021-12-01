@@ -604,14 +604,7 @@ const Stock = connect(mapStateToProps)((props) => {
           <Autocomplete
             key={index}
             sx={{ flexBasis: '200px', maxWidth: '200px' }}
-            renderInput={(params) => (
-              <TextField
-                margin="dense"
-                {...params}
-                label={label}
-                size="small"
-              />
-            )}
+            renderInput={(params) => <TextField {...params} label={label} />}
             {...props}
           />
         ))}
@@ -704,8 +697,6 @@ const Stock = connect(mapStateToProps)((props) => {
                 return (
                   <TextField
                     key={index}
-                    margin="dense"
-                    size="small"
                     sx={{ flexBasis: width, minWidth: width }}
                     {...restParams}
                   />
@@ -714,8 +705,6 @@ const Stock = connect(mapStateToProps)((props) => {
                 return (
                   <TextField
                     key={index}
-                    margin="dense"
-                    size="small"
                     type="date"
                     InputLabelProps={{ shrink: true }}
                     sx={{ flexBasis: width, minWidth: width }}
@@ -739,16 +728,9 @@ const Stock = connect(mapStateToProps)((props) => {
                 return (
                   <Autocomplete
                     key={index}
-                    options={['aa', 'ss']}
                     sx={{ flexBasis: width, minWidth: width }}
                     renderInput={(params) => (
-                      <TextField
-                        margin="dense"
-                        {...params}
-                        name={name}
-                        label={label}
-                        size="small"
-                      />
+                      <TextField {...params} name={name} label={label} />
                     )}
                     {...autocomParams}
                   />
@@ -756,8 +738,6 @@ const Stock = connect(mapStateToProps)((props) => {
               } else return null;
             })}
             <TextField
-              margin="dense"
-              size="small"
               label="Thumbnail"
               name="thumbnail"
               type="file"
@@ -777,7 +757,6 @@ const Stock = connect(mapStateToProps)((props) => {
               control={
                 <TextField
                   label="Unit Price"
-                  margin="dense"
                   type="number"
                   name="unitPrice"
                   defaultValue={1000}
@@ -801,9 +780,7 @@ const Stock = connect(mapStateToProps)((props) => {
                 <RemoveIcon />
               </IconButton>
               <TextField
-                margin="dense"
                 label="Balance"
-                size="small"
                 value={balance}
                 type="number"
                 sx={{ width: '80px', mx: '5px' }}
@@ -834,9 +811,7 @@ const Stock = connect(mapStateToProps)((props) => {
                 <RemoveIcon />
               </IconButton>
               <TextField
-                margin="dense"
                 label="Shipment"
-                size="small"
                 value={shipmentQty}
                 type="number"
                 sx={{ width: '80px', mx: '5px' }}

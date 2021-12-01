@@ -526,16 +526,12 @@ export default connect(mapStateToProps)((props) => {
             ) : (
               <TextField
                 key={index}
-                margin="dense"
-                size="small"
                 sx={{ flexBasis: width, minWidth: width }}
                 {...restProps}
               />
             )
           )}
           <TextField
-            margin="dense"
-            size="small"
             sx={{ flexBasis: ['100%', '30%'], minWidth: ['100%', '30%'] }}
             name="timeLine"
             label="TimeLine"
@@ -671,12 +667,7 @@ export default connect(mapStateToProps)((props) => {
                     key={index}
                     sx={{ flexBasis: '200px', maxWidth: '200px' }}
                     renderInput={(params) => (
-                      <TextField
-                        margin="dense"
-                        {...params}
-                        label={label}
-                        size="small"
-                      />
+                      <TextField {...params} label={label} />
                     )}
                     {...props}
                   />
@@ -810,12 +801,7 @@ export default connect(mapStateToProps)((props) => {
                     key={index}
                     sx={{ flexBasis: '200px', maxWidth: '200px' }}
                     renderInput={(params) => (
-                      <TextField
-                        margin="dense"
-                        {...params}
-                        label={label}
-                        size="small"
-                      />
+                      <TextField {...params} label={label} />
                     )}
                     {...props}
                   />
@@ -922,12 +908,7 @@ export default connect(mapStateToProps)((props) => {
                     key={index}
                     sx={{ flexBasis: '200px', maxWidth: '200px' }}
                     renderInput={(params) => (
-                      <TextField
-                        margin="dense"
-                        {...params}
-                        label={label}
-                        size="small"
-                      />
+                      <TextField {...params} label={label} />
                     )}
                     {...props}
                   />
@@ -1151,8 +1132,6 @@ export default connect(mapStateToProps)((props) => {
           </Typography>
           <TextField
             name="paymentTerms"
-            margin="dense"
-            size="small"
             sx={{ flexBasis: '100%', minWidth: '100%' }}
             label="Payment Terms"
           />
@@ -1174,8 +1153,6 @@ export default connect(mapStateToProps)((props) => {
             label="Paid"
           />
           <TextField
-            margin="dense"
-            size="small"
             type="date"
             disabled={paid}
             name="dueDate"
@@ -1197,7 +1174,6 @@ export default connect(mapStateToProps)((props) => {
             control={
               <TextField
                 label="Discount"
-                margin="dense"
                 type="number"
                 name="discount"
                 inputProps={{
@@ -1271,7 +1247,6 @@ export default connect(mapStateToProps)((props) => {
             control={
               <TextField
                 label="Unit Price"
-                margin="dense"
                 type="number"
                 name="unitPrice"
                 inputProps={{ readOnly: true }}
