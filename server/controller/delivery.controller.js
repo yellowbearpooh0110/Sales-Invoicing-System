@@ -205,22 +205,25 @@ async function signDelivery(req, res, next) {
   }
 }
 
-async function generateDeliveryPDF(req, res, next) {
-  try {
-    const host = req.get('host');
-    const protocol = req.protocol;
-    var { productType: type, deliveryId: id } = req.body;
-    type = type.charAt(0).toUpperCase() + type.slice(1);
-    if (
-      !fs.existsSync(
-        `server/uploads/deliveryPDFs/Chair-bb1798b2-5ba1-4cf8-b690-06e7f712a61b.pdf`
-      )
-    )
-      await _generateDeliveryPDF(type, id, `${protocol}://${host}`);
-    res.json({ success: true });
-  } catch (err) {
-    next(err);
-  }
+function generateDeliveryPDF(req, res, next) {
+  const host = req.get('host');
+  const protocol = req.protocol;
+  var { productType: type, deliveryId: id } = req.body;
+  type = type.charAt(0).toUpperCase() + type.slice(1);
+  if (!fs.existsSync(`server/uploads/deliveryPDFs/${type}-${id}.pdf`))
+    _generateDeliveryPDF(type, id, `${protocol}://${host}`)
+      .then(() => {
+        res.json({
+          success: true,
+          url: `${protocol}://${host}/uploads/deliveryPDFs/${type}-${id}.pdf`,
+        });
+      })
+      .catch(next);
+  else
+    res.json({
+      success: true,
+      url: `${protocol}://${host}/uploads/deliveryPDFs/${type}-${id}.pdf`,
+    });
 }
 
 async function _generateDeliveryPDF(type, id, host) {
@@ -316,8 +319,8 @@ async function _generateDeliveryPDF(type, id, host) {
           }<br />ArmSize: ${deliveryInfo.DeskStock.armSize}<br />FeetSize: ${
             deliveryInfo.DeskStock.feetSize
           }<br />Beam Size: ${deliveryInfo.DeskStock.beamSize}\n${
-            deliveryInfo.DeskStock.DeskToOrder.hasDeskTop
-              ? `Top: ${deliveryInfo.DeskStock.DeskToOrder.topMaterial} ${deliveryInfo.DeskStock.DeskToOrder.topColor}\nTop Size: ${deliveryInfo.DeskStock.DeskToOrder.topLength}x${deliveryInfo.DeskStock.DeskToOrder.topWidth}x${deliveryInfo.DeskStock.DeskToOrder.topThickness}\nTop Corners: ${deliveryInfo.DeskStock.DeskToOrder.topRoundedCorners}-R${deliveryInfo.DeskStock.DeskToOrder.topCornerRadius}\nTop Holes: ${deliveryInfo.DeskStock.DeskToOrder.topHoleCount}-${deliveryInfo.DeskStock.DeskToOrder.topHoleType}`
+            deliveryInfo.hasDeskTop
+              ? `Top: ${deliveryInfo.topMaterial} ${deliveryInfo.topColor}\nTop Size: ${deliveryInfo.topLength}x${deliveryInfo.topWidth}x${deliveryInfo.topThickness}\nTop Corners: ${deliveryInfo.topRoundedCorners}-R${deliveryInfo.topCornerRadius}\nTop Holes: ${deliveryInfo.topHoleCount}-${deliveryInfo.topHoleType}`
               : 'Without DeskTop'
           }`
         : type === 'Accessory'
@@ -336,6 +339,5 @@ async function _generateDeliveryPDF(type, id, host) {
     path: `server/uploads/deliveryPDFs/${type}-${deliveryInfo.id}.pdf`,
     type: '',
   };
-
   await pdf.create(document, options);
 }

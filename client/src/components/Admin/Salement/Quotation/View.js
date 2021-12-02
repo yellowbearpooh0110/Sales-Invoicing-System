@@ -621,7 +621,12 @@ export default connect(mapStateToProps)((props) => {
                       item.DeskToQuotation.hasDeskTop ? (
                         <span>
                           {`${item.DeskToQuotation.topMaterial}, ${item.DeskToQuotation.topColor}, ${item.DeskToQuotation.topLength}x${item.DeskToQuotation.topWidth}x${item.DeskToQuotation.topThickness}, ${item.DeskToQuotation.topRoundedCorners}-R${item.DeskToQuotation.topCornerRadius}, ${item.DeskToQuotation.topHoleCount}-${item.DeskToQuotation.topHoleType} `}
-                          <a href={item.DeskToQuotation.topSketchUrl}>Sketch</a>
+                          <a
+                            href={item.DeskToQuotation.topSketchUrl}
+                            target="_blank"
+                          >
+                            Sketch
+                          </a>
                         </span>
                       ) : (
                         'Without DeskTop'

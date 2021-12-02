@@ -590,14 +590,9 @@ export default connect(mapStateToProps)((props) => {
                       <ProductListItemText
                         primary={`Desk: ${item.productDetail.supplierCode}, ${item.productDetail.model}, ${item.productDetail.color}, ${item.productDetail.armSize}, ${item.productDetail.feetSize}, ${item.productDetail.beamSize}`}
                         secondary={
-                          item.hasDeskTop ? (
-                            <span>
-                              {`${item.topMaterial}, ${item.topColor}, ${item.topLength}x${item.topWidth}x${item.topThickness}, ${item.topRoundedCorners}-R${item.topCornerRadius}, ${item.topHoleCount}-${item.topHoleType} `}
-                              <a href={item.topSketchUrl}>Sketch</a>
-                            </span>
-                          ) : (
-                            'Without DeskTop'
-                          )
+                          item.hasDeskTop
+                            ? `${item.topMaterial}, ${item.topColor}, ${item.topLength}x${item.topWidth}x${item.topThickness}, ${item.topRoundedCorners}-R${item.topCornerRadius}, ${item.topHoleCount}-${item.topHoleType}`
+                            : 'Without DeskTop'
                         }
                       />
                     )}
@@ -1363,9 +1358,9 @@ export default connect(mapStateToProps)((props) => {
                 productType,
                 productDetail,
                 productAmount,
-                productPrice:
-                  Number(data.get('deskLegPrice')) +
-                  Number(data.get('deskTopPrice')),
+                productPrice: Boolean(data.get('hasDeskTop'))
+                  ? Number(data.get('deskTotalPrice'))
+                  : Number(data.get('deskLegPrice')),
                 hasDeskTop: Boolean(data.get('hasDeskTop')) || '',
                 topMaterial: data.get('topMaterial') || '',
                 topColor: data.get('topColor') || '',
@@ -1400,6 +1395,7 @@ export default connect(mapStateToProps)((props) => {
                 value={productPrice}
                 fullWidth
                 sx={{ m: '10px 5px 0 0' }}
+                hidden={hasDeskTop}
               />
             }
             label="HKD"
@@ -1574,9 +1570,9 @@ export default connect(mapStateToProps)((props) => {
               }}
               control={
                 <TextField
-                  label="Desk Top Price"
+                  label="Desk Total Price"
                   type="number"
-                  name="deskTopPrice"
+                  name="deskTotalPrice"
                   inputProps={{ min: 0 }}
                   defaultValue={1000}
                   fullWidth

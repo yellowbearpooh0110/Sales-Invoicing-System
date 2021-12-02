@@ -627,6 +627,49 @@ export default connect(mapStateToProps)((props) => {
                     unitPrice={`${item.ChairToOrder.unitPrice} HKD`}
                     amount={`Amount: ${item.ChairToOrder.qty}`}
                   />
+                  <Button
+                    variant="contained"
+                    sx={{ mt: '5px' }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      axios
+                        .post('/delivery/generatePDF', {
+                          productType: 'chair',
+                          deliveryId: item.ChairToOrder.id,
+                          signature: '',
+                        })
+                        .then((response) => {
+                          // handle success
+                          if (!response.data) {
+                            setDetailOpen(false);
+                            Swal.fire({
+                              icon: 'info',
+                              title: 'Alarm',
+                              text:
+                                'New Delivery PDF was created. Please click the button again to check.',
+                              allowOutsideClick: false,
+                            }).then(() => {
+                              setDetailOpen(true);
+                            });
+                          }
+                          window.open(response.data.url, '_blank');
+                        })
+                        .catch(function (error) {
+                          // handle error
+                          setDetailOpen(false);
+                          Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.response.data.message,
+                            allowOutsideClick: false,
+                          }).then(() => {
+                            setDetailOpen(true);
+                          });
+                        });
+                    }}
+                  >
+                    Delivery Note
+                  </Button>
                   {orders[orderIndex].paid && (
                     <Paper
                       ref={(ref) => chairDeliveries.current.push(ref)}
@@ -696,7 +739,12 @@ export default connect(mapStateToProps)((props) => {
                       item.DeskToOrder.hasDeskTop ? (
                         <span>
                           {`${item.DeskToOrder.topMaterial}, ${item.DeskToOrder.topColor}, ${item.DeskToOrder.topLength}x${item.DeskToOrder.topWidth}x${item.DeskToOrder.topThickness}, ${item.DeskToOrder.topRoundedCorners}-R${item.DeskToOrder.topCornerRadius}, ${item.DeskToOrder.topHoleCount}-${item.DeskToOrder.topHoleType} `}
-                          <a href={item.DeskToOrder.topSketchUrl}>Sketch</a>
+                          <a
+                            href={item.DeskToOrder.topSketchUrl}
+                            target="_blank"
+                          >
+                            Sketch
+                          </a>
                         </span>
                       ) : (
                         'Without DeskTop'
@@ -707,6 +755,49 @@ export default connect(mapStateToProps)((props) => {
                     unitPrice={`${item.DeskToOrder.unitPrice} HKD`}
                     amount={`Amount: ${item.DeskToOrder.qty}`}
                   />
+                  <Button
+                    variant="contained"
+                    sx={{ mt: '5px' }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      axios
+                        .post('/delivery/generatePDF', {
+                          productType: 'desk',
+                          deliveryId: item.DeskToOrder.id,
+                          signature: '',
+                        })
+                        .then((response) => {
+                          // handle success
+                          if (!response.data) {
+                            setDetailOpen(false);
+                            Swal.fire({
+                              icon: 'info',
+                              title: 'Alarm',
+                              text:
+                                'New Delivery PDF was created. Please click the button again to check.',
+                              allowOutsideClick: false,
+                            }).then(() => {
+                              setDetailOpen(true);
+                            });
+                          }
+                          window.open(response.data.url, '_blank');
+                        })
+                        .catch(function (error) {
+                          // handle error
+                          setDetailOpen(false);
+                          Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.response.data.message,
+                            allowOutsideClick: false,
+                          }).then(() => {
+                            setDetailOpen(true);
+                          });
+                        });
+                    }}
+                  >
+                    Delivery Note
+                  </Button>
                   {orders[orderIndex].paid && (
                     <Paper
                       ref={(ref) => deskDeliveries.current.push(ref)}
@@ -778,6 +869,49 @@ export default connect(mapStateToProps)((props) => {
                     unitPrice={`${item.AccessoryToOrder.unitPrice} HKD`}
                     amount={`Amount: ${item.AccessoryToOrder.qty}`}
                   />
+                  <Button
+                    variant="contained"
+                    sx={{ mt: '5px' }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      axios
+                        .post('/delivery/generatePDF', {
+                          productType: 'accessory',
+                          deliveryId: item.AccessoryToOrder.id,
+                          signature: '',
+                        })
+                        .then((response) => {
+                          // handle success
+                          if (!response.data) {
+                            setDetailOpen(false);
+                            Swal.fire({
+                              icon: 'info',
+                              title: 'Alarm',
+                              text:
+                                'New Delivery PDF was created. Please click the button again to check.',
+                              allowOutsideClick: false,
+                            }).then(() => {
+                              setDetailOpen(true);
+                            });
+                          }
+                          window.open(response.data.url, '_blank');
+                        })
+                        .catch(function (error) {
+                          // handle error
+                          setDetailOpen(false);
+                          Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.response.data.message,
+                            allowOutsideClick: false,
+                          }).then(() => {
+                            setDetailOpen(true);
+                          });
+                        });
+                    }}
+                  >
+                    Delivery Note
+                  </Button>
                   {orders[orderIndex].paid && (
                     <Paper
                       ref={(ref) => accessoryDeliveries.current.push(ref)}

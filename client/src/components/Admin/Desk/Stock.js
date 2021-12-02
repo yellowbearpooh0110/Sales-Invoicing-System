@@ -119,7 +119,7 @@ const Stock = connect(mapStateToProps)((props) => {
       setFormProps([
         {
           name: 'supplierCode',
-          label: 'Suppier',
+          label: 'Supplier',
           type: 'autocomplete',
           defaultValue: stocks[index].supplierCode,
           options: ['AK', 'JC', 'AW', 'LK'],
@@ -426,7 +426,7 @@ const Stock = connect(mapStateToProps)((props) => {
           setFormProps([
             {
               name: 'supplierCode',
-              label: 'Suppier',
+              label: 'Supplier',
               type: 'autocomplete',
               options: ['AK', 'JC', 'AW', 'LK'],
               width: '30%',
