@@ -58,7 +58,7 @@ const menuLists = [
     ],
   },
   {
-    category: 'Salement',
+    category: 'Sales',
     content: [
       { to: '/user/order', icon: <BookOnlineIcon />, label: 'Order' },
       { to: '/user/quotation', icon: <BookOnlineIcon />, label: 'Quotation' },

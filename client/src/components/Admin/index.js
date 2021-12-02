@@ -59,7 +59,7 @@ const menuLists = [
     ],
   },
   {
-    category: 'Salement',
+    category: 'Sales',
     content: [
       { to: '/admin/order', icon: <BookOnlineIcon />, label: 'Order' },
       {
