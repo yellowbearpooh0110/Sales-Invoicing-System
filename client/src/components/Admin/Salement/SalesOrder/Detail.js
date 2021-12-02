@@ -1385,6 +1385,7 @@ export default connect(mapStateToProps)((props) => {
               width: '200px',
               alignItems: 'baseline',
               m: 0,
+              visibility: hasDeskTop ? 'hidden' : 'visible',
             }}
             control={
               <TextField
@@ -1395,7 +1396,6 @@ export default connect(mapStateToProps)((props) => {
                 value={productPrice}
                 fullWidth
                 sx={{ m: '10px 5px 0 0' }}
-                hidden={hasDeskTop}
               />
             }
             label="HKD"
