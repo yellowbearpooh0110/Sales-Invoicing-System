@@ -212,7 +212,7 @@ export default connect(mapStateToProps)((props) => {
     if (index < orders.length && index >= 0) {
       Swal.fire({
         title: 'Are you sure?',
-        text: 'This action will remove current ChairOrder permanently.',
+        text: 'This action will remove current Order permanently.',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Yes, Remove!',
@@ -248,7 +248,7 @@ export default connect(mapStateToProps)((props) => {
     console.log(selected);
     Swal.fire({
       title: 'Are you sure?',
-      text: 'This action will remove selected Brands permanently.',
+      text: 'This action will remove selected Orders permanently.',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Yes, Remove!',
@@ -692,7 +692,16 @@ export default connect(mapStateToProps)((props) => {
                 <ProductListItem key={index}>
                   <ProductListItemText
                     primary={`Desk: ${item.supplierCode}, ${item.model}, ${item.color}, ${item.armSize}, ${item.feetSize}, ${item.beamSize}`}
-                    secondary={`${item.topMaterial}, ${item.topColor}, ${item.topSize}`}
+                    secondary={
+                      item.DeskToOrder.hasDeskTop ? (
+                        <span>
+                          {`${item.DeskToOrder.topMaterial}, ${item.DeskToOrder.topColor}, ${item.DeskToOrder.topLength}x${item.DeskToOrder.topWidth}x${item.DeskToOrder.topThickness}, ${item.DeskToOrder.topRoundedCorners}-R${item.DeskToOrder.topCornerRadius}, ${item.DeskToOrder.topHoleCount}-${item.DeskToOrder.topHoleType} `}
+                          <a href={item.DeskToOrder.topSketchUrl}>Sketch</a>
+                        </span>
+                      ) : (
+                        'Without DeskTop'
+                      )
+                    }
                   />
                   <ProductPriceAmount
                     unitPrice={`${item.DeskToOrder.unitPrice} HKD`}

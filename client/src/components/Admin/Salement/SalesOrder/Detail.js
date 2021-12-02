@@ -169,18 +169,6 @@ const deskColumns = [
     label: 'Beam Size',
   },
   {
-    id: 'topMaterial',
-    label: 'topMaterial',
-  },
-  {
-    id: 'topColor',
-    label: 'topColor',
-  },
-  {
-    id: 'topSize',
-    label: 'topSize',
-  },
-  {
     id: 'remark',
     label: 'Special Remark',
   },
@@ -265,6 +253,7 @@ export default connect(mapStateToProps)((props) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [addOpen, setAddOpen] = useState(false);
   const [deskAddOpen, setDeskAddOpen] = useState(false);
+  const [hasDeskTop, setHasDeskTop] = useState(false);
   const [productType, setProductType] = useState('chair');
   const [productDetail, setProductDetail] = useState('');
   const [productPrice, setProductPrice] = useState(1000);
@@ -600,7 +589,16 @@ export default connect(mapStateToProps)((props) => {
                     {item.productType === 'desk' && (
                       <ProductListItemText
                         primary={`Desk: ${item.productDetail.supplierCode}, ${item.productDetail.model}, ${item.productDetail.color}, ${item.productDetail.armSize}, ${item.productDetail.feetSize}, ${item.productDetail.beamSize}`}
-                        secondary={`${item.productDetail.topMaterial}, ${item.productDetail.topColor}, ${item.productDetail.topSize}`}
+                        secondary={
+                          item.hasDeskTop ? (
+                            <span>
+                              {`${item.topMaterial}, ${item.topColor}, ${item.topLength}x${item.topWidth}x${item.topThickness}, ${item.topRoundedCorners}-R${item.topCornerRadius}, ${item.topHoleCount}-${item.topHoleType} `}
+                              <a href={item.topSketchUrl}>Sketch</a>
+                            </span>
+                          ) : (
+                            'Without DeskTop'
+                          )
+                        }
                       />
                     )}
                     {item.productType === 'accessory' && (
@@ -842,9 +840,6 @@ export default connect(mapStateToProps)((props) => {
                         <IconButton
                           onClick={(event) => {
                             event.preventDefault();
-                            setProductType('desk');
-                            setProductDetail(deskStocks[index]);
-                            setProductAmount(1);
                             if (
                               cart.find(
                                 (item) =>
@@ -860,6 +855,12 @@ export default connect(mapStateToProps)((props) => {
                               });
                               return;
                             }
+
+                            setProductType('desk');
+                            setProductDetail(deskStocks[index]);
+                            setProductPrice(deskStocks[index].unitPrice);
+                            setProductAmount(1);
+                            setHasDeskTop(false);
                             setDeskAddOpen(true);
                           }}
                         >
@@ -951,6 +952,7 @@ export default connect(mapStateToProps)((props) => {
                             event.preventDefault();
                             setProductType('accessory');
                             setProductDetail(accessoryStocks[index]);
+                            setProductPrice(accessoryStocks[index].unitPrice);
                             setProductAmount(1);
                             if (
                               cart.find(
@@ -1154,7 +1156,7 @@ export default connect(mapStateToProps)((props) => {
             control={
               <Checkbox
                 name="paid"
-                defaultChecked={paid}
+                checked={paid}
                 onChange={(e) => {
                   setPaid(e.target.checked);
                 }}
@@ -1224,7 +1226,7 @@ export default connect(mapStateToProps)((props) => {
             if (
               cart.find(
                 (item) =>
-                  item.productType === 'chair' &&
+                  item.productType === productType &&
                   item.productDetail.id === productDetail.id
               )
             ) {
@@ -1241,7 +1243,7 @@ export default connect(mapStateToProps)((props) => {
                 productType,
                 productDetail,
                 productAmount,
-                productPrice: Math.max(e.currentTarget.unitPrice.value, 0),
+                productPrice: e.currentTarget.unitPrice.value,
               })
             );
           },
@@ -1322,13 +1324,27 @@ export default connect(mapStateToProps)((props) => {
         fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
         PaperProps={{
           component: 'form',
-          onSubmit: (e) => {
+          onSubmit: async (e) => {
             e.preventDefault();
-            setAddOpen(false);
+            const data = new FormData(e.currentTarget);
+            let topSketchUrl = '';
+            if (data.get('topSketchImg') && data.get('topSketchImg').name) {
+              const uploadData = new FormData();
+              uploadData.append('file', data.get('topSketchImg'));
+              try {
+                const response = await axios.post(`/upload`, uploadData, {
+                  headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                  },
+                });
+                topSketchUrl = response.data.url;
+              } catch (err) {}
+            }
+            setDeskAddOpen(false);
             if (
               cart.find(
                 (item) =>
-                  item.productType === 'chair' &&
+                  item.productType === 'desk' &&
                   item.productDetail.id === productDetail.id
               )
             ) {
@@ -1337,6 +1353,8 @@ export default connect(mapStateToProps)((props) => {
                 title: 'Warning',
                 text: 'This product is already added.',
                 allowOutsideClick: false,
+              }).then(() => {
+                setDeskAddOpen(true);
               });
               return;
             }
@@ -1345,7 +1363,21 @@ export default connect(mapStateToProps)((props) => {
                 productType,
                 productDetail,
                 productAmount,
-                productPrice: Math.max(e.currentTarget.unitPrice.value, 0),
+                productPrice:
+                  Number(data.get('deskLegPrice')) +
+                  Number(data.get('deskTopPrice')),
+                hasDeskTop: Boolean(data.get('hasDeskTop')) || '',
+                topMaterial: data.get('topMaterial') || '',
+                topColor: data.get('topColor') || '',
+                topLength: data.get('topLength') || '',
+                topWidth: data.get('topWidth') || '',
+                topThickness: data.get('topThickness') || '',
+                topRoundedCorners: data.get('topRoundedCorners') || '',
+                topCornerRadius: data.get('topCornerRadius') || '',
+                topHoleCount: data.get('topHoleCount') || '',
+                topHoleType: data.get('topHoleType') || '',
+                topRemark: data.get('topRemark') || '',
+                topSketchUrl: topSketchUrl,
               })
             );
           },
@@ -1361,9 +1393,9 @@ export default connect(mapStateToProps)((props) => {
             }}
             control={
               <TextField
-                label="Unit Price"
+                label="Desk Leg Price"
                 type="number"
-                name="unitPrice"
+                name="deskLegPrice"
                 inputProps={{ readOnly: true }}
                 value={productPrice}
                 fullWidth
@@ -1372,6 +1404,190 @@ export default connect(mapStateToProps)((props) => {
             }
             label="HKD"
           />
+          <Divider sx={{ my: '10px' }} />
+          <Box display="flex" flexWrap="wrap" justifyContent="space-between">
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="hasDeskTop"
+                  checked={hasDeskTop}
+                  onChange={(e) => {
+                    setHasDeskTop(e.currentTarget.checked);
+                  }}
+                />
+              }
+              label="Desk Top"
+              sx={{ flexBasis: '100%', minWidth: '100%' }}
+            />
+            {[
+              {
+                name: 'topMaterial',
+                label: 'Material',
+                type: 'autocomplete',
+                defaultValue: 'Melamine',
+                options: [
+                  'Melamine',
+                  'Laminate',
+                  'North American Walnut',
+                  'South American Walnut',
+                  'Red Oak',
+                  'Maple, Bamboo',
+                  'Melamine with glass top',
+                ],
+                width: '65%',
+              },
+              {
+                name: 'topColor',
+                label: 'Color',
+                type: 'text',
+                width: '30%',
+              },
+              {
+                name: 'topLength',
+                label: 'Length',
+                type: 'number',
+                defaultValue: 700,
+                inputProps: { min: 0 },
+                width: '30%',
+              },
+              {
+                name: 'topWidth',
+                label: 'Width',
+                type: 'number',
+                defaultValue: 400,
+                inputProps: { min: 0 },
+                width: '30%',
+              },
+              {
+                name: 'topThickness',
+                label: 'Thickness',
+                type: 'number',
+                defaultValue: 25,
+                inputProps: { min: 0 },
+                width: '30%',
+              },
+              {
+                name: 'topRoundedCorners',
+                label: 'Rounded Corners',
+                type: 'select',
+                defaultValue: 0,
+                options: [0, 1, 2, 3, 4],
+                width: '48%',
+              },
+              {
+                name: 'topCornerRadius',
+                label: 'Corner Radius',
+                type: 'number',
+                defaultValue: 50,
+                inputProps: { min: 0 },
+                width: '48%',
+              },
+              {
+                name: 'topHoleCount',
+                label: 'Number of Holes',
+                type: 'select',
+                defaultValue: 0,
+                options: [0, 1, 2, 3],
+                width: '48%',
+              },
+              {
+                name: 'topHoleType',
+                label: 'Type of Holes',
+                type: 'select',
+                defaultValue: 'Rounded',
+                options: ['Rounded', 'Rectangular'],
+                width: '48%',
+              },
+              {
+                name: 'topRemark',
+                label: 'Remark',
+                type: 'text',
+                width: '100%',
+              },
+              {
+                name: 'topSketchImg',
+                label: 'Sketch Image (Optional)',
+                type: 'file',
+                inputProps: {
+                  accept: 'image/png, image/gif, image/jpeg',
+                },
+                InputLabelProps: { shrink: true },
+                width: '100%',
+              },
+            ].map(({ type, width, ...restParams }, index) => {
+              if (type === 'autocomplete') {
+                const { name, label, ...autocomParams } = restParams;
+                return (
+                  <Autocomplete
+                    key={index}
+                    sx={{ flexBasis: width, minWidth: width }}
+                    renderInput={(params) => (
+                      <TextField {...params} name={name} label={label} />
+                    )}
+                    disabled={!hasDeskTop}
+                    {...autocomParams}
+                  />
+                );
+              } else if (type === 'select') {
+                const { name, label, options, ...selectParams } = restParams;
+                return (
+                  <FormControl
+                    key={index}
+                    sx={{ flexBasis: width, minWidth: width }}
+                  >
+                    <InputLabel id={`desk-top-${name}-select-label`}>
+                      {label}
+                    </InputLabel>
+                    <Select
+                      labelId={`desk-top-${name}-select-label`}
+                      id={`desk-top-${name}-select`}
+                      name={name}
+                      label={label}
+                      size="small"
+                      disabled={!hasDeskTop}
+                      {...selectParams}
+                    >
+                      {options.map((selectOption, selectOptionIndex) => (
+                        <MenuItem key={selectOptionIndex} value={selectOption}>
+                          {selectOption}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                );
+              } else
+                return (
+                  <TextField
+                    key={index}
+                    type={type}
+                    sx={{ flexBasis: width, minWidth: width }}
+                    disabled={!hasDeskTop}
+                    {...restParams}
+                  />
+                );
+            })}
+            <FormControlLabel
+              sx={{
+                width: '200px',
+                alignItems: 'baseline',
+                m: '0 auto',
+              }}
+              control={
+                <TextField
+                  label="Desk Top Price"
+                  type="number"
+                  name="deskTopPrice"
+                  inputProps={{ min: 0 }}
+                  defaultValue={1000}
+                  fullWidth
+                  sx={{ m: '10px 5px 0 0' }}
+                  disabled={!hasDeskTop}
+                />
+              }
+              label="HKD"
+            />
+          </Box>
+          <Divider sx={{ my: '10px' }} />
           <Box
             sx={{
               display: 'flex',
@@ -1406,140 +1622,6 @@ export default connect(mapStateToProps)((props) => {
             >
               <AddIcon />
             </IconButton>
-          </Box>
-          <Divider sx={{ my: '10px' }} />
-          <FormControlLabel
-            control={<Checkbox name={'hasTalbeTop'} defaultChecked={false} />}
-            label="Table Top"
-            sx={{ flexBasis: '100%', minWidth: '100%' }}
-          />
-          <Box display="flex" flexWrap="wrap" justifyContent="space-between">
-            {[
-              {
-                name: 'topMaterial',
-                label: 'Material',
-                type: 'autocomplete',
-                options: [
-                  'Melamine',
-                  'Laminate',
-                  'North American Walnut',
-                  'South American Walnut',
-                  'Red Oak',
-                  'Maple, Bamboo',
-                  'Melamine with glass top',
-                ],
-                width: '65%',
-              },
-              {
-                name: 'topColor',
-                label: 'Color',
-                type: 'text',
-                width: '30%',
-              },
-              {
-                name: 'topLength',
-                label: 'Length',
-                type: 'number',
-                inputProps: { min: 0 },
-                width: '30%',
-              },
-              {
-                name: 'topWidth',
-                label: 'Width',
-                type: 'number',
-                inputProps: { min: 0 },
-                width: '30%',
-              },
-              {
-                name: 'topThickness',
-                label: 'Thickness',
-                type: 'number',
-                inputProps: { min: 0 },
-                width: '30%',
-              },
-              {
-                name: 'roundedCorners',
-                label: 'Rounded Corners',
-                type: 'select',
-                defaultValue: 0,
-                options: [0, 1, 2, 3, 4],
-                width: '48%',
-              },
-              {
-                name: 'cornerRadius',
-                label: 'Corner Radius',
-                type: 'number',
-                inputProps: { min: 0 },
-                width: '48%',
-              },
-              {
-                name: 'holeCount',
-                label: 'Number of Holes',
-                type: 'select',
-                defaultValue: 0,
-                options: [0, 1, 2, 3],
-                width: '48%',
-              },
-              {
-                name: 'holeType',
-                label: 'Type of Holes',
-                type: 'select',
-                defaultValue: 'Rounded',
-                options: ['Rounded', 'Rectangular'],
-                width: '48%',
-              },
-              {
-                name: 'remark',
-                label: 'Remark',
-                type: 'text',
-                width: '100%',
-              },
-            ].map(({ type, width, ...restParams }, index) => {
-              if (type === 'autocomplete') {
-                const { name, label, ...autocomParams } = restParams;
-                return (
-                  <Autocomplete
-                    key={index}
-                    sx={{ flexBasis: width, minWidth: width }}
-                    renderInput={(params) => (
-                      <TextField {...params} name={name} label={label} />
-                    )}
-                    {...autocomParams}
-                  />
-                );
-              } else if (type === 'select') {
-                const { name, label, options, ...selectParams } = restParams;
-                return (
-                  <FormControl sx={{ flexBasis: width, minWidth: width }}>
-                    <InputLabel id={`desk-top-${name}-select-label`}>
-                      {label}
-                    </InputLabel>
-                    <Select
-                      labelId={`desk-top-${name}-select-label`}
-                      id={`desk-top-${name}-select`}
-                      name={name}
-                      label={label}
-                      size="small"
-                      {...selectParams}
-                    >
-                      {options.map((selectOption, selectOptionIndex) => (
-                        <MenuItem key={selectOptionIndex} value={selectOption}>
-                          {selectOption}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                );
-              } else
-                return (
-                  <TextField
-                    key={index}
-                    type={type}
-                    sx={{ flexBasis: width, minWidth: width }}
-                    {...restParams}
-                  />
-                );
-            })}
           </Box>
         </DialogContent>
         <DialogActions>

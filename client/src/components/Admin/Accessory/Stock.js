@@ -222,7 +222,7 @@ const Stock = connect(mapStateToProps)((props) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     let thumbnailUrl = '';
-    if (data.get('thumbnail')) {
+    if (data.get('thumbnail').name) {
       const uploadData = new FormData();
       uploadData.append('file', data.get('thumbnail'));
       try {
@@ -277,7 +277,7 @@ const Stock = connect(mapStateToProps)((props) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     let thumbnailUrl = '';
-    if (data.get('thumbnail')) {
+    if (data.get('thumbnail').name) {
       const uploadData = new FormData();
       uploadData.append('file', data.get('thumbnail'));
       try {

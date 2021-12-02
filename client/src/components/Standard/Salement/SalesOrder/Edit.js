@@ -31,12 +31,16 @@ const Edit = (props) => {
         productAmount: ChairToOrder.qty,
       }))
         .concat(
-          DeskStocks.map(({ DeskToOrder, ...restProps }) => ({
-            productType: 'desk',
-            productDetail: restProps,
-            productPrice: DeskToOrder.unitPrice,
-            productAmount: DeskToOrder.qty,
-          }))
+          DeskStocks.map(({ DeskToOrder, ...restProps }) => {
+            const { unitPrice, qty, ...deskTopProps } = DeskToOrder;
+            return {
+              productType: 'desk',
+              productDetail: restProps,
+              productPrice: unitPrice,
+              productAmount: qty,
+              ...deskTopProps,
+            };
+          })
         )
         .concat(
           AccessoryStocks.map(({ AccessoryToOrder, ...restProps }) => ({

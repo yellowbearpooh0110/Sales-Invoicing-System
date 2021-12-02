@@ -56,12 +56,17 @@ const theme = createTheme({
         size: 'small',
       },
     },
+    MuiFormControl: {
+      defaultProps: {
+        margin: 'dense',
+      },
+    },
   },
 });
 
-// axios.defaults.baseURL = 'http://localhost:4000/api';
+axios.defaults.baseURL = 'http://localhost:4000/api';
 // axios.defaults.baseURL = 'http://97.74.83.170/api';
-axios.defaults.baseURL = 'http://blueoceanblue.com/api';
+// axios.defaults.baseURL = 'http://blueoceanblue.com/api';
 
 axios.interceptors.request.use(
   function (config) {

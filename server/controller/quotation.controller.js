@@ -1,6 +1,7 @@
 const chairStockController = require('./chairStock.controller');
 const deskStockController = require('./deskStock.controller');
 const accessoryStockController = require('./accessoryStock.controller');
+const { drawDeskTop } = require('server/middleware/deskDrawing');
 
 module.exports = {
   getAll,
@@ -25,19 +26,25 @@ async function getAll(where) {
       {
         model: db.ChairStock,
         through: {
-          attributes: ['unitPrice', 'qty'],
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
         },
       },
       {
         model: db.DeskStock,
         through: {
-          attributes: ['unitPrice', 'qty'],
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
         },
       },
       {
         model: db.AccessoryStock,
         through: {
-          attributes: ['unitPrice', 'qty'],
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
         },
       },
     ],
@@ -48,93 +55,144 @@ async function getById(id) {
   return await getQuotation(id);
 }
 
-async function create(params) {
-  const { products, ...restParams } = params;
+async function create(req, res, next) {
+  try {
+    const host = req.get('host');
+    const protocol = req.protocol;
+    const { products, ...restParams } = req.body;
+    restParams.sellerId = req.user.id;
 
-  const quotation = await db.Quotation.create({ ...restParams });
+    const quotation = await db.Quotation.create({ ...restParams });
 
-  for (var index = 0; index < products.length; index++) {
-    if (products[index].productType === 'chair') {
-      const stock = await chairStockController.getById(
-        products[index].productId
-      );
-      await quotation.addChairStock(stock, {
-        through: {
-          unitPrice: products[index].productPrice,
-          qty: products[index].productAmount,
-        },
-      });
-    } else if (products[index].productType === 'desk') {
-      const stock = await deskStockController.getById(
-        products[index].productId
-      );
-      await quotation.addDeskStock(stock, {
-        through: {
-          unitPrice: products[index].productPrice,
-          qty: products[index].productAmount,
-        },
-      });
-    } else if (products[index].productType === 'accessory') {
-      const stock = await accessoryStockController.getById(
-        products[index].productId
-      );
-      await quotation.addAccessoryStock(stock, {
-        through: {
-          unitPrice: products[index].productPrice,
-          qty: products[index].productAmount,
-        },
-      });
+    for (var index = 0; index < products.length; index++) {
+      if (products[index].productType === 'chair') {
+        const stock = await chairStockController.getById(
+          products[index].productId
+        );
+        await quotation.addChairStock(stock, {
+          through: {
+            unitPrice: products[index].productPrice,
+            qty: products[index].productAmount,
+          },
+        });
+      } else if (products[index].productType === 'desk') {
+        const stock = await deskStockController.getById(
+          products[index].productId
+        );
+        const {
+          productPrice: unitPrice,
+          productAmount: qty,
+          productType,
+          ...restParams
+        } = products[index];
+
+        if (restParams.hasDeskTop && !restParams.topSketchUrl)
+          restParams.topSketchUrl = `${protocol}://${host}/${await drawDeskTop({
+            topLength: restParams.topLength,
+            topWidth: restParams.topWidth,
+            topThickness: restParams.topThickness,
+            topRoundedCorners: restParams.topRoundedCorners,
+            topCornerRadius: restParams.topCornerRadius,
+            topHoleCount: restParams.topHoleCount,
+            topHoleType: restParams.topHoleType,
+          })}`;
+        await quotation.addDeskStock(stock, {
+          through: {
+            unitPrice,
+            qty,
+            ...restParams,
+          },
+        });
+      } else if (products[index].productType === 'accessory') {
+        const stock = await accessoryStockController.getById(
+          products[index].productId
+        );
+        await quotation.addAccessoryStock(stock, {
+          through: {
+            unitPrice: products[index].productPrice,
+            qty: products[index].productAmount,
+          },
+        });
+      }
     }
+    res.json({ message: 'New Quotation was created successfully.' });
+  } catch (err) {
+    next(err);
   }
 }
 
-async function update(id, params) {
-  const quotation = await getQuotation(id);
-  const { ChairStocks, DeskStocks, AccessoryStocks } = quotation;
-  const { products, ...restParams } = params;
-  Object.assign(quotation, restParams);
-  await quotation.save();
-  for (var index = 0; index < ChairStocks.length; index++) {
-    await quotation.removeChairStock(ChairStocks[index]);
-  }
-  for (var index = 0; index < DeskStocks.length; index++) {
-    await quotation.removeDeskStock(DeskStocks[index].id);
-  }
-  for (var index = 0; index < AccessoryStocks.length; index++) {
-    await quotation.removeAccessoryStock(AccessoryStocks[index].id);
-  }
-  for (var index = 0; index < products.length; index++) {
-    if (products[index].productType === 'chair') {
-      const stock = await chairStockController.getById(
-        products[index].productId
-      );
-      await quotation.addChairStock(stock, {
-        through: {
-          unitPrice: products[index].productPrice,
-          qty: products[index].productAmount,
-        },
-      });
-    } else if (products[index].productType === 'desk') {
-      const stock = await deskStockController.getById(
-        products[index].productId
-      );
-      await quotation.addDeskStock(stock, {
-        through: {
-          unitPrice: products[index].productPrice,
-          qty: products[index].productAmount,
-        },
-      });
-    } else if (products[index].productType === 'accessory') {
-      const stock = await accessoryStockController.getById(
-        products[index].productId
-      );
-      await quotation.addAccessoryStock(stock, {
-        through: {
-          unitPrice: products[index].productPrice,
-          qty: products[index].productAmount,
-        },
-      });
+async function update(req, res, next) {
+  try {
+    const host = req.get('host');
+    const protocol = req.protocol;
+    const id = req.params.id;
+    const quotation = await getQuotation(id);
+    const { ChairStocks, DeskStocks, AccessoryStocks } = quotation;
+    const { products, ...restParams } = req.body;
+    Object.assign(quotation, restParams);
+    await quotation.save();
+    for (var index = 0; index < ChairStocks.length; index++) {
+      await quotation.removeChairStock(ChairStocks[index]);
     }
+    for (var index = 0; index < DeskStocks.length; index++) {
+      await quotation.removeDeskStock(DeskStocks[index].id);
+    }
+    for (var index = 0; index < AccessoryStocks.length; index++) {
+      await quotation.removeAccessoryStock(AccessoryStocks[index].id);
+    }
+    for (var index = 0; index < products.length; index++) {
+      if (products[index].productType === 'chair') {
+        const stock = await chairStockController.getById(
+          products[index].productId
+        );
+        await quotation.addChairStock(stock, {
+          through: {
+            unitPrice: products[index].productPrice,
+            qty: products[index].productAmount,
+          },
+        });
+      } else if (products[index].productType === 'desk') {
+        const stock = await deskStockController.getById(
+          products[index].productId
+        );
+        const {
+          productPrice: unitPrice,
+          productAmount: qty,
+          productType,
+          ...restParams
+        } = products[index];
+        if (restParams.hasDeskTop && !restParams.topSketchUrl)
+          restParams.topSketchUrl = `${protocol}://${host}/${await drawDeskTop({
+            topLength: restParams.topLength,
+            topWidth: restParams.topWidth,
+            topThickness: restParams.topThickness,
+            topRoundedCorners: restParams.topRoundedCorners,
+            topCornerRadius: restParams.topCornerRadius,
+            topHoleCount: restParams.topHoleCount,
+            topHoleType: restParams.topHoleType,
+          })}`;
+        await quotation.addDeskStock(stock, {
+          through: {
+            unitPrice,
+            qty,
+            ...restParams,
+          },
+        });
+      } else if (products[index].productType === 'accessory') {
+        const stock = await accessoryStockController.getById(
+          products[index].productId
+        );
+        await quotation.addAccessoryStock(stock, {
+          through: {
+            unitPrice: products[index].productPrice,
+            qty: products[index].productAmount,
+          },
+        });
+      }
+    }
+    res.json({ message: 'Quotation was updated successfully.' });
+  } catch (err) {
+    next(err);
   }
 }
 
@@ -167,19 +225,25 @@ async function getQuotation(id) {
       {
         model: db.ChairStock,
         through: {
-          attributes: ['unitPrice', 'qty'],
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
         },
       },
       {
         model: db.DeskStock,
         through: {
-          attributes: ['unitPrice', 'qty'],
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
         },
       },
       {
         model: db.AccessoryStock,
         through: {
-          attributes: ['unitPrice', 'qty'],
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
         },
       },
     ],

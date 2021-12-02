@@ -20,11 +20,6 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: 1,
     },
-    preOrder: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true,
-    },
   };
 
   return sequelize.define('ChairToQuotation', attributes);

@@ -58,18 +58,6 @@ const columns = [
     label: 'Beam Size',
   },
   {
-    id: 'topMaterial',
-    label: 'topMaterial',
-  },
-  {
-    id: 'topColor',
-    label: 'topColor',
-  },
-  {
-    id: 'topSize',
-    label: 'topSize',
-  },
-  {
     id: 'remark',
     label: 'Special Remark',
   },
@@ -176,36 +164,6 @@ const Stock = connect(mapStateToProps)((props) => {
           width: '30%',
         },
         {
-          name: 'topMaterial',
-          label: 'Top Material',
-          type: 'autocomplete',
-          defaultValue: stocks[index].topMaterial,
-          options: [
-            'Melamine',
-            'Laminate',
-            'North American Walnut',
-            'South American Walnut',
-            'Red Oak',
-            'Maple, Bamboo',
-            'Melamine with glass top',
-          ],
-          width: '65%',
-        },
-        {
-          name: 'topColor',
-          label: 'Top Color',
-          type: 'text',
-          defaultValue: stocks[index].topColor,
-          width: '30%',
-        },
-        {
-          name: 'topSize',
-          label: 'Top Size',
-          type: 'text',
-          defaultValue: stocks[index].topSize,
-          width: '100%',
-        },
-        {
           name: 'remark',
           label: 'Remark',
           multiline: true,
@@ -309,7 +267,7 @@ const Stock = connect(mapStateToProps)((props) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     let thumbnailUrl = '';
-    if (data.get('thumbnail')) {
+    if (data.get('thumbnail').name) {
       const uploadData = new FormData();
       uploadData.append('file', data.get('thumbnail'));
       try {
@@ -329,9 +287,6 @@ const Stock = connect(mapStateToProps)((props) => {
         armSize: data.get('armSize'),
         feetSize: data.get('feetSize'),
         beamSize: data.get('beamSize'),
-        topMaterial: data.get('topMaterial'),
-        topColor: data.get('topColor'),
-        topSize: data.get('topSize'),
         remark: data.get('remark'),
         thumbnailUrl,
         unitPrice: data.get('unitPrice'),
@@ -367,7 +322,7 @@ const Stock = connect(mapStateToProps)((props) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     let thumbnailUrl = '';
-    if (data.get('thumbnail')) {
+    if (data.get('thumbnail').name) {
       const uploadData = new FormData();
       uploadData.append('file', data.get('thumbnail'));
       try {
@@ -387,9 +342,6 @@ const Stock = connect(mapStateToProps)((props) => {
         armSize: data.get('armSize'),
         feetSize: data.get('feetSize'),
         beamSize: data.get('beamSize'),
-        topMaterial: data.get('topMaterial'),
-        topColor: data.get('topColor'),
-        topSize: data.get('topSize'),
         remark: data.get('remark'),
         thumbnailUrl,
         unitPrice: data.get('unitPrice'),
@@ -511,33 +463,6 @@ const Stock = connect(mapStateToProps)((props) => {
               type: 'autocomplete',
               options: ['740-1100', 'Regular'],
               width: '30%',
-            },
-            {
-              name: 'topMaterial',
-              label: 'Top Material',
-              type: 'autocomplete',
-              options: [
-                'Melamine',
-                'Laminate',
-                'North American Walnut',
-                'South American Walnut',
-                'Red Oak',
-                'Maple, Bamboo',
-                'Melamine with glass top',
-              ],
-              width: '65%',
-            },
-            {
-              name: 'topColor',
-              label: 'Top Color',
-              type: 'text',
-              width: '30%',
-            },
-            {
-              name: 'topSize',
-              label: 'Top Size',
-              type: 'text',
-              width: '100%',
             },
             {
               name: 'remark',

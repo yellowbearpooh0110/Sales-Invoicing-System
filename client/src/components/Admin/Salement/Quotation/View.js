@@ -60,16 +60,12 @@ const columns = [
     label: 'Seller',
   },
   {
-    id: 'orderDate',
-    label: 'Order',
+    id: 'quotationDate',
+    label: 'Quotation',
   },
   {
     id: 'timeLine',
     label: 'TimeLine',
-  },
-  {
-    id: 'isPreOrder',
-    label: 'PreOrder',
   },
   {
     id: 'remark',
@@ -127,7 +123,7 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps)((props) => {
   const theme = useTheme();
 
-  const [orders, setOrders] = useState([]);
+  const [quotations, setquotations] = useState([]);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -138,7 +134,7 @@ export default connect(mapStateToProps)((props) => {
   const emailContent = useRef(null);
   const [filterAnchor, setFilterAnchor] = useState(null);
 
-  const [orderIndex, setOrderIndex] = useState(0);
+  const [quotationIndex, setquotationIndex] = useState(0);
 
   const handleFilterClick = (e) => {
     e.preventDefault();
@@ -201,15 +197,15 @@ export default connect(mapStateToProps)((props) => {
   };
 
   const handleEditClick = (index) => {
-    if (index < orders.length && index >= 0) {
+    if (index < quotations.length && index >= 0) {
     }
   };
 
   const handleRemoveClick = (index) => {
-    if (index < orders.length && index >= 0) {
+    if (index < quotations.length && index >= 0) {
       Swal.fire({
         title: 'Are you sure?',
-        text: 'This action will remove current ChairOrder permanently.',
+        text: 'This action will remove current Quotation permanently.',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Yes, Remove!',
@@ -218,10 +214,10 @@ export default connect(mapStateToProps)((props) => {
       }).then((result) => {
         if (result.isConfirmed) {
           axios
-            .delete(`/quotation/${orders[index].id}`)
+            .delete(`/quotation/${quotations[index].id}`)
             .then((response) => {
               // handle success
-              getOrders();
+              getQuotations();
             })
             .catch(function (error) {
               // handle error
@@ -245,7 +241,7 @@ export default connect(mapStateToProps)((props) => {
     console.log(selected);
     Swal.fire({
       title: 'Are you sure?',
-      text: 'This action will remove selected Brands permanently.',
+      text: 'This action will remove selected Quotations permanently.',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Yes, Remove!',
@@ -259,7 +255,7 @@ export default connect(mapStateToProps)((props) => {
           })
           .then((response) => {
             // handle success
-            getOrders();
+            getQuotations();
           })
           .catch(function (error) {
             // handle error
@@ -278,12 +274,13 @@ export default connect(mapStateToProps)((props) => {
     });
   };
 
-  const getOrders = (cancelToken) => {
+  const getQuotations = (cancelToken) => {
     axios
       .get('/quotation', { cancelToken })
       .then((response) => {
         // handle success
-        setOrders(response.data);
+        setquotations(response.data);
+        console.log(response.data);
       })
       .catch(function (error) {
         // handle error
@@ -296,7 +293,7 @@ export default connect(mapStateToProps)((props) => {
 
   useEffect(() => {
     const source = axios.CancelToken.source();
-    getOrders(source.token);
+    getQuotations(source.token);
     return () => source.cancel('Brand Component got unmounted');
   }, []);
 
@@ -316,8 +313,8 @@ export default connect(mapStateToProps)((props) => {
         New Quotation
       </Button>
       <DataGrid
-        title="Sales Orders"
-        rows={orders.map(
+        title="Sales quotations"
+        rows={quotations.map(
           (
             {
               id,
@@ -327,7 +324,6 @@ export default connect(mapStateToProps)((props) => {
               floor,
               unit,
               Seller,
-              isPreOrder,
               discount,
               createdAt,
               timeLine,
@@ -346,7 +342,7 @@ export default connect(mapStateToProps)((props) => {
               timeLine % 7 !== 0
                 ? `${timeLine} day${timeLine === 1 ? '' : 's'}`
                 : `${timeLine / 7} week${timeLine / 7 === 1 ? '' : 's'}`,
-            orderDate: (() => {
+            quotationDate: (() => {
               const createdTime = new Date(createdAt);
               createdTime.setMinutes(
                 createdTime.getMinutes() - createdTime.getTimezoneOffset()
@@ -355,23 +351,12 @@ export default connect(mapStateToProps)((props) => {
             })(),
             discount: `${discount}%`,
             clientAddress: [district, street, block, floor, unit].join(', '),
-            isPreOrder:
-              (!orders[index].ChairStocks.length ||
-                !orders[index].ChairStocks.reduce(
-                  (acc, cur) => cur.ChairToQuotation.preOrder * acc
-                )) *
-              (!orders[index].DeskStocks.length ||
-                !orders[index].DeskStocks.reduce(
-                  (acc, cur) => cur.DeskToQuotation.preOrder * acc
-                ))
-                ? 'No'
-                : 'Yes',
             products: (
               <IconButton
                 sx={{ my: '5px' }}
                 onClick={(event) => {
                   event.preventDefault();
-                  setOrderIndex(index);
+                  setquotationIndex(index);
                   setDetailOpen(true);
                 }}
               >
@@ -398,7 +383,7 @@ export default connect(mapStateToProps)((props) => {
                       paid: !paid,
                     })
                     .then(() => {
-                      getOrders();
+                      getQuotations();
                     })
                     .catch(function (error) {
                       // handle error
@@ -489,7 +474,7 @@ export default connect(mapStateToProps)((props) => {
                 component={RouterLink}
                 to={{
                   pathname: '/admin/quotation/edit',
-                  state: { order: orders[index] },
+                  state: { quotation: quotations[index] },
                 }}
               >
                 <EditIcon />
@@ -537,7 +522,7 @@ export default connect(mapStateToProps)((props) => {
               inputRef={whatsAppMessage}
               label="Message"
               fullWidth
-              defaultValue={`Hello ${name},\nThank you for your order! Please find here (payment link URL) for your payment.\nOnce finished, your order will be processed accordingly.`}
+              defaultValue={`Hello ${name}.`}
               multiline
               minRows={4}
               maxRows={10}
@@ -581,7 +566,7 @@ export default connect(mapStateToProps)((props) => {
               inputRef={emailContent}
               label="Message"
               fullWidth
-              defaultValue={`Hello ${name},\nThank you for your order! Please find here (payment link URL) for your payment.\nOnce finished, your order will be processed accordingly.`}
+              defaultValue={`Hello ${name}.`}
               multiline
               minRows={4}
               maxRows={10}
@@ -612,8 +597,8 @@ export default connect(mapStateToProps)((props) => {
         <DialogTitle>Products Details</DialogTitle>
         <DialogContent>
           <ProductList>
-            {orderIndex < orders.length &&
-              orders[orderIndex].ChairStocks.map((item, index) => (
+            {quotationIndex < quotations.length &&
+              quotations[quotationIndex].ChairStocks.map((item, index) => (
                 <ProductListItem key={index}>
                   <ProductListItemText
                     primary={`Chair: ${item.brand}, ${item.model}, ${item.frameColor}, ${item.backColor}, ${item.seatColor}`}
@@ -627,12 +612,21 @@ export default connect(mapStateToProps)((props) => {
                   />
                 </ProductListItem>
               ))}
-            {orderIndex < orders.length &&
-              orders[orderIndex].DeskStocks.map((item, index) => (
+            {quotationIndex < quotations.length &&
+              quotations[quotationIndex].DeskStocks.map((item, index) => (
                 <ProductListItem key={index}>
                   <ProductListItemText
                     primary={`Desk: ${item.supplierCode}, ${item.model}, ${item.color}, ${item.armSize}, ${item.feetSize}, ${item.beamSize}`}
-                    secondary={`${item.topMaterial}, ${item.topColor}, ${item.topSize}`}
+                    secondary={
+                      item.DeskToQuotation.hasDeskTop ? (
+                        <span>
+                          {`${item.DeskToQuotation.topMaterial}, ${item.DeskToQuotation.topColor}, ${item.DeskToQuotation.topLength}x${item.DeskToQuotation.topWidth}x${item.DeskToQuotation.topThickness}, ${item.DeskToQuotation.topRoundedCorners}-R${item.DeskToQuotation.topCornerRadius}, ${item.DeskToQuotation.topHoleCount}-${item.DeskToQuotation.topHoleType} `}
+                          <a href={item.DeskToQuotation.topSketchUrl}>Sketch</a>
+                        </span>
+                      ) : (
+                        'Without DeskTop'
+                      )
+                    }
                   />
                   <ProductPriceAmount
                     unitPrice={`${item.DeskToQuotation.unitPrice} HKD`}
@@ -640,8 +634,8 @@ export default connect(mapStateToProps)((props) => {
                   />
                 </ProductListItem>
               ))}
-            {orderIndex < orders.length &&
-              orders[orderIndex].AccessoryStocks.map((item, index) => (
+            {quotationIndex < quotations.length &&
+              quotations[quotationIndex].AccessoryStocks.map((item, index) => (
                 <ProductListItem key={index}>
                   <ProductListItemText
                     primary={`Accessory: ${item.color}`}

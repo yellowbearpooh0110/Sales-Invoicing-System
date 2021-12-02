@@ -10,11 +10,16 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
+  FormControl,
   FormControlLabel,
   IconButton,
+  InputLabel,
+  MenuItem,
   Paper,
   Radio,
   RadioGroup,
+  Select,
   Step,
   Stepper,
   StepLabel,
@@ -29,6 +34,8 @@ import {
   Delete as DeleteIcon,
   Remove as RemoveIcon,
 } from '@mui/icons-material';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import MuiPhoneNumber from 'material-ui-phone-number';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -162,18 +169,6 @@ const deskColumns = [
     label: 'Beam Size',
   },
   {
-    id: 'topMaterial',
-    label: 'topMaterial',
-  },
-  {
-    id: 'topColor',
-    label: 'topColor',
-  },
-  {
-    id: 'topSize',
-    label: 'topSize',
-  },
-  {
     id: 'remark',
     label: 'Special Remark',
   },
@@ -246,6 +241,7 @@ const accessoryColumns = [
 ];
 
 export default connect(mapStateToProps)((props) => {
+  const theme = useTheme();
   const { componentType, initialClient, initialCart } = props;
 
   const steps = [
@@ -256,6 +252,8 @@ export default connect(mapStateToProps)((props) => {
   const clientForm = useRef(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [addOpen, setAddOpen] = useState(false);
+  const [deskAddOpen, setDeskAddOpen] = useState(false);
+  const [hasDeskTop, setHasDeskTop] = useState(false);
   const [productType, setProductType] = useState('chair');
   const [productDetail, setProductDetail] = useState('');
   const [productPrice, setProductPrice] = useState(1000);
@@ -591,7 +589,16 @@ export default connect(mapStateToProps)((props) => {
                     {item.productType === 'desk' && (
                       <ProductListItemText
                         primary={`Desk: ${item.productDetail.supplierCode}, ${item.productDetail.model}, ${item.productDetail.color}, ${item.productDetail.armSize}, ${item.productDetail.feetSize}, ${item.productDetail.beamSize}`}
-                        secondary={`${item.productDetail.topMaterial}, ${item.productDetail.topColor}, ${item.productDetail.topSize}`}
+                        secondary={
+                          item.hasDeskTop ? (
+                            <span>
+                              {`${item.topMaterial}, ${item.topColor}, ${item.topLength}x${item.topWidth}x${item.topThickness}, ${item.topRoundedCorners}-R${item.topCornerRadius}, ${item.topHoleCount}-${item.topHoleType} `}
+                              <a href={item.topSketchUrl}>Sketch</a>
+                            </span>
+                          ) : (
+                            'Without DeskTop'
+                          )
+                        }
                       />
                     )}
                     {item.productType === 'accessory' && (
@@ -833,9 +840,6 @@ export default connect(mapStateToProps)((props) => {
                         <IconButton
                           onClick={(event) => {
                             event.preventDefault();
-                            setProductType('desk');
-                            setProductDetail(deskStocks[index]);
-                            setProductAmount(1);
                             if (
                               cart.find(
                                 (item) =>
@@ -851,7 +855,13 @@ export default connect(mapStateToProps)((props) => {
                               });
                               return;
                             }
-                            setAddOpen(true);
+
+                            setProductType('desk');
+                            setProductDetail(deskStocks[index]);
+                            setProductPrice(deskStocks[index].unitPrice);
+                            setProductAmount(1);
+                            setHasDeskTop(false);
+                            setDeskAddOpen(true);
                           }}
                         >
                           <AddIcon />
@@ -942,6 +952,7 @@ export default connect(mapStateToProps)((props) => {
                             event.preventDefault();
                             setProductType('accessory');
                             setProductDetail(accessoryStocks[index]);
+                            setProductPrice(accessoryStocks[index].unitPrice);
                             setProductAmount(1);
                             if (
                               cart.find(
@@ -1132,6 +1143,7 @@ export default connect(mapStateToProps)((props) => {
           </Typography>
           <TextField
             name="paymentTerms"
+            size="small"
             sx={{ flexBasis: '100%', minWidth: '100%' }}
             label="Payment Terms"
           />
@@ -1144,7 +1156,7 @@ export default connect(mapStateToProps)((props) => {
             control={
               <Checkbox
                 name="paid"
-                defaultChecked={paid}
+                checked={paid}
                 onChange={(e) => {
                   setPaid(e.target.checked);
                 }}
@@ -1205,6 +1217,7 @@ export default connect(mapStateToProps)((props) => {
         open={addOpen}
         maxWidth="sm"
         fullWidth
+        fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
         PaperProps={{
           component: 'form',
           onSubmit: (e) => {
@@ -1213,7 +1226,7 @@ export default connect(mapStateToProps)((props) => {
             if (
               cart.find(
                 (item) =>
-                  item.productType === 'chair' &&
+                  item.productType === productType &&
                   item.productDetail.id === productDetail.id
               )
             ) {
@@ -1230,7 +1243,7 @@ export default connect(mapStateToProps)((props) => {
                 productType,
                 productDetail,
                 productAmount,
-                productPrice: Math.max(e.currentTarget.unitPrice.value, 0),
+                productPrice: e.currentTarget.unitPrice.value,
               })
             );
           },
@@ -1297,6 +1310,325 @@ export default connect(mapStateToProps)((props) => {
           <Button
             onClick={(e) => {
               setAddOpen(false);
+            }}
+          >
+            Cancle
+          </Button>
+          <Button type="submit">OK</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={deskAddOpen}
+        maxWidth="sm"
+        fullWidth
+        fullScreen={useMediaQuery(theme.breakpoints.down('sm'))}
+        PaperProps={{
+          component: 'form',
+          onSubmit: async (e) => {
+            e.preventDefault();
+            const data = new FormData(e.currentTarget);
+            let topSketchUrl = '';
+            if (data.get('topSketchImg') && data.get('topSketchImg').name) {
+              const uploadData = new FormData();
+              uploadData.append('file', data.get('topSketchImg'));
+              try {
+                const response = await axios.post(`/upload`, uploadData, {
+                  headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                  },
+                });
+                topSketchUrl = response.data.url;
+              } catch (err) {}
+            }
+            setDeskAddOpen(false);
+            if (
+              cart.find(
+                (item) =>
+                  item.productType === 'desk' &&
+                  item.productDetail.id === productDetail.id
+              )
+            ) {
+              Swal.fire({
+                icon: 'warning',
+                title: 'Warning',
+                text: 'This product is already added.',
+                allowOutsideClick: false,
+              }).then(() => {
+                setDeskAddOpen(true);
+              });
+              return;
+            }
+            setCart(
+              cart.concat({
+                productType,
+                productDetail,
+                productAmount,
+                productPrice:
+                  Number(data.get('deskLegPrice')) +
+                  Number(data.get('deskTopPrice')),
+                hasDeskTop: Boolean(data.get('hasDeskTop')) || '',
+                topMaterial: data.get('topMaterial') || '',
+                topColor: data.get('topColor') || '',
+                topLength: data.get('topLength') || '',
+                topWidth: data.get('topWidth') || '',
+                topThickness: data.get('topThickness') || '',
+                topRoundedCorners: data.get('topRoundedCorners') || '',
+                topCornerRadius: data.get('topCornerRadius') || '',
+                topHoleCount: data.get('topHoleCount') || '',
+                topHoleType: data.get('topHoleType') || '',
+                topRemark: data.get('topRemark') || '',
+                topSketchUrl: topSketchUrl,
+              })
+            );
+          },
+        }}
+      >
+        <DialogTitle>Price and Amount</DialogTitle>
+        <DialogContent sx={{ textAlign: 'center' }}>
+          <FormControlLabel
+            sx={{
+              width: '200px',
+              alignItems: 'baseline',
+              m: 0,
+            }}
+            control={
+              <TextField
+                label="Desk Leg Price"
+                type="number"
+                name="deskLegPrice"
+                inputProps={{ readOnly: true }}
+                value={productPrice}
+                fullWidth
+                sx={{ m: '10px 5px 0 0' }}
+              />
+            }
+            label="HKD"
+          />
+          <Divider sx={{ my: '10px' }} />
+          <Box display="flex" flexWrap="wrap" justifyContent="space-between">
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="hasDeskTop"
+                  checked={hasDeskTop}
+                  onChange={(e) => {
+                    setHasDeskTop(e.currentTarget.checked);
+                  }}
+                />
+              }
+              label="Desk Top"
+              sx={{ flexBasis: '100%', minWidth: '100%' }}
+            />
+            {[
+              {
+                name: 'topMaterial',
+                label: 'Material',
+                type: 'autocomplete',
+                defaultValue: 'Melamine',
+                options: [
+                  'Melamine',
+                  'Laminate',
+                  'North American Walnut',
+                  'South American Walnut',
+                  'Red Oak',
+                  'Maple, Bamboo',
+                  'Melamine with glass top',
+                ],
+                width: '65%',
+              },
+              {
+                name: 'topColor',
+                label: 'Color',
+                type: 'text',
+                width: '30%',
+              },
+              {
+                name: 'topLength',
+                label: 'Length',
+                type: 'number',
+                defaultValue: 700,
+                inputProps: { min: 0 },
+                width: '30%',
+              },
+              {
+                name: 'topWidth',
+                label: 'Width',
+                type: 'number',
+                defaultValue: 400,
+                inputProps: { min: 0 },
+                width: '30%',
+              },
+              {
+                name: 'topThickness',
+                label: 'Thickness',
+                type: 'number',
+                defaultValue: 25,
+                inputProps: { min: 0 },
+                width: '30%',
+              },
+              {
+                name: 'topRoundedCorners',
+                label: 'Rounded Corners',
+                type: 'select',
+                defaultValue: 0,
+                options: [0, 1, 2, 3, 4],
+                width: '48%',
+              },
+              {
+                name: 'topCornerRadius',
+                label: 'Corner Radius',
+                type: 'number',
+                defaultValue: 50,
+                inputProps: { min: 0 },
+                width: '48%',
+              },
+              {
+                name: 'topHoleCount',
+                label: 'Number of Holes',
+                type: 'select',
+                defaultValue: 0,
+                options: [0, 1, 2, 3],
+                width: '48%',
+              },
+              {
+                name: 'topHoleType',
+                label: 'Type of Holes',
+                type: 'select',
+                defaultValue: 'Rounded',
+                options: ['Rounded', 'Rectangular'],
+                width: '48%',
+              },
+              {
+                name: 'topRemark',
+                label: 'Remark',
+                type: 'text',
+                width: '100%',
+              },
+              {
+                name: 'topSketchImg',
+                label: 'Sketch Image (Optional)',
+                type: 'file',
+                inputProps: {
+                  accept: 'image/png, image/gif, image/jpeg',
+                },
+                InputLabelProps: { shrink: true },
+                width: '100%',
+              },
+            ].map(({ type, width, ...restParams }, index) => {
+              if (type === 'autocomplete') {
+                const { name, label, ...autocomParams } = restParams;
+                return (
+                  <Autocomplete
+                    key={index}
+                    sx={{ flexBasis: width, minWidth: width }}
+                    renderInput={(params) => (
+                      <TextField {...params} name={name} label={label} />
+                    )}
+                    disabled={!hasDeskTop}
+                    {...autocomParams}
+                  />
+                );
+              } else if (type === 'select') {
+                const { name, label, options, ...selectParams } = restParams;
+                return (
+                  <FormControl
+                    key={index}
+                    sx={{ flexBasis: width, minWidth: width }}
+                  >
+                    <InputLabel id={`desk-top-${name}-select-label`}>
+                      {label}
+                    </InputLabel>
+                    <Select
+                      labelId={`desk-top-${name}-select-label`}
+                      id={`desk-top-${name}-select`}
+                      name={name}
+                      label={label}
+                      size="small"
+                      disabled={!hasDeskTop}
+                      {...selectParams}
+                    >
+                      {options.map((selectOption, selectOptionIndex) => (
+                        <MenuItem key={selectOptionIndex} value={selectOption}>
+                          {selectOption}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                );
+              } else
+                return (
+                  <TextField
+                    key={index}
+                    type={type}
+                    sx={{ flexBasis: width, minWidth: width }}
+                    disabled={!hasDeskTop}
+                    {...restParams}
+                  />
+                );
+            })}
+            <FormControlLabel
+              sx={{
+                width: '200px',
+                alignItems: 'baseline',
+                m: '0 auto',
+              }}
+              control={
+                <TextField
+                  label="Desk Top Price"
+                  type="number"
+                  name="deskTopPrice"
+                  inputProps={{ min: 0 }}
+                  defaultValue={1000}
+                  fullWidth
+                  sx={{ m: '10px 5px 0 0' }}
+                  disabled={!hasDeskTop}
+                />
+              }
+              label="HKD"
+            />
+          </Box>
+          <Divider sx={{ my: '10px' }} />
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              width: '200px',
+              border: '1px solid #0000003b',
+              borderRadius: '4px',
+              mt: '10px',
+              mx: 'auto',
+              p: '5px 3px',
+            }}
+          >
+            <Typography variant="span" sx={{ flexGrow: 1 }}>
+              Amount
+            </Typography>
+            <IconButton
+              onClick={(e) => {
+                e.preventDefault();
+                setProductAmount(Math.max(productAmount - 1, 1));
+              }}
+            >
+              <RemoveIcon />
+            </IconButton>
+            <Typography variant="span" mx="10px">
+              {productAmount}
+            </Typography>
+            <IconButton
+              onClick={(e) => {
+                e.preventDefault();
+                setProductAmount(Math.min(productAmount + 1, 9));
+              }}
+            >
+              <AddIcon />
+            </IconButton>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              setDeskAddOpen(false);
             }}
           >
             Cancle

@@ -58,18 +58,6 @@ const columns = [
     label: 'Beam Size',
   },
   {
-    id: 'topMaterial',
-    label: 'topMaterial',
-  },
-  {
-    id: 'topColor',
-    label: 'topColor',
-  },
-  {
-    id: 'topSize',
-    label: 'topSize',
-  },
-  {
     id: 'balance',
     label: 'Balance',
   },

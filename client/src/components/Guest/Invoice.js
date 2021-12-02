@@ -326,7 +326,15 @@ export default connect(mapStateToProps)((props) => {
                     width: '15%',
                   },
                   {
-                    content: `Desk: ${item.model}\nColor: ${item.color}\nArmSize: ${item.armSize}\nFeetSize: ${item.feetSize}\nBeam Size: ${item.beamSize}`,
+                    content: `Desk: ${item.model}\nColor: ${
+                      item.color
+                    }\nArmSize: ${item.armSize}\nFeetSize: ${
+                      item.feetSize
+                    }\nBeam Size: ${item.beamSize}\n${
+                      item.DeskToOrder.hasDeskTop
+                        ? `Top: ${item.DeskToOrder.topMaterial} ${item.DeskToOrder.topColor}\nTop Size: ${item.DeskToOrder.topLength}x${item.DeskToOrder.topWidth}x${item.DeskToOrder.topThickness}\nTop Corners: ${item.DeskToOrder.topRoundedCorners}-R${item.DeskToOrder.topCornerRadius}\nTop Holes: ${item.DeskToOrder.topHoleCount}-${item.DeskToOrder.topHoleType}`
+                        : 'Without DeskTop'
+                    }`,
                     width: '55%',
                   },
                   {

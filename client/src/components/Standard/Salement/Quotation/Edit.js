@@ -4,7 +4,7 @@ import { Redirect, useLocation } from 'react-router-dom';
 
 const Edit = (props) => {
   const location = useLocation();
-  const { order } = location.state || {};
+  const { quotation } = location.state || {};
   const {
     ChairStocks,
     DeskStocks,
@@ -12,11 +12,11 @@ const Edit = (props) => {
     Seller,
     sellerId,
     ...client
-  } = order || {};
+  } = quotation || {};
 
   const [phone, setPhone] = useState(client.phone);
 
-  return order ? (
+  return quotation ? (
     <Detail
       componentType="edit"
       initialClient={{
@@ -31,12 +31,16 @@ const Edit = (props) => {
         productAmount: ChairToQuotation.qty,
       }))
         .concat(
-          DeskStocks.map(({ DeskToQuotation, ...restProps }) => ({
-            productType: 'desk',
-            productDetail: restProps,
-            productPrice: DeskToQuotation.unitPrice,
-            productAmount: DeskToQuotation.qty,
-          }))
+          DeskStocks.map(({ DeskToQuotation, ...restProps }) => {
+            const { unitPrice, qty, ...deskTopProps } = DeskToQuotation;
+            return {
+              productType: 'desk',
+              productDetail: restProps,
+              productPrice: unitPrice,
+              productAmount: qty,
+              ...deskTopProps,
+            };
+          })
         )
         .concat(
           AccessoryStocks.map(({ AccessoryToQuotation, ...restProps }) => ({
@@ -49,7 +53,7 @@ const Edit = (props) => {
       {...props}
     />
   ) : (
-    <Redirect to="/user/order" />
+    <Redirect to="/user/quotation" />
   );
 };
 

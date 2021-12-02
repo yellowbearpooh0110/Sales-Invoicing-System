@@ -1,6 +1,7 @@
 const chairStockController = require('./chairStock.controller');
 const deskStockController = require('./deskStock.controller');
 const accessoryStockController = require('./accessoryStock.controller');
+const { drawDeskTop } = require('server/middleware/deskDrawing');
 
 module.exports = {
   getAll,
@@ -27,49 +28,25 @@ async function getAll(where) {
       {
         model: db.ChairStock,
         through: {
-          attributes: [
-            'id',
-            'unitPrice',
-            'qty',
-            'preOrder',
-            'deliveryDate',
-            'from',
-            'to',
-            'delivered',
-            'signUrl',
-          ],
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
         },
       },
       {
         model: db.DeskStock,
         through: {
-          attributes: [
-            'id',
-            'unitPrice',
-            'qty',
-            'preOrder',
-            'deliveryDate',
-            'from',
-            'to',
-            'delivered',
-            'signUrl',
-          ],
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
         },
       },
       {
         model: db.AccessoryStock,
         through: {
-          attributes: [
-            'id',
-            'unitPrice',
-            'qty',
-            'preOrder',
-            'deliveryDate',
-            'from',
-            'to',
-            'delivered',
-            'signUrl',
-          ],
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
         },
       },
     ],
@@ -80,161 +57,243 @@ async function getById(id) {
   return await getSalesOrder(id);
 }
 
-async function create(params) {
-  const { products, ...restParams } = params;
+async function create(req, res, next) {
+  try {
+    const host = req.get('host');
+    const protocol = req.protocol;
+    const { products, ...restParams } = req.body;
+    restParams.sellerId = req.user.id;
 
-  const salesOrder = await db.SalesOrder.create({ ...restParams });
+    const salesOrder = await db.SalesOrder.create({ ...restParams });
 
-  for (var index = 0; index < products.length; index++) {
-    if (products[index].productType === 'chair') {
-      const stock = await chairStockController.getById(
-        products[index].productId
-      );
-      let preOrder = true;
-      if (stock.balance >= products[index].productAmount) {
-        stock.balance -= products[index].productAmount;
-        stock.qty -= products[index].productAmount;
-        preOrder = false;
-        await stock.save();
+    for (var index = 0; index < products.length; index++) {
+      if (products[index].productType === 'chair') {
+        const stock = await chairStockController.getById(
+          products[index].productId
+        );
+        let preOrder = true;
+        if (stock.balance >= products[index].productAmount) {
+          stock.balance -= products[index].productAmount;
+          stock.qty -= products[index].productAmount;
+          preOrder = false;
+          await stock.save();
+        }
+        const {
+          productPrice: unitPrice,
+          productAmount: qty,
+          productType,
+          ...restParams
+        } = products[index];
+        await salesOrder.addChairStock(stock, {
+          through: {
+            unitPrice,
+            qty,
+            preOrder,
+            ...restParams,
+          },
+        });
+      } else if (products[index].productType === 'desk') {
+        const stock = await deskStockController.getById(
+          products[index].productId
+        );
+        let preOrder = true;
+        if (stock.balance >= products[index].productAmount) {
+          stock.balance -= products[index].productAmount;
+          stock.qty -= products[index].productAmount;
+          preOrder = false;
+          await stock.save();
+        }
+
+        const {
+          productPrice: unitPrice,
+          productAmount: qty,
+          productType,
+          ...restParams
+        } = products[index];
+
+        if (restParams.hasDeskTop && !restParams.topSketchUrl)
+          restParams.topSketchUrl = `${protocol}://${host}/${await drawDeskTop({
+            topLength: restParams.topLength,
+            topWidth: restParams.topWidth,
+            topThickness: restParams.topThickness,
+            topRoundedCorners: restParams.topRoundedCorners,
+            topCornerRadius: restParams.topCornerRadius,
+            topHoleCount: restParams.topHoleCount,
+            topHoleType: restParams.topHoleType,
+          })}`;
+        await salesOrder.addDeskStock(stock, {
+          through: {
+            unitPrice,
+            qty,
+            preOrder,
+            ...restParams,
+          },
+        });
+      } else if (products[index].productType === 'accessory') {
+        const stock = await accessoryStockController.getById(
+          products[index].productId
+        );
+        let preOrder = true;
+        if (stock.balance >= products[index].productAmount) {
+          stock.balance -= products[index].productAmount;
+          stock.qty -= products[index].productAmount;
+          preOrder = false;
+          await stock.save();
+        }
+        const {
+          productPrice: unitPrice,
+          productAmount: qty,
+          productType,
+          ...restParams
+        } = products[index];
+        await salesOrder.addAccessoryStock(stock, {
+          through: {
+            unitPrice,
+            qty,
+            preOrder,
+            ...restParams,
+          },
+        });
       }
-      await salesOrder.addChairStock(stock, {
-        through: {
-          unitPrice: products[index].productPrice,
-          qty: products[index].productAmount,
-          preOrder,
-        },
-      });
-    } else if (products[index].productType === 'desk') {
-      const stock = await deskStockController.getById(
-        products[index].productId
-      );
-      let preOrder = true;
-      if (stock.balance >= products[index].productAmount) {
-        stock.balance -= products[index].productAmount;
-        stock.qty -= products[index].productAmount;
-        preOrder = false;
-        await stock.save();
-      }
-      await salesOrder.addDeskStock(stock, {
-        through: {
-          unitPrice: products[index].productPrice,
-          qty: products[index].productAmount,
-          preOrder,
-        },
-      });
-    } else if (products[index].productType === 'accessory') {
-      const stock = await accessoryStockController.getById(
-        products[index].productId
-      );
-      let preOrder = true;
-      if (stock.balance >= products[index].productAmount) {
-        stock.balance -= products[index].productAmount;
-        stock.qty -= products[index].productAmount;
-        preOrder = false;
-        await stock.save();
-      }
-      await salesOrder.addAccessoryStock(stock, {
-        through: {
-          unitPrice: products[index].productPrice,
-          qty: products[index].productAmount,
-          preOrder,
-        },
-      });
     }
+    res.json({ message: 'New SalesOrder was created successfully.' });
+  } catch (err) {
+    next(err);
   }
 }
 
-async function update(id, params) {
-  const salesOrder = await getSalesOrder(id);
-  const { ChairStocks, DeskStocks, AccessoryStocks } = salesOrder;
-  const { products, ...restParams } = params;
-  Object.assign(salesOrder, restParams);
-  await salesOrder.save();
-  for (var index = 0; index < ChairStocks.length; index++) {
-    if (!ChairStocks[index].ChairToOrder.preOrder) {
-      const stock = await chairStockController.getById(ChairStocks[index].id);
-      stock.balance += ChairStocks[index].ChairToOrder.qty;
-      stock.qty += ChairStocks[index].ChairToOrder.qty;
-      await stock.save();
-    }
-    await salesOrder.removeChairStock(ChairStocks[index]);
-  }
-  for (var index = 0; index < DeskStocks.length; index++) {
-    if (!DeskStocks[index].DeskToOrder.preOrder) {
-      const stock = await deskStockController.getById(DeskStocks[index].id);
-      stock.balance += DeskStocks[index].DeskToOrder.qty;
-      stock.qty += DeskStocks[index].DeskToOrder.qty;
-      await stock.save();
-    }
-    await salesOrder.removeDeskStock(DeskStocks[index].id);
-  }
-  for (var index = 0; index < AccessoryStocks.length; index++) {
-    if (!AccessoryStocks[index].AccessoryToOrder.preOrder) {
-      const stock = await accessoryStockController.getById(
-        AccessoryStocks[index].id
-      );
-      stock.balance += AccessoryStocks[index].AccessoryToOrder.qty;
-      stock.qty += AccessoryStocks[index].AccessoryToOrder.qty;
-      await stock.save();
-    }
-    await salesOrder.removeAccessoryStock(AccessoryStocks[index].id);
-  }
-  for (var index = 0; index < products.length; index++) {
-    if (products[index].productType === 'chair') {
-      const stock = await chairStockController.getById(
-        products[index].productId
-      );
-      let preOrder = true;
-      if (stock.balance >= products[index].productAmount) {
-        stock.balance -= products[index].productAmount;
-        stock.qty -= products[index].productAmount;
-        preOrder = false;
+async function update(req, res, next) {
+  try {
+    const host = req.get('host');
+    const protocol = req.protocol;
+    const id = req.params.id;
+    const salesOrder = await getSalesOrder(id);
+    const { ChairStocks, DeskStocks, AccessoryStocks } = salesOrder;
+    const { products, ...restParams } = req.body;
+    Object.assign(salesOrder, restParams);
+    await salesOrder.save();
+    for (var index = 0; index < ChairStocks.length; index++) {
+      if (!ChairStocks[index].ChairToOrder.preOrder) {
+        const stock = await chairStockController.getById(ChairStocks[index].id);
+        stock.balance += ChairStocks[index].ChairToOrder.qty;
+        stock.qty += ChairStocks[index].ChairToOrder.qty;
         await stock.save();
       }
-      await salesOrder.addChairStock(stock, {
-        through: {
-          unitPrice: products[index].productPrice,
-          qty: products[index].productAmount,
-          preOrder,
-        },
-      });
-    } else if (products[index].productType === 'desk') {
-      const stock = await deskStockController.getById(
-        products[index].productId
-      );
-      let preOrder = true;
-      if (stock.balance >= products[index].productAmount) {
-        stock.balance -= products[index].productAmount;
-        stock.qty -= products[index].productAmount;
-        preOrder = false;
-        await stock.save();
-      }
-      await salesOrder.addDeskStock(stock, {
-        through: {
-          unitPrice: products[index].productPrice,
-          qty: products[index].productAmount,
-          preOrder,
-        },
-      });
-    } else if (products[index].productType === 'accessory') {
-      const stock = await accessoryStockController.getById(
-        products[index].productId
-      );
-      let preOrder = true;
-      if (stock.balance >= products[index].productAmount) {
-        stock.balance -= products[index].productAmount;
-        stock.qty -= products[index].productAmount;
-        preOrder = false;
-        await stock.save();
-      }
-      await salesOrder.addAccessoryStock(stock, {
-        through: {
-          unitPrice: products[index].productPrice,
-          qty: products[index].productAmount,
-          preOrder,
-        },
-      });
+      await salesOrder.removeChairStock(ChairStocks[index]);
     }
+    for (var index = 0; index < DeskStocks.length; index++) {
+      if (!DeskStocks[index].DeskToOrder.preOrder) {
+        const stock = await deskStockController.getById(DeskStocks[index].id);
+        stock.balance += DeskStocks[index].DeskToOrder.qty;
+        stock.qty += DeskStocks[index].DeskToOrder.qty;
+        await stock.save();
+      }
+      await salesOrder.removeDeskStock(DeskStocks[index].id);
+    }
+    for (var index = 0; index < AccessoryStocks.length; index++) {
+      if (!AccessoryStocks[index].AccessoryToOrder.preOrder) {
+        const stock = await accessoryStockController.getById(
+          AccessoryStocks[index].id
+        );
+        stock.balance += AccessoryStocks[index].AccessoryToOrder.qty;
+        stock.qty += AccessoryStocks[index].AccessoryToOrder.qty;
+        await stock.save();
+      }
+      await salesOrder.removeAccessoryStock(AccessoryStocks[index].id);
+    }
+    for (var index = 0; index < products.length; index++) {
+      if (products[index].productType === 'chair') {
+        const stock = await chairStockController.getById(
+          products[index].productId
+        );
+        let preOrder = true;
+        if (stock.balance >= products[index].productAmount) {
+          stock.balance -= products[index].productAmount;
+          stock.qty -= products[index].productAmount;
+          preOrder = false;
+          await stock.save();
+        }
+        const {
+          productPrice: unitPrice,
+          productAmount: qty,
+          productType,
+          ...restParams
+        } = products[index];
+        await salesOrder.addChairStock(stock, {
+          through: {
+            unitPrice,
+            qty,
+            preOrder,
+            ...restParams,
+          },
+        });
+      } else if (products[index].productType === 'desk') {
+        const stock = await deskStockController.getById(
+          products[index].productId
+        );
+        let preOrder = true;
+        if (stock.balance >= products[index].productAmount) {
+          stock.balance -= products[index].productAmount;
+          stock.qty -= products[index].productAmount;
+          preOrder = false;
+          await stock.save();
+        }
+
+        const {
+          productPrice: unitPrice,
+          productAmount: qty,
+          productType,
+          ...restParams
+        } = products[index];
+
+        if (restParams.hasDeskTop && !restParams.topSketchUrl)
+          restParams.topSketchUrl = `${protocol}://${host}/${await drawDeskTop({
+            topLength: restParams.topLength,
+            topWidth: restParams.topWidth,
+            topThickness: restParams.topThickness,
+            topRoundedCorners: restParams.topRoundedCorners,
+            topCornerRadius: restParams.topCornerRadius,
+            topHoleCount: restParams.topHoleCount,
+            topHoleType: restParams.topHoleType,
+          })}`;
+        await salesOrder.addDeskStock(stock, {
+          through: {
+            unitPrice,
+            qty,
+            preOrder,
+            ...restParams,
+          },
+        });
+      } else if (products[index].productType === 'accessory') {
+        const stock = await accessoryStockController.getById(
+          products[index].productId
+        );
+        let preOrder = true;
+        if (stock.balance >= products[index].productAmount) {
+          stock.balance -= products[index].productAmount;
+          stock.qty -= products[index].productAmount;
+          preOrder = false;
+          await stock.save();
+        }
+        const {
+          productPrice: unitPrice,
+          productAmount: qty,
+          productType,
+          ...restParams
+        } = products[index];
+        await salesOrder.addAccessoryStock(stock, {
+          through: {
+            unitPrice,
+            qty,
+            preOrder,
+            ...restParams,
+          },
+        });
+      }
+    }
+    res.json({ message: 'SalesOrder was updated successfully.' });
+  } catch (err) {
+    next(err);
   }
 }
 
@@ -368,49 +427,25 @@ async function getSalesOrder(id) {
       {
         model: db.ChairStock,
         through: {
-          attributes: [
-            'id',
-            'unitPrice',
-            'qty',
-            'preOrder',
-            'deliveryDate',
-            'from',
-            'to',
-            'delivered',
-            'signUrl',
-          ],
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
         },
       },
       {
         model: db.DeskStock,
         through: {
-          attributes: [
-            'id',
-            'unitPrice',
-            'qty',
-            'preOrder',
-            'deliveryDate',
-            'from',
-            'to',
-            'delivered',
-            'signUrl',
-          ],
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
         },
       },
       {
         model: db.AccessoryStock,
         through: {
-          attributes: [
-            'id',
-            'unitPrice',
-            'qty',
-            'preOrder',
-            'deliveryDate',
-            'from',
-            'to',
-            'delivered',
-            'signUrl',
-          ],
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
         },
       },
     ],

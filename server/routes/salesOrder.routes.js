@@ -9,7 +9,7 @@ const authorize = require('server/middleware/authorize');
 const validateRequest = require('server/middleware/validate-request');
 const salesOrderController = require('server/controller/salesOrder.controller');
 
-router.post('/create', authorize(), createSchema, create);
+router.post('/create', authorize(), createSchema, salesOrderController.create);
 router.post(
   '/products',
   authorize(),
@@ -20,7 +20,7 @@ router.get('/', admin(), getAll);
 router.get('/current', salesman(), getCurrent);
 router.get('/:id', getById);
 router.put('/withoutStock/:id', salesman(), updateSchema, updateWithoutStock);
-router.put('/:id', salesman(), createSchema, update);
+router.put('/:id', salesman(), createSchema, salesOrderController.update);
 router.post('/sign', authorize(), signSchema, signDelivery);
 router.delete('/:id', salesman(), _delete);
 router.delete('/', salesman(), bulkDeleteSchema, _bulkDelete);
@@ -85,15 +85,6 @@ function signSchema(req, res, next) {
   validateRequest(req, next, schema);
 }
 
-function create(req, res, next) {
-  salesOrderController
-    .create({ ...req.body, Id: req.user.id })
-    .then(() => {
-      res.json({ message: 'New SalesOrder was created successfully.' });
-    })
-    .catch(next);
-}
-
 function getAll(req, res, next) {
   salesOrderController
     .getAll()
@@ -109,95 +100,24 @@ function getAll(req, res, next) {
     .catch(next);
 }
 
-// function getDelivery(req, res, next) {
-//   const host = req.get('host');
-//   const protocol = req.protocol;
-//   const deliveryDate = new Date(
-//     req.query.deliveryDate.replace(/(\d+[/])(\d+[/])/, '$2$1')
-//   );
-//   const nextDate = new Date(deliveryDate.getTime() + 24 * 60 * 60 * 1000);
-
-//   const where = {
-//     deliveryDate: {
-//       [Sequelize.Op.gte]: deliveryDate,
-//       [Sequelize.Op.lt]: nextDate,
-//     },
-//     paid: true,
-//   };
-//   salesOrderController
-//     .getAll(where)
-//     .then((salesOrders) =>
-//       res.json(
-//         salesOrders.map(
-//           ({
-//             id,
-//             invoiceNum,
-//             clientName,
-//             clientPhone,
-//             clientEmail,
-//             clientDistrict,
-//             clientStreet,
-//             clientBlock,
-//             clientFloor,
-//             clientUnit,
-//             clientRemark,
-//             paid,
-//             finished,
-//             signUrl,
-//             qty,
-//             stock,
-//             salesman,
-//           }) => ({
-//             id,
-//             clientName,
-//             clientPhone,
-//             clientEmail,
-//             clientDistrict,
-//             clientStreet,
-//             clientBlock,
-//             clientFloor,
-//             clientUnit,
-//             clientRemark,
-//             paid,
-//             finished,
-//             signUrl: signUrl !== '' ? `${protocol}://${host}/${signUrl}` : null,
-//             qty,
-//             invoiceNum:
-//               'C_' + salesman.prefix + ('000' + invoiceNum).substr(-3),
-//             model: stock.chairModel ? stock.chairModel.name : null,
-//             frameColor: stock.frameColor ? stock.frameColor.name : null,
-//           })
-//         )
-//       )
-//     )
-//     .catch(next);
-// }
-
 function getCurrent(req, res, next) {
   salesOrderController
     .getAll({ sellerId: req.user.id })
-    .then((salesOrders) => res.json(salesOrders))
+    .then((salesOrders) =>
+      res.json(
+        salesOrders.map((item) => {
+          item.invoiceNum =
+            item.Seller.prefix + ('000' + item.invoiceNum).substr(-3);
+          return item;
+        })
+      )
+    )
     .catch(next);
 }
 
 function getById(req, res, next) {
   salesOrderController
     .getById(req.params.id)
-    .then((salesOrder) => res.json(salesOrder))
-    .catch(next);
-}
-
-// function getByToken(req, res, next) {
-//   req.params.token;
-//   salesOrderController
-//     .getById(req.params.id)
-//     .then((salesOrder) => res.json(salesOrder))
-//     .catch(next);
-// }
-
-function update(req, res, next) {
-  salesOrderController
-    .update(req.params.id, req.body)
     .then((salesOrder) => res.json(salesOrder))
     .catch(next);
 }

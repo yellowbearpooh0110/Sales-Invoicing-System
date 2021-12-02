@@ -9,6 +9,9 @@ const bodyParser = require('body-parser');
 const errorHandler = require('server/middleware/error-handler');
 require('server/whatsapp/main.js');
 
+const authorize = require('server/middleware/authorize');
+const uploadController = require('server/controller/upload.controller');
+
 global.db = require('server/helper/db');
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -16,12 +19,12 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // api routes
+router.post('/upload', authorize(), uploadController.upload);
 router.use('/chairStock', require('server/routes/chairStock.routes'));
 router.use('/deskStock', require('server/routes/deskStock.routes'));
 router.use('/accessoryStock', require('server/routes/accessoryStock.routes'));
 router.use('/salesOrder', require('server/routes/salesOrder.routes'));
 router.use('/delivery', require('server/routes/delivery.routes'));
-router.use('/drawing', require('server/routes/drawing.routes'));
 router.use('/quotation', require('server/routes/quotation.routes'));
 router.use('/user', require('server/routes/user.routes'));
 router.use('/email', require('server/routes/email.routes'));

@@ -40,21 +40,6 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: 'Regular',
     },
-    topMaterial: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: '',
-    },
-    topColor: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: '',
-    },
-    topSize: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: '',
-    },
     remark: {
       type: DataTypes.STRING,
       allowNull: false,

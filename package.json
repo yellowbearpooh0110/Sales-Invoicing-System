@@ -29,6 +29,7 @@
         "nodemailer": "^6.7.0",
         "nodemailer-express-handlebars": "^4.0.0",
         "pdf-creator-node": "^2.2.4",
+        "pureimage": "^0.3.6",
         "rootpath": "^0.1.2",
         "sequelize": "^6.3.4",
         "whatsapp-web": "^1.0.3"

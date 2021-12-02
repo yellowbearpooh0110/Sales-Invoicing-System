@@ -311,7 +311,15 @@ async function _generateDeliveryPDF(type, id, host) {
             deliveryInfo.ChairStock.withAdArmrest ? 'With Headrest<br />' : ''
           }${deliveryInfo.ChairStock.remark}`
         : type === 'Desk'
-        ? `Desk: ${deliveryInfo.DeskStock.model}<br />Color: ${deliveryInfo.DeskStock.color}<br />ArmSize: ${deliveryInfo.DeskStock.armSize}<br />FeetSize: ${deliveryInfo.DeskStock.feetSize}<br />Beam Size: ${deliveryInfo.DeskStock.beamSize}`
+        ? `Desk: ${deliveryInfo.DeskStock.model}<br />Color: ${
+            deliveryInfo.DeskStock.color
+          }<br />ArmSize: ${deliveryInfo.DeskStock.armSize}<br />FeetSize: ${
+            deliveryInfo.DeskStock.feetSize
+          }<br />Beam Size: ${deliveryInfo.DeskStock.beamSize}\n${
+            deliveryInfo.DeskStock.DeskToOrder.hasDeskTop
+              ? `Top: ${deliveryInfo.DeskStock.DeskToOrder.topMaterial} ${deliveryInfo.DeskStock.DeskToOrder.topColor}\nTop Size: ${deliveryInfo.DeskStock.DeskToOrder.topLength}x${deliveryInfo.DeskStock.DeskToOrder.topWidth}x${deliveryInfo.DeskStock.DeskToOrder.topThickness}\nTop Corners: ${deliveryInfo.DeskStock.DeskToOrder.topRoundedCorners}-R${deliveryInfo.DeskStock.DeskToOrder.topCornerRadius}\nTop Holes: ${deliveryInfo.DeskStock.DeskToOrder.topHoleCount}-${deliveryInfo.DeskStock.DeskToOrder.topHoleType}`
+              : 'Without DeskTop'
+          }`
         : type === 'Accessory'
         ? `Accessory: ${deliveryInfo.AccessoryStock.name}<br />Color: ${deliveryInfo.AccessoryStock.color}<br />${deliveryInfo.AccessoryStock.remark}`
         : '',

@@ -9,12 +9,12 @@ const authorize = require('server/middleware/authorize');
 const validateRequest = require('server/middleware/validate-request');
 const quotationController = require('server/controller/quotation.controller');
 
-router.post('/create', authorize(), createSchema, create);
+router.post('/create', authorize(), createSchema, quotationController.create);
 router.get('/', admin(), getAll);
 router.get('/current', salesman(), getCurrent);
 router.get('/:id', getById);
 router.put('/withoutStock/:id', salesman(), updateSchema, updateWithoutStock);
-router.put('/:id', salesman(), createSchema, update);
+router.put('/:id', salesman(), createSchema, quotationController.update);
 router.delete('/:id', salesman(), _delete);
 router.delete('/', salesman(), bulkDeleteSchema, _bulkDelete);
 
@@ -59,15 +59,6 @@ function bulkDeleteSchema(req, res, next) {
   validateRequest(req, next, schema);
 }
 
-function create(req, res, next) {
-  quotationController
-    .create({ ...req.body, sellerId: req.user.id })
-    .then(() => {
-      res.json({ message: 'New Quotation was created successfully.' });
-    })
-    .catch(next);
-}
-
 function getAll(req, res, next) {
   quotationController
     .getAll()
@@ -86,7 +77,15 @@ function getAll(req, res, next) {
 function getCurrent(req, res, next) {
   quotationController
     .getAll({ SellerId: req.user.id })
-    .then((quotations) => res.json(quotations))
+    .then((quotations) =>
+      res.json(
+        quotations.map((item) => {
+          item.quotationNum =
+            item.Seller.prefix + ('000' + item.quotationNum).substr(-3);
+          return item;
+        })
+      )
+    )
     .catch(next);
 }
 
