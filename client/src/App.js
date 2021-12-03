@@ -15,6 +15,7 @@ import { Invoice, Quotation, SignIn, SignUp } from 'components/Guest';
 import Admin from 'components/Admin';
 import Standard from 'components/Standard';
 import { AdminRoute, GuestRoute, PrivateRoute } from 'components/Common/Routes';
+import DeliveryPDF from 'components/Common/DeliveryPDF';
 
 if (store.getState().auth.isLoggedIn)
   axios.defaults.headers.common['Authorization'] = `Bearer ${
@@ -128,6 +129,10 @@ const App = () => {
               <GuestRoute path="/signup" exact component={SignUp} />
               <AdminRoute path="/admin" component={Admin} />
               <PrivateRoute path="/user" component={Standard} />
+              <Route
+                path="/deliveryPDF/:productType/:deliveryId"
+                component={DeliveryPDF}
+              />
             </Switch>
           </BrowserRouter>
         </Container>

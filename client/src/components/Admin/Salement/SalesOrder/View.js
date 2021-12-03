@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import ReactDOMServer from 'react-dom/server';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {
   Badge,
@@ -17,7 +16,6 @@ import {
   Paper,
   Stack,
   TextField,
-  Typography,
 } from '@mui/material';
 import { blue, pink, red, yellow } from '@mui/material/colors';
 import {
@@ -145,8 +143,6 @@ export default connect(mapStateToProps)((props) => {
   const chairDeliveries = useRef([]);
   const deskDeliveries = useRef([]);
   const accessoryDeliveries = useRef([]);
-
-  useEffect(() => {}, [orders]);
 
   const handleFilterClick = (e) => {
     e.preventDefault();
@@ -423,7 +419,7 @@ export default connect(mapStateToProps)((props) => {
             ),
             invoicePDF: (
               <IconButton
-                component={Link}
+                component={RouterLink}
                 to={`/invoice/${id}`}
                 target="_blank"
               >
@@ -630,43 +626,9 @@ export default connect(mapStateToProps)((props) => {
                   <Button
                     variant="contained"
                     sx={{ mt: '5px' }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      axios
-                        .post('/delivery/generatePDF', {
-                          productType: 'chair',
-                          deliveryId: item.ChairToOrder.id,
-                          signature: '',
-                        })
-                        .then((response) => {
-                          // handle success
-                          if (!response.data) {
-                            setDetailOpen(false);
-                            Swal.fire({
-                              icon: 'info',
-                              title: 'Alarm',
-                              text:
-                                'New Delivery PDF was created. Please click the button again to check.',
-                              allowOutsideClick: false,
-                            }).then(() => {
-                              setDetailOpen(true);
-                            });
-                          }
-                          window.open(response.data.url, '_blank');
-                        })
-                        .catch(function (error) {
-                          // handle error
-                          setDetailOpen(false);
-                          Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: error.response.data.message,
-                            allowOutsideClick: false,
-                          }).then(() => {
-                            setDetailOpen(true);
-                          });
-                        });
-                    }}
+                    component={RouterLink}
+                    target="_blank"
+                    to={`/deliveryPDF/chair/${item.ChairToOrder.id}`}
                   >
                     Delivery Note
                   </Button>
@@ -758,43 +720,9 @@ export default connect(mapStateToProps)((props) => {
                   <Button
                     variant="contained"
                     sx={{ mt: '5px' }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      axios
-                        .post('/delivery/generatePDF', {
-                          productType: 'desk',
-                          deliveryId: item.DeskToOrder.id,
-                          signature: '',
-                        })
-                        .then((response) => {
-                          // handle success
-                          if (!response.data) {
-                            setDetailOpen(false);
-                            Swal.fire({
-                              icon: 'info',
-                              title: 'Alarm',
-                              text:
-                                'New Delivery PDF was created. Please click the button again to check.',
-                              allowOutsideClick: false,
-                            }).then(() => {
-                              setDetailOpen(true);
-                            });
-                          }
-                          window.open(response.data.url, '_blank');
-                        })
-                        .catch(function (error) {
-                          // handle error
-                          setDetailOpen(false);
-                          Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: error.response.data.message,
-                            allowOutsideClick: false,
-                          }).then(() => {
-                            setDetailOpen(true);
-                          });
-                        });
-                    }}
+                    component={RouterLink}
+                    target="_blank"
+                    to={`/deliveryPDF/desk/${item.DeskToOrder.id}`}
                   >
                     Delivery Note
                   </Button>
@@ -872,43 +800,9 @@ export default connect(mapStateToProps)((props) => {
                   <Button
                     variant="contained"
                     sx={{ mt: '5px' }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      axios
-                        .post('/delivery/generatePDF', {
-                          productType: 'accessory',
-                          deliveryId: item.AccessoryToOrder.id,
-                          signature: '',
-                        })
-                        .then((response) => {
-                          // handle success
-                          if (!response.data) {
-                            setDetailOpen(false);
-                            Swal.fire({
-                              icon: 'info',
-                              title: 'Alarm',
-                              text:
-                                'New Delivery PDF was created. Please click the button again to check.',
-                              allowOutsideClick: false,
-                            }).then(() => {
-                              setDetailOpen(true);
-                            });
-                          }
-                          window.open(response.data.url, '_blank');
-                        })
-                        .catch(function (error) {
-                          // handle error
-                          setDetailOpen(false);
-                          Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: error.response.data.message,
-                            allowOutsideClick: false,
-                          }).then(() => {
-                            setDetailOpen(true);
-                          });
-                        });
-                    }}
+                    component={RouterLink}
+                    target="_blank"
+                    to={`/deliveryPDF/accessory/${item.AccessoryToOrder.id}`}
                   >
                     Delivery Note
                   </Button>
@@ -1009,7 +903,6 @@ export default connect(mapStateToProps)((props) => {
                   delivered: item.delivered.checked,
                 })
               );
-              setDetailOpen(false);
               axios
                 .post('/salesOrder/products', {
                   chairToOrders,
@@ -1026,6 +919,7 @@ export default connect(mapStateToProps)((props) => {
                 })
                 .then(function () {
                   // always executed
+                  setDetailOpen(false);
                 });
             }}
           >

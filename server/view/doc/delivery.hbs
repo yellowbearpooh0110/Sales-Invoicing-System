@@ -77,11 +77,6 @@
       width: 30%;
     }
 
-    .contact-info .sign-img {
-      vertical-align: bottom;
-      width: 30%;
-    }
-
     .table th:first-child,
     .table td:first-child {
       width: 15%;
@@ -95,6 +90,12 @@
     .delivery-table th:last-child,
     .delivery-table td:last-child {
       width: 15%;
+    }
+
+    .sign-img {
+      margin-top: 10px;
+      float: right;
+      width: 30%;
     }
   </style>
 </head>
@@ -130,9 +131,6 @@
       <p>Phone: {{phone}}</p>
       {{/with}}
     </div>
-    {{#if signUrl}}
-    <img class="sign-img" alt="" src="{{signUrl}}">
-    {{/if}}
   </div>
   <table class="delivery-table table">
     <thead>
@@ -170,6 +168,9 @@
       </tr>
     </tbody>
   </table>
+  {{#if signUrl}}
+  <img class="sign-img" alt="" src="{{signUrl}}">
+  {{/if}}
 </body>
 
 </html>
