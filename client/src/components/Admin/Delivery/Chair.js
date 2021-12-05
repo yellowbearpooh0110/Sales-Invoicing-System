@@ -28,7 +28,7 @@ export default connect(mapStateToProps)((props) => {
 
   const getDeliveries = (props) => {
     axios
-      .get('/delivery/chair', props)
+      .get('/delivery/allChair', props)
       .then((response) => {
         // handle success
         setDeliveries(response.data);
@@ -46,19 +46,19 @@ export default connect(mapStateToProps)((props) => {
     const source = axios.CancelToken.source();
     getDeliveries({
       cancelToken: source.token,
-      params: {
-        fromDate: (() => {
-          const now = new Date();
-          now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-          now.setDate(now.getDate() - 10);
-          return now.toISOString().split('T')[0];
-        })(),
-        toDate: (() => {
-          const now = new Date();
-          now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-          return now.toISOString().split('T')[0];
-        })(),
-      },
+      // params: {
+      //   fromDate: (() => {
+      //     const now = new Date();
+      //     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      //     now.setDate(now.getDate() - 10);
+      //     return now.toISOString().split('T')[0];
+      //   })(),
+      //   toDate: (() => {
+      //     const now = new Date();
+      //     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      //     return now.toISOString().split('T')[0];
+      //   })(),
+      // },
     });
     return () => source.cancel('Stock Component got unmounted');
   }, []);
@@ -71,7 +71,7 @@ export default connect(mapStateToProps)((props) => {
         padding: '10px 20px',
       }}
     >
-      <Paper
+      {/* <Paper
         component="form"
         sx={{
           marginTop: '10px',
@@ -131,10 +131,10 @@ export default connect(mapStateToProps)((props) => {
         >
           OK
         </Button>
-      </Paper>
+      </Paper> */}
       <DataGrid
         nonSelect={true}
-        title="Accessory Stocks"
+        title="Chair Delivery"
         rows={deliveries.map(
           ({
             id,

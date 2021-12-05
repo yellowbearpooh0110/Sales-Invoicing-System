@@ -3,12 +3,61 @@ const pdf = require('pdf-creator-node');
 const fs = require('fs');
 
 module.exports = {
+  getAllChairDelivery,
   getChairDelivery,
+  getAllDeskDelivery,
   getDeskDelivery,
   getAccessoryDelivery,
   generateDeliveryPDF,
   signDelivery,
 };
+
+async function getAllChairDelivery(req, res, next) {
+  try {
+    const result = await db.ChairToOrder.findAll({
+      attributes: ['id', 'deliveryDate', 'from', 'to', 'delivered', 'signUrl'],
+      include: [
+        {
+          attributes: [
+            'name',
+            'phone',
+            'email',
+            'district',
+            'street',
+            'block',
+            'floor',
+            'unit',
+          ],
+          model: db.SalesOrder,
+        },
+      ],
+      order: [['createdAt', 'DESC']],
+    });
+
+    const host = req.get('host');
+    const protocol = req.protocol;
+
+    res.json(
+      result.map((item) => {
+        const { SalesOrder, signUrl, ...restProps } = item.get();
+        return {
+          clientName: SalesOrder.name,
+          clientPhone: SalesOrder.phone,
+          clientEmail: SalesOrder.email,
+          clientDistrict: SalesOrder.district,
+          clientStreet: SalesOrder.street,
+          clientBlock: SalesOrder.block,
+          clientFloor: SalesOrder.floor,
+          clientUnit: SalesOrder.unit,
+          pdfURL: `${protocol}://${host}/deliveryPDFs/Chair-${restProps.id}.pdf`,
+          ...restProps,
+        };
+      })
+    );
+  } catch (err) {
+    next(err);
+  }
+}
 
 async function getChairDelivery(req, res, next) {
   try {
@@ -59,6 +108,53 @@ async function getChairDelivery(req, res, next) {
           clientFloor: SalesOrder.floor,
           clientUnit: SalesOrder.unit,
           pdfURL: `${protocol}://${host}/deliveryPDFs/Chair-${restProps.id}.pdf`,
+          ...restProps,
+        };
+      })
+    );
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function getAllDeskDelivery(req, res, next) {
+  try {
+    const result = await db.DeskToOrder.findAll({
+      attributes: ['id', 'deliveryDate', 'from', 'to', 'delivered', 'signUrl'],
+      include: [
+        {
+          attributes: [
+            'name',
+            'phone',
+            'email',
+            'district',
+            'street',
+            'block',
+            'floor',
+            'unit',
+          ],
+          model: db.SalesOrder,
+        },
+      ],
+      order: [['createdAt', 'DESC']],
+    });
+
+    const host = req.get('host');
+    const protocol = req.protocol;
+
+    res.json(
+      result.map((item) => {
+        const { SalesOrder, signUrl, ...restProps } = item.get();
+        return {
+          clientName: SalesOrder.name,
+          clientPhone: SalesOrder.phone,
+          clientEmail: SalesOrder.email,
+          clientDistrict: SalesOrder.district,
+          clientStreet: SalesOrder.street,
+          clientBlock: SalesOrder.block,
+          clientFloor: SalesOrder.floor,
+          clientUnit: SalesOrder.unit,
+          pdfURL: `${protocol}://${host}/deliveryPDFs/Desk-${restProps.id}.pdf`,
           ...restProps,
         };
       })
