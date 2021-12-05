@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="utf-8" />
+  <title>Delivery Sheet</title>
   <style>
     @import url('http://fonts.cdnfonts.com/css/microsoft-sans-serif');
 
@@ -34,7 +35,7 @@
     .table th,
     .table td {
       font-size: 14px;
-      padding: 3px 5px;
+      padding: 5px;
     }
 
     .table tr,
@@ -45,12 +46,12 @@
 
     .logo {
       width: 200px;
-      display: block;
-      margin: 10px auto;
+      float: right;
     }
 
     .title {
       margin-bottom: 40px;
+      display: inline-block;
     }
 
     .desc {
@@ -91,20 +92,31 @@
       width: 15%;
     }
 
+    .sign-area {
+      margin-top: 50px;
+      display: flex;
+      flex-direction: column;
+      border-bottom: 1px dotted #000000;
+      width: 70%;
+      min-height: 200px;
+    }
+    .sign-desc {
+      font-style: italic;
+      font-size: 16px;
+      margin-bottom: 30px;
+      flex-grow: 1;
+    }
     .sign-img {
-      margin-top: 10px;
-      float: right;
-      width: 30%;
+      display: block;
+      margin: 0 auto;
+      width: 50%;
     }
   </style>
 </head>
 
 <body>
-  <img class="logo" src="http://localhost:4000/images/logo_title.png" alt="">
   <h1 class="title">Delivery</h1>
-  <div class="desc">
-    <p></p>
-  </div>
+  <img class="logo" src="http://localhost:4000/images/logo_title.png" alt="">
   <div class="contact-info">
     <div class="company">
       <p>Blueocean Int’l (HK) Ltd</p>
@@ -167,9 +179,12 @@
       </tr>
     </tbody>
   </table>
-  {{#if signUrl}}
-  <img class="sign-img" alt="" src="{{signUrl}}">
-  {{/if}}
+  <div class="sign-area">
+    <p class="sign-desc">Please sign here to confirm delivery of items above are delivered in good condition:</p>
+    {{#if signUrl}}
+    <img class="sign-img" alt="" src="{{signUrl}}">
+    {{/if}}
+  </div>
 </body>
 
 </html>

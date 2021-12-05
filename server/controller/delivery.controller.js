@@ -52,6 +52,7 @@ async function getChairDelivery(req, res, next) {
         return {
           clientName: SalesOrder.name,
           clientPhone: SalesOrder.phone,
+          clientEmail: SalesOrder.email,
           clientDistrict: SalesOrder.district,
           clientStreet: SalesOrder.street,
           clientBlock: SalesOrder.block,
@@ -109,6 +110,7 @@ async function getDeskDelivery(req, res, next) {
         return {
           clientName: SalesOrder.name,
           clientPhone: SalesOrder.phone,
+          clientEmail: SalesOrder.email,
           clientDistrict: SalesOrder.district,
           clientStreet: SalesOrder.street,
           clientBlock: SalesOrder.block,
@@ -166,6 +168,7 @@ async function getAccessoryDelivery(req, res, next) {
         return {
           clientName: SalesOrder.name,
           clientPhone: SalesOrder.phone,
+          clientEmail: SalesOrder.email,
           clientDistrict: SalesOrder.district,
           clientStreet: SalesOrder.street,
           clientBlock: SalesOrder.block,
@@ -233,18 +236,6 @@ async function _generateDeliveryPDF(type, id, host) {
     format: 'A4',
     orientation: 'portrait',
     border: '10mm',
-    header: {
-      height: '20mm',
-      contents:
-        '<p style="text-align: center; text-transform: uppercase;">Delivery Sheet</p>',
-    },
-    footer: {
-      height: '28mm',
-      contents: {
-        default:
-          '<p style="text-align: center;"><span style="color: #444;">{{page}}</span>&nbsp;/&nbsp;<span>{{pages}}</span></p>', // fallback value
-      },
-    },
   };
 
   const deliveryInfo = await db[`${type}ToOrder`].findOne({
@@ -302,31 +293,35 @@ async function _generateDeliveryPDF(type, id, host) {
     qty: deliveryInfo.qty,
     description:
       type === 'Chair'
-        ? `Chair Brand: ${deliveryInfo.ChairStock.brand}\nChair Model: ${
+        ? `Chair Brand: ${deliveryInfo.ChairStock.brand}<br />Chair Model: ${
             deliveryInfo.ChairStock.model
-          }\n${
+          }<br />${
             deliveryInfo.ChairStock.withHeadrest
               ? 'With Headrest'
               : 'Without Headrest'
-          }\n${
+          }<br />${
             deliveryInfo.ChairStock.withAdArmrest
               ? 'With Adjustable Armrest'
               : 'Without Adjustable Armrest'
-          }\nFrameColor: ${deliveryInfo.ChairStock.frameColor}\nBack Color: ${
+          }<br />FrameColor: ${
+            deliveryInfo.ChairStock.frameColor
+          }<br />Back Color: ${
             deliveryInfo.ChairStock.backColor
-          }\nSeat Color: ${deliveryInfo.ChairStock.seatColor}\nRemark: ${
+          }<br />Seat Color: ${
+            deliveryInfo.ChairStock.seatColor
+          }<br />Remark: ${
             deliveryInfo.ChairStock.remark
-          }\nWith delivery and installation included`
+          }<br />With delivery and installation included`
         : type === 'Desk'
-        ? `Desk Model: ${deliveryInfo.DeskStock.model}\nColor of Legs: ${
+        ? `Desk Model: ${deliveryInfo.DeskStock.model}<br />Color of Legs: ${
             deliveryInfo.DeskStock.color
-          }\nArmSize: ${deliveryInfo.DeskStock.armSize}\nFeetSize: ${
+          }<br />ArmSize: ${deliveryInfo.DeskStock.armSize}<br />FeetSize: ${
             deliveryInfo.DeskStock.feetSize
-          }\nBeam Size: ${deliveryInfo.DeskStock.beamSize}\n${
+          }<br />Beam Size: ${deliveryInfo.DeskStock.beamSize}<br />${
             deliveryInfo.hasDeskTop
-              ? `Table Top: ${deliveryInfo.topMaterial} ${deliveryInfo.topColor}\nTable Top Size: ${deliveryInfo.topLength}x${deliveryInfo.topWidth}x${deliveryInfo.topThickness}\nTable Top Color:\nRounded Corners: ${deliveryInfo.topRoundedCorners}, Radius: R${deliveryInfo.topCornerRadius}\nHoles Required: ${deliveryInfo.topHoleCount}, Holes Shaped: ${deliveryInfo.topHoleType}`
+              ? `Table Top: ${deliveryInfo.topMaterial} ${deliveryInfo.topColor}<br />Table Top Size: ${deliveryInfo.topLength}x${deliveryInfo.topWidth}x${deliveryInfo.topThickness}<br />Table Top Color:<br />Rounded Corners: ${deliveryInfo.topRoundedCorners}, Radius: R${deliveryInfo.topCornerRadius}<br />Holes Required: ${deliveryInfo.topHoleCount}, Holes Shaped: ${deliveryInfo.topHoleType}`
               : 'Without DeskTop'
-          }\nWith delivery and installation included`
+          }<br />With delivery and installation included`
         : '',
   };
 

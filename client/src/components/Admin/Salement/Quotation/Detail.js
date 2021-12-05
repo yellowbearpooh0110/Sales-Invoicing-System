@@ -1437,7 +1437,8 @@ export default connect(mapStateToProps)((props) => {
               {
                 name: 'topLength',
                 label: 'Length',
-                type: 'number',
+                type: 'suffixNumber',
+                suffix: 'mm',
                 defaultValue: 700,
                 inputProps: { min: 0 },
                 width: '30%',
@@ -1445,7 +1446,8 @@ export default connect(mapStateToProps)((props) => {
               {
                 name: 'topWidth',
                 label: 'Width',
-                type: 'number',
+                type: 'suffixNumber',
+                suffix: 'mm',
                 defaultValue: 400,
                 inputProps: { min: 0 },
                 width: '30%',
@@ -1453,7 +1455,8 @@ export default connect(mapStateToProps)((props) => {
               {
                 name: 'topThickness',
                 label: 'Thickness',
-                type: 'number',
+                type: 'suffixNumber',
+                suffix: 'mm',
                 defaultValue: 25,
                 inputProps: { min: 0 },
                 width: '30%',
@@ -1526,6 +1529,29 @@ export default connect(mapStateToProps)((props) => {
                     )}
                     disabled={!hasDeskTop}
                     {...autocomParams}
+                  />
+                );
+              } else if (type === 'suffixNumber') {
+                const { suffix, ...fieldParams } = restParams;
+                return (
+                  <FormControlLabel
+                    key={index}
+                    sx={{
+                      flexBasis: width,
+                      minWidth: width,
+                      alignItems: 'baseline',
+                      mx: 0,
+                    }}
+                    control={
+                      <TextField
+                        fullWidth
+                        sx={{ m: '10px 5px 0 0' }}
+                        type="number"
+                        disabled={!hasDeskTop}
+                        {...fieldParams}
+                      />
+                    }
+                    label={suffix}
                   />
                 );
               } else if (type === 'select') {

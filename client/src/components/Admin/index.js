@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Box } from '@mui/material';
 import {
   BookOnline as BookOnlineIcon,
+  DeliveryDining as DeliveryDiningIcon,
   PeopleAlt as PeopleAltIcon,
   Storefront as StorefrontIcon,
 } from '@mui/icons-material';
@@ -26,6 +27,7 @@ import {
   QuotationEdit,
   QuotationView,
 } from './Salement/Quotation';
+import { ChairDelivery, DeskDelivery } from './Delivery';
 
 function mapStateToProps(state) {
   const { auth } = state;
@@ -66,6 +68,21 @@ const menuLists = [
         to: '/admin/quotation',
         icon: <BookOnlineIcon />,
         label: 'Quotation',
+      },
+    ],
+  },
+  {
+    category: 'Delivery',
+    content: [
+      {
+        to: '/admin/delivery/chair',
+        icon: <DeliveryDiningIcon />,
+        label: 'Chair',
+      },
+      {
+        to: '/admin/delivery/desk',
+        icon: <DeliveryDiningIcon />,
+        label: 'Desk',
       },
     ],
   },
@@ -171,6 +188,16 @@ const Admin = (props) => {
               path={`${path}/quotation/edit`}
               exact
               component={QuotationEdit}
+            />
+            <Route
+              path={`${path}/delivery/chair`}
+              exact
+              component={ChairDelivery}
+            />
+            <Route
+              path={`${path}/delivery/desk`}
+              exact
+              component={DeskDelivery}
             />
           </Switch>
         </Box>
