@@ -191,7 +191,7 @@ const Stock = connect(mapStateToProps)((props) => {
       </Paper>
       <DataGrid
         nonSelect={true}
-        title="Desk Stocks"
+        title="Desk Leg Stocks"
         rows={stocks
           .filter(
             (item) =>

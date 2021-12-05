@@ -535,7 +535,7 @@ const Stock = connect(mapStateToProps)((props) => {
         ))}
       </Paper>
       <DataGrid
-        title="Desk Stocks"
+        title="Desk Leg Stocks"
         rows={stocks
           .filter(
             (item) =>

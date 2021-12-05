@@ -25,17 +25,24 @@ const styles = StyleSheet.create({
     paddingBottom: 65,
     paddingHorizontal: 35,
   },
-  title: {
+  header: {
     fontFamily: 'Microsoft Sans Serif',
-    fontSize: 40,
-    marginBottom: 10,
-    fontWeight: 'bold',
-  },
-  detail: {
-    fontFamily: 'Microsoft Sans Serif',
+    width: '100%',
     fontSize: 8,
     lineHeight: 1.2,
+    marginBottom: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  title: {
+    fontFamily: 'Microsoft Sans Serif',
+    fontSize: 15,
     marginBottom: 10,
+    textTransform: 'uppercase',
+  },
+  logo: {
+    marginLeft: 'auto',
+    width: 50,
   },
   info: {
     flexDirection: 'row',
@@ -87,20 +94,6 @@ const styles = StyleSheet.create({
     padding: '3px 5px',
     borderRight: '0.5px solid #808080',
   },
-  header: {
-    width: 100,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  },
-  pageNumber: {
-    position: 'absolute',
-    fontSize: 12,
-    bottom: 30,
-    left: 0,
-    right: 0,
-    textAlign: 'center',
-    color: 'grey',
-  },
 });
 
 Font.register({
@@ -151,6 +144,11 @@ export default connect(mapStateToProps)((props) => {
     } ${tmp.getDate()}, ${tmp.getFullYear()}`;
   };
 
+  const getDateNum = (time) => {
+    const tmp = new Date(time);
+    return `${tmp.getFullYear()}${tmp.getMonth()}${tmp.getDate()}`;
+  };
+
   const getQuotation = ({ id, cancelToken }) => {
     axios
       .get(`/quotation/${id}`, { cancelToken })
@@ -176,15 +174,19 @@ export default connect(mapStateToProps)((props) => {
     <PDFViewer height="100%">
       <Document>
         <Page style={styles.body} wrap>
-          <Image style={styles.header} src={logoTitle} />
-          <Text style={styles.title}>Quotation</Text>
-          <View style={styles.detail}>
-            <Text>
-              No:{' '}
-              {quotation.Seller.prefix +
-                ('000' + quotation.quotationNum).substr(-3)}
-            </Text>
-            <Text>Date: {getDateString(quotation.createdAt)}</Text>
+          <View style={styles.header}>
+            <View>
+              <Text style={styles.title}>Quotation</Text>
+              <Text>Date: {getDateString(quotation.createdAt)}</Text>
+              <Text>
+                {`No: Q_${quotation.Seller.prefix}${getDateNum(
+                  quotation.createdAt
+                )}${('000' + quotation.quotationNum).substr(-3)}`}
+              </Text>
+            </View>
+            <View style={styles.logo}>
+              <Image src={logoTitle} />
+            </View>
           </View>
           <View style={styles.info}>
             <View style={styles.companyInfo}>
@@ -218,7 +220,7 @@ export default connect(mapStateToProps)((props) => {
                   { content: 'Salesperson', width: '15%' },
                   { content: 'Delivery Date', width: '55%' },
                   { content: 'Payment Terms', width: '15%' },
-                  { content: 'Due Date', width: '15%' },
+                  { content: 'Valid Til', width: '15%' },
                 ],
                 backgroundColor: '#dbe5f1',
                 textTransform: 'uppercase',
@@ -242,7 +244,9 @@ export default connect(mapStateToProps)((props) => {
                   },
                   { content: quotation.paymentTerms, width: '15%' },
                   {
-                    content: quotation.paid ? 'Paid' : quotation.dueDate,
+                    content: `${quotation.validTil} month${
+                      quotation.validTil === 1 ? '' : 's'
+                    }`,
                     width: '15%',
                   },
                 ],
@@ -300,13 +304,19 @@ export default connect(mapStateToProps)((props) => {
                     width: '15%',
                   },
                   {
-                    content: `Chair: ${item.brand} ${item.model}\nFrameColor: ${
-                      item.frameColor
-                    }\nBack Color: ${item.backColor}\nSeat Color: ${
-                      item.seatColor
-                    }\n${item.withHeadrest ? 'With Headrest\n' : ''}${
-                      item.withAdArmrest ? 'With Headrest\n' : ''
-                    }${item.remark}`,
+                    content: `Chair Brand: ${item.brand}\nChair Model: ${
+                      item.model
+                    }\n${
+                      item.withHeadrest ? 'With Headrest' : 'Without Headrest'
+                    }\n${
+                      item.withAdArmrest
+                        ? 'With Adjustable Armrest'
+                        : 'Without Adjustable Armrest'
+                    }\nFrameColor: ${item.frameColor}\nBack Color: ${
+                      item.backColor
+                    }\nSeat Color: ${item.seatColor}\nRemark: ${
+                      item.remark
+                    }\nWith delivery and installation included`,
                     width: '55%',
                   },
                   {
@@ -329,15 +339,15 @@ export default connect(mapStateToProps)((props) => {
                     width: '15%',
                   },
                   {
-                    content: `Desk: ${item.model}\nColor: ${
+                    content: `Desk Model: ${item.model}\nColor of Legs: ${
                       item.color
                     }\nArmSize: ${item.armSize}\nFeetSize: ${
                       item.feetSize
                     }\nBeam Size: ${item.beamSize}\n${
                       item.DeskToQuotation.hasDeskTop
-                        ? `Top: ${item.DeskToQuotation.topMaterial} ${item.DeskToQuotation.topColor}\nTop Size: ${item.DeskToQuotation.topLength}x${item.DeskToQuotation.topWidth}x${item.DeskToQuotation.topThickness}\nTop Corners: ${item.DeskToQuotation.topRoundedCorners}-R${item.DeskToQuotation.topCornerRadius}\nTop Holes: ${item.DeskToQuotation.topHoleCount}-${item.DeskToQuotation.topHoleType}`
+                        ? `Table Top: ${item.DeskToQuotation.topMaterial} ${item.DeskToQuotation.topColor}\nTable Top Size: ${item.DeskToQuotation.topLength}x${item.DeskToQuotation.topWidth}x${item.DeskToQuotation.topThickness}\nTable Top Color:\nRounded Corners: ${item.DeskToQuotation.topRoundedCorners}, Radius: R${item.DeskToQuotation.topCornerRadius}\nHoles Required: ${item.DeskToQuotation.topHoleCount}, Holes Shaped: ${item.DeskToQuotation.topHoleType}`
                         : 'Without DeskTop'
-                    }`,
+                    }\nWith delivery and installation included`,
                     width: '55%',
                   },
                   {
@@ -359,7 +369,7 @@ export default connect(mapStateToProps)((props) => {
                     width: '15%',
                   },
                   {
-                    content: `Accessory: ${item.name}\nColor: ${item.color}\n${item.remark}`,
+                    content: `Accessory Name: ${item.name}\nAccessory Color: ${item.color}\nRemark: ${item.remark}\nWith delivery and installation included`,
                     width: '55%',
                   },
                   {
@@ -436,7 +446,7 @@ export default connect(mapStateToProps)((props) => {
                     width: '70%',
                     fontSize: 12,
                   },
-                  { content: 'SALES TAX', width: '15%' },
+                  { content: 'DISCOUNT', width: '15%' },
                   {
                     content: `${
                       (((quotation.ChairStocks.length
@@ -587,7 +597,6 @@ export default connect(mapStateToProps)((props) => {
           <Text
             style={{
               marginTop: '5px',
-              flexGrow: 1,
               fontSize: 10,
               lineHeight: 1.2,
               color: '#888888',
@@ -677,19 +686,13 @@ export default connect(mapStateToProps)((props) => {
             style={{
               fontSize: 12,
               lineHeight: 1.2,
-              marginTop: 30,
+              marginTop: 12,
+              fontWeight: 'bold',
               textAlign: 'center',
             }}
           >
             Thank you for your business!
           </Text>
-          <Text
-            style={styles.pageNumber}
-            render={({ pageNumber, totalPages }) =>
-              `${pageNumber} / ${totalPages}`
-            }
-            fixed
-          />
         </Page>
       </Document>
     </PDFViewer>

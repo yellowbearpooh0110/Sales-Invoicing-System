@@ -35,10 +35,7 @@ function createSchema(req, res, next) {
     products: Joi.array().required(),
     paid: Joi.boolean().required(),
     paymentTerms: Joi.string().allow('').required(),
-    dueDate: Joi.date().allow(null).required().messages({
-      'any.required': `Shipment Date field is required.`,
-      'date.base': `Shipment Date should be a valid date type.`,
-    }),
+    validTil: Joi.number().integer().min(0).required(),
     discount: Joi.number().min(0).max(100).required(),
   });
   validateRequest(req, next, schema);
@@ -65,8 +62,12 @@ function getAll(req, res, next) {
     .then((quotations) =>
       res.json(
         quotations.map((item) => {
-          item.quotationNum =
-            item.Seller.prefix + ('000' + item.quotationNum).substr(-3);
+          const tmp = new Date(item.createdAt);
+          item.quotationNum = `Q_${
+            item.Seller.prefix
+          }${tmp.getFullYear()}${tmp.getMonth()}${tmp.getDate()}${(
+            '000' + item.quotationNum
+          ).substr(-3)}`;
           return item;
         })
       )
@@ -80,8 +81,12 @@ function getCurrent(req, res, next) {
     .then((quotations) =>
       res.json(
         quotations.map((item) => {
-          item.quotationNum =
-            item.Seller.prefix + ('000' + item.quotationNum).substr(-3);
+          const tmp = new Date(item.createdAt);
+          item.quotationNum = `Q_${
+            item.Seller.prefix
+          }${tmp.getFullYear()}${tmp.getMonth()}${tmp.getDate()}${(
+            '000' + item.quotationNum
+          ).substr(-3)}`;
           return item;
         })
       )

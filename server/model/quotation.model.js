@@ -41,18 +41,15 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: '',
     },
-    paid: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
     paymentTerms: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: '',
     },
-    dueDate: {
-      type: DataTypes.DATEONLY,
+    validTil: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1,
     },
     discount: {
       type: DataTypes.FLOAT,

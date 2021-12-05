@@ -511,6 +511,7 @@ export default connect(mapStateToProps)((props) => {
             <MuiPhoneNumber
               variant="outlined"
               label="Phone Number"
+              onlyCountries={['hk']}
               defaultCountry={'hk'}
               value={phone}
               InputProps={{

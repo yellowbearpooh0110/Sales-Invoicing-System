@@ -302,29 +302,31 @@ async function _generateDeliveryPDF(type, id, host) {
     qty: deliveryInfo.qty,
     description:
       type === 'Chair'
-        ? `Chair: ${deliveryInfo.ChairStock.brand} ${
+        ? `Chair Brand: ${deliveryInfo.ChairStock.brand}\nChair Model: ${
             deliveryInfo.ChairStock.model
-          }<br />Frame Color: ${
-            deliveryInfo.ChairStock.frameColor
-          }<br />Back Color: ${
+          }\n${
+            deliveryInfo.ChairStock.withHeadrest
+              ? 'With Headrest'
+              : 'Without Headrest'
+          }\n${
+            deliveryInfo.ChairStock.withAdArmrest
+              ? 'With Adjustable Armrest'
+              : 'Without Adjustable Armrest'
+          }\nFrameColor: ${deliveryInfo.ChairStock.frameColor}\nBack Color: ${
             deliveryInfo.ChairStock.backColor
-          }<br />Seat Color: ${deliveryInfo.ChairStock.seatColor}<br />${
-            deliveryInfo.ChairStock.withHeadrest ? 'With Headrest<br />' : ''
-          }${
-            deliveryInfo.ChairStock.withAdArmrest ? 'With Headrest<br />' : ''
-          }${deliveryInfo.ChairStock.remark}`
+          }\nSeat Color: ${deliveryInfo.ChairStock.seatColor}\nRemark: ${
+            deliveryInfo.ChairStock.remark
+          }\nWith delivery and installation included`
         : type === 'Desk'
-        ? `Desk: ${deliveryInfo.DeskStock.model}<br />Color: ${
+        ? `Desk Model: ${deliveryInfo.DeskStock.model}\nColor of Legs: ${
             deliveryInfo.DeskStock.color
-          }<br />ArmSize: ${deliveryInfo.DeskStock.armSize}<br />FeetSize: ${
+          }\nArmSize: ${deliveryInfo.DeskStock.armSize}\nFeetSize: ${
             deliveryInfo.DeskStock.feetSize
-          }<br />Beam Size: ${deliveryInfo.DeskStock.beamSize}\n${
+          }\nBeam Size: ${deliveryInfo.DeskStock.beamSize}\n${
             deliveryInfo.hasDeskTop
-              ? `Top: ${deliveryInfo.topMaterial} ${deliveryInfo.topColor}\nTop Size: ${deliveryInfo.topLength}x${deliveryInfo.topWidth}x${deliveryInfo.topThickness}\nTop Corners: ${deliveryInfo.topRoundedCorners}-R${deliveryInfo.topCornerRadius}\nTop Holes: ${deliveryInfo.topHoleCount}-${deliveryInfo.topHoleType}`
+              ? `Table Top: ${deliveryInfo.topMaterial} ${deliveryInfo.topColor}\nTable Top Size: ${deliveryInfo.topLength}x${deliveryInfo.topWidth}x${deliveryInfo.topThickness}\nTable Top Color:\nRounded Corners: ${deliveryInfo.topRoundedCorners}, Radius: R${deliveryInfo.topCornerRadius}\nHoles Required: ${deliveryInfo.topHoleCount}, Holes Shaped: ${deliveryInfo.topHoleType}`
               : 'Without DeskTop'
-          }`
-        : type === 'Accessory'
-        ? `Accessory: ${deliveryInfo.AccessoryStock.name}<br />Color: ${deliveryInfo.AccessoryStock.color}<br />${deliveryInfo.AccessoryStock.remark}`
+          }\nWith delivery and installation included`
         : '',
   };
 

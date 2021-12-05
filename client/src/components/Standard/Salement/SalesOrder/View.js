@@ -527,6 +527,7 @@ export default connect(mapStateToProps)((props) => {
             <MuiPhoneNumber
               variant="outlined"
               label="Phone Number"
+              onlyCountries={['hk']}
               defaultCountry={'hk'}
               value={phone}
               InputProps={{
@@ -654,7 +655,7 @@ export default connect(mapStateToProps)((props) => {
                       <TextField
                         name="deliveryDate"
                         type="date"
-                        label="Actual Date"
+                        label="Preferred Delivery Date"
                         defaultValue={item.ChairToOrder.deliveryDate}
                         InputLabelProps={{ shrink: true }}
                         sx={{
@@ -748,7 +749,7 @@ export default connect(mapStateToProps)((props) => {
                       <TextField
                         name="deliveryDate"
                         type="date"
-                        label="Actual Date"
+                        label="Preferred Delivery Date"
                         defaultValue={item.DeskToOrder.deliveryDate}
                         InputLabelProps={{ shrink: true }}
                         sx={{
@@ -828,7 +829,7 @@ export default connect(mapStateToProps)((props) => {
                       <TextField
                         name="deliveryDate"
                         type="date"
-                        label="Actual Date"
+                        label="Preferred Delivery Date"
                         defaultValue={item.AccessoryToOrder.deliveryDate}
                         InputLabelProps={{ shrink: true }}
                         sx={{

@@ -260,8 +260,6 @@ export default connect(mapStateToProps)((props) => {
   const [productAmount, setProductAmount] = useState(0);
   const [cart, setCart] = useState(initialCart);
 
-  const [paid, setPaid] = useState(initialClient.paid);
-
   const [chairStocks, setChairStocks] = useState([]);
   const [deskStocks, setDeskStocks] = useState([]);
   const [accessoryStocks, setAccessoryStocks] = useState([]);
@@ -515,6 +513,7 @@ export default connect(mapStateToProps)((props) => {
               <MuiPhoneNumber
                 key={index}
                 variant="outlined"
+                onlyCountries={['hk']}
                 defaultCountry={'hk'}
                 sx={{ flexBasis: width, minWidth: width }}
                 margin="dense"
@@ -811,7 +810,7 @@ export default connect(mapStateToProps)((props) => {
               </Paper>
               <DataGrid
                 nonSelect={true}
-                title="Desk Stocks"
+                title="Desk Leg Stocks"
                 rows={deskStocks
                   .filter(
                     (item) =>
@@ -1055,7 +1054,7 @@ export default connect(mapStateToProps)((props) => {
                 })),
                 paymentTerms: paymentData.get('paymentTerms'),
                 paid: Boolean(paymentData.get('paid')),
-                dueDate: paymentData.get('dueDate') || null,
+                validTil: paymentData.get('validTil') || null,
                 discount: Math.max(
                   Math.min(paymentData.get('discount'), 100),
                   0
@@ -1099,7 +1098,7 @@ export default connect(mapStateToProps)((props) => {
                 })),
                 paymentTerms: paymentData.get('paymentTerms'),
                 paid: Boolean(paymentData.get('paid')),
-                dueDate: paymentData.get('dueDate') || null,
+                validTil: paymentData.get('validTil') || null,
                 discount: Math.max(
                   Math.min(paymentData.get('discount'), 100),
                   0
@@ -1144,32 +1143,27 @@ export default connect(mapStateToProps)((props) => {
           />
           <FormControlLabel
             sx={{
-              flexBasis: '30%',
-              minWidth: '30%',
-              marginRight: 0,
+              flexBasis: '100%',
+              minWidth: '100%',
+              alignItems: 'baseline',
+              m: 0,
             }}
             control={
-              <Checkbox
-                name="paid"
-                checked={paid}
-                onChange={(e) => {
-                  setPaid(e.target.checked);
+              <TextField
+                type="number"
+                name="validTil"
+                label="Valid Til"
+                inputProps={{
+                  max: 10,
+                  min: 0,
                 }}
+                defaultValue={initialClient.validTil}
+                InputLabelProps={{ shrink: true }}
+                fullWidth
+                sx={{ m: '10px 5px 0 0' }}
               />
             }
-            label="Paid"
-          />
-          <TextField
-            type="date"
-            disabled={paid}
-            name="dueDate"
-            label="Due Date"
-            sx={{
-              flexBasis: '70%',
-              minWidth: '70%',
-            }}
-            defaultValue={initialClient.dueDate}
-            InputLabelProps={{ shrink: true }}
+            label="month(s)"
           />
           <FormControlLabel
             sx={{
@@ -1307,7 +1301,7 @@ export default connect(mapStateToProps)((props) => {
               setAddOpen(false);
             }}
           >
-            Cancle
+            Cancel
           </Button>
           <Button type="submit">OK</Button>
         </DialogActions>
@@ -1371,6 +1365,7 @@ export default connect(mapStateToProps)((props) => {
                 topCornerRadius: data.get('topCornerRadius') || '',
                 topHoleCount: data.get('topHoleCount') || '',
                 topHoleType: data.get('topHoleType') || '',
+                topHolePosition: data.get('topHolePosition') || '',
                 topRemark: data.get('topRemark') || '',
                 topSketchUrl: topSketchUrl,
               })
@@ -1412,7 +1407,7 @@ export default connect(mapStateToProps)((props) => {
                   }}
                 />
               }
-              label="Desk Top"
+              label="With TableTop"
               sx={{ flexBasis: '100%', minWidth: '100%' }}
             />
             {[
@@ -1427,7 +1422,8 @@ export default connect(mapStateToProps)((props) => {
                   'North American Walnut',
                   'South American Walnut',
                   'Red Oak',
-                  'Maple, Bamboo',
+                  'Maple',
+                  'Bamboo',
                   'Melamine with glass top',
                 ],
                 width: '65%',
@@ -1492,6 +1488,14 @@ export default connect(mapStateToProps)((props) => {
                 type: 'select',
                 defaultValue: 'Rounded',
                 options: ['Rounded', 'Rectangular'],
+                width: '48%',
+              },
+              {
+                name: 'topHolePosition',
+                label: 'Hole Position',
+                type: 'select',
+                defaultValue: 'Left',
+                options: ['Left', 'Right', 'Center'],
                 width: '48%',
               },
               {
@@ -1627,7 +1631,7 @@ export default connect(mapStateToProps)((props) => {
               setDeskAddOpen(false);
             }}
           >
-            Cancle
+            Cancel
           </Button>
           <Button type="submit">OK</Button>
         </DialogActions>

@@ -12,7 +12,7 @@ router.get('/accessory', authorize(), deliveryController.getAccessoryDelivery);
 router.post(
   '/generatePDF',
   authorize(),
-  signSchema,
+  generateSchema,
   deliveryController.generateDeliveryPDF
 );
 router.post('/sign', authorize(), signSchema, deliveryController.signDelivery);

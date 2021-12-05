@@ -91,8 +91,9 @@ function getAll(req, res, next) {
     .then((salesOrders) =>
       res.json(
         salesOrders.map((item) => {
-          item.invoiceNum =
-            item.Seller.prefix + ('000' + item.invoiceNum).substr(-3);
+          item.invoiceNum = `I_${item.Seller.prefix}${new Date(
+            item.createdAt
+          ).getFullYear()}-${('000' + item.invoiceNum).substr(-3)}`;
           return item;
         })
       )
@@ -106,8 +107,9 @@ function getCurrent(req, res, next) {
     .then((salesOrders) =>
       res.json(
         salesOrders.map((item) => {
-          item.invoiceNum =
-            item.Seller.prefix + ('000' + item.invoiceNum).substr(-3);
+          item.invoiceNum = `I_${item.Seller.prefix}${new Date(
+            item.createdAt
+          ).getFullYear()}-${('000' + item.invoiceNum).substr(-3)}`;
           return item;
         })
       )

@@ -515,6 +515,7 @@ export default connect(mapStateToProps)((props) => {
               <MuiPhoneNumber
                 key={index}
                 variant="outlined"
+                onlyCountries={['hk']}
                 defaultCountry={'hk'}
                 sx={{ flexBasis: width, minWidth: width }}
                 margin="dense"
@@ -811,7 +812,7 @@ export default connect(mapStateToProps)((props) => {
               </Paper>
               <DataGrid
                 nonSelect={true}
-                title="Desk Stocks"
+                title="Desk Leg Stocks"
                 rows={deskStocks
                   .filter(
                     (item) =>
@@ -1307,7 +1308,7 @@ export default connect(mapStateToProps)((props) => {
               setAddOpen(false);
             }}
           >
-            Cancle
+            Cancel
           </Button>
           <Button type="submit">OK</Button>
         </DialogActions>
@@ -1371,6 +1372,7 @@ export default connect(mapStateToProps)((props) => {
                 topCornerRadius: data.get('topCornerRadius') || '',
                 topHoleCount: data.get('topHoleCount') || '',
                 topHoleType: data.get('topHoleType') || '',
+                topHolePosition: data.get('topHolePosition') || '',
                 topRemark: data.get('topRemark') || '',
                 topSketchUrl: topSketchUrl,
               })
@@ -1412,7 +1414,7 @@ export default connect(mapStateToProps)((props) => {
                   }}
                 />
               }
-              label="Desk Top"
+              label="With TableTop"
               sx={{ flexBasis: '100%', minWidth: '100%' }}
             />
             {[
@@ -1427,7 +1429,8 @@ export default connect(mapStateToProps)((props) => {
                   'North American Walnut',
                   'South American Walnut',
                   'Red Oak',
-                  'Maple, Bamboo',
+                  'Maple',
+                  'Bamboo',
                   'Melamine with glass top',
                 ],
                 width: '65%',
@@ -1492,6 +1495,14 @@ export default connect(mapStateToProps)((props) => {
                 type: 'select',
                 defaultValue: 'Rounded',
                 options: ['Rounded', 'Rectangular'],
+                width: '48%',
+              },
+              {
+                name: 'topHolePosition',
+                label: 'Hole Position',
+                type: 'select',
+                defaultValue: 'Left',
+                options: ['Left', 'Right', 'Center'],
                 width: '48%',
               },
               {
@@ -1627,7 +1638,7 @@ export default connect(mapStateToProps)((props) => {
               setDeskAddOpen(false);
             }}
           >
-            Cancle
+            Cancel
           </Button>
           <Button type="submit">OK</Button>
         </DialogActions>

@@ -7,7 +7,7 @@ module.exports = {
 
 function drawDeskTop(params) {
   return new Promise((resolve, reject) => {
-    const {
+    var {
       topLength,
       topWidth,
       topThickness,
@@ -15,10 +15,15 @@ function drawDeskTop(params) {
       topCornerRadius,
       topHoleCount,
       topHoleType,
+      topHolePosition,
     } = params;
+    var topHolePosition =
+      topHoleCount === '1' && topHoleType === 'Rounded'
+        ? `${topHolePosition.toLowerCase()}-`
+        : '';
     PImage.decodePNGFromStream(
       fs.createReadStream(
-        `server/images/sketch/${topRoundedCorners}-RCorner/${topHoleType}Hole/${topHoleCount}-hole.png`
+        `server/images/sketch/${topRoundedCorners}-RCorner/${topHoleType}Hole/${topHoleCount}-${topHolePosition}hole.png`
       )
     ).then((img) => {
       const fnt = PImage.registerFont(

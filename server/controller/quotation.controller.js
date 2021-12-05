@@ -87,15 +87,9 @@ async function create(req, res, next) {
         } = products[index];
 
         if (restParams.hasDeskTop && !restParams.topSketchUrl)
-          restParams.topSketchUrl = `${protocol}://${host}/${await drawDeskTop({
-            topLength: restParams.topLength,
-            topWidth: restParams.topWidth,
-            topThickness: restParams.topThickness,
-            topRoundedCorners: restParams.topRoundedCorners,
-            topCornerRadius: restParams.topCornerRadius,
-            topHoleCount: restParams.topHoleCount,
-            topHoleType: restParams.topHoleType,
-          })}`;
+          restParams.topSketchUrl = `${protocol}://${host}/${await drawDeskTop(
+            restParams
+          )}`;
         await quotation.addDeskStock(stock, {
           through: {
             unitPrice,
@@ -162,15 +156,9 @@ async function update(req, res, next) {
           ...restParams
         } = products[index];
         if (restParams.hasDeskTop && !restParams.topSketchUrl)
-          restParams.topSketchUrl = `${protocol}://${host}/${await drawDeskTop({
-            topLength: restParams.topLength,
-            topWidth: restParams.topWidth,
-            topThickness: restParams.topThickness,
-            topRoundedCorners: restParams.topRoundedCorners,
-            topCornerRadius: restParams.topCornerRadius,
-            topHoleCount: restParams.topHoleCount,
-            topHoleType: restParams.topHoleType,
-          })}`;
+          restParams.topSketchUrl = `${protocol}://${host}/${await drawDeskTop(
+            restParams
+          )}`;
         await quotation.addDeskStock(stock, {
           through: {
             unitPrice,
