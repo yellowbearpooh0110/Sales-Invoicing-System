@@ -36,7 +36,8 @@ function createSchema(req, res, next) {
     paid: Joi.boolean().required(),
     paymentTerms: Joi.string().allow('').required(),
     validTil: Joi.number().integer().min(0).required(),
-    discount: Joi.number().min(0).max(100).required(),
+    discount: Joi.number().min(0).required(),
+    discountType: Joi.number().integer().min(0).required(),
   });
   validateRequest(req, next, schema);
 }
@@ -63,7 +64,7 @@ function getAll(req, res, next) {
       res.json(
         quotations.map((item) => {
           const tmp = new Date(item.createdAt);
-          item.quotationNum = `Q_${
+          item.quotationNum = `Q-${
             item.Seller.prefix
           }${tmp.getFullYear()}${tmp.getMonth()}${tmp.getDate()}${(
             '000' + item.quotationNum
@@ -82,7 +83,7 @@ function getCurrent(req, res, next) {
       res.json(
         quotations.map((item) => {
           const tmp = new Date(item.createdAt);
-          item.quotationNum = `Q_${
+          item.quotationNum = `Q-${
             item.Seller.prefix
           }${tmp.getFullYear()}${tmp.getMonth()}${tmp.getDate()}${(
             '000' + item.quotationNum

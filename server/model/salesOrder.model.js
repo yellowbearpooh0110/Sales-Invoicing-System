@@ -64,6 +64,11 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: 0,
     },
+    discountType: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1,
+    },
     finished: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

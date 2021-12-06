@@ -280,7 +280,6 @@ export default connect(mapStateToProps)((props) => {
       .then((response) => {
         // handle success
         setquotations(response.data);
-        console.log(response.data);
       })
       .catch(function (error) {
         // handle error
@@ -325,6 +324,7 @@ export default connect(mapStateToProps)((props) => {
               unit,
               Seller,
               discount,
+              discountType,
               createdAt,
               timeLine,
               paid,
@@ -349,7 +349,7 @@ export default connect(mapStateToProps)((props) => {
               );
               return createdTime.toISOString().split('T')[0];
             })(),
-            discount: `${discount}%`,
+            discount: `${discount}${discountType ? ' HKD' : '%'}`,
             clientAddress: [district, street, block, floor, unit].join(', '),
             products: (
               <IconButton

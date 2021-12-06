@@ -174,7 +174,7 @@ export default connect(mapStateToProps)((props) => {
               <Text style={styles.title}>Invoice</Text>
               <Text>Date: {getDateString(order.createdAt)}</Text>
               <Text>
-                {`No: ${order.Seller.prefix}${new Date(
+                {`No: I-${order.Seller.prefix}${new Date(
                   order.createdAt
                 ).getFullYear()}-${('000' + order.invoiceNum).substr(-3)}`}
               </Text>
@@ -354,29 +354,29 @@ export default connect(mapStateToProps)((props) => {
                   },
                 ],
               })),
-              ...order.AccessoryStocks.map((item) => ({
-                cells: [
-                  {
-                    content: `${item.AccessoryToOrder.qty}`,
-                    width: '15%',
-                  },
-                  {
-                    content: `Accessory Name: ${item.name}\nAccessory Color: ${item.color}\nRemark: ${item.remark}\nWith delivery and installation included`,
-                    width: '55%',
-                  },
-                  {
-                    content: `${item.AccessoryToOrder.unitPrice}`,
-                    width: '15%',
-                  },
-                  {
-                    content: `${
-                      item.AccessoryToOrder.unitPrice *
-                      item.AccessoryToOrder.qty
-                    }`,
-                    width: '15%',
-                  },
-                ],
-              })),
+              // ...order.AccessoryStocks.map((item) => ({
+              //   cells: [
+              //     {
+              //       content: `${item.AccessoryToOrder.qty}`,
+              //       width: '15%',
+              //     },
+              //     {
+              //       content: `Accessory Name: ${item.name}\nAccessory Color: ${item.color}\nRemark: ${item.remark}\nWith delivery and installation included`,
+              //       width: '55%',
+              //     },
+              //     {
+              //       content: `${item.AccessoryToOrder.unitPrice}`,
+              //       width: '15%',
+              //     },
+              //     {
+              //       content: `${
+              //         item.AccessoryToOrder.unitPrice *
+              //         item.AccessoryToOrder.qty
+              //       }`,
+              //       width: '15%',
+              //     },
+              //   ],
+              // })),
               ...Array(
                 Math.max(
                   0,
@@ -415,14 +415,15 @@ export default connect(mapStateToProps)((props) => {
                             (item) =>
                               item.DeskToOrder.unitPrice * item.DeskToOrder.qty
                           ).reduce((acc, cur) => acc + cur)
-                        : 0) +
-                      (order.AccessoryStocks.length
-                        ? order.AccessoryStocks.map(
-                            (item) =>
-                              item.AccessoryToOrder.unitPrice *
-                              item.AccessoryToOrder.qty
-                          ).reduce((acc, cur) => acc + cur)
                         : 0)
+                      //   +
+                      // (order.AccessoryStocks.length
+                      //   ? order.AccessoryStocks.map(
+                      //       (item) =>
+                      //         item.AccessoryToOrder.unitPrice *
+                      //         item.AccessoryToOrder.qty
+                      //     ).reduce((acc, cur) => acc + cur)
+                      //   : 0)
                     }`,
                     width: '15%',
                     borderBottom: '0.5px solid #808080',
@@ -440,29 +441,32 @@ export default connect(mapStateToProps)((props) => {
                   { content: 'DISCOUNT', width: '15%' },
                   {
                     content: `${
-                      (((order.ChairStocks.length
-                        ? order.ChairStocks.map(
-                            (item) =>
-                              item.ChairToOrder.unitPrice *
-                              item.ChairToOrder.qty
-                          ).reduce((acc, cur) => acc + cur)
-                        : 0) +
-                        (order.DeskStocks.length
-                          ? order.DeskStocks.map(
-                              (item) =>
-                                item.DeskToOrder.unitPrice *
-                                item.DeskToOrder.qty
-                            ).reduce((acc, cur) => acc + cur)
-                          : 0) +
-                        (order.AccessoryStocks.length
-                          ? order.AccessoryStocks.map(
-                              (item) =>
-                                item.AccessoryToOrder.unitPrice *
-                                item.AccessoryToOrder.qty
-                            ).reduce((acc, cur) => acc + cur)
-                          : 0)) *
-                        order.discount) /
-                      100
+                      order.discountType
+                        ? order.discount
+                        : (((order.ChairStocks.length
+                            ? order.ChairStocks.map(
+                                (item) =>
+                                  item.ChairToOrder.unitPrice *
+                                  item.ChairToOrder.qty
+                              ).reduce((acc, cur) => acc + cur)
+                            : 0) +
+                            (order.DeskStocks.length
+                              ? order.DeskStocks.map(
+                                  (item) =>
+                                    item.DeskToOrder.unitPrice *
+                                    item.DeskToOrder.qty
+                                ).reduce((acc, cur) => acc + cur)
+                              : 0)) *
+                            //   +
+                            // (order.AccessoryStocks.length
+                            //   ? order.AccessoryStocks.map(
+                            //       (item) =>
+                            //         item.AccessoryToOrder.unitPrice *
+                            //         item.AccessoryToOrder.qty
+                            //     ).reduce((acc, cur) => acc + cur)
+                            //   : 0)
+                            order.discount) /
+                          100
                     }`,
                     width: '15%',
                     borderBottom: '0.5px solid #808080',
@@ -480,29 +484,46 @@ export default connect(mapStateToProps)((props) => {
                   { content: 'TOTAL', width: '15%' },
                   {
                     content: `${
-                      (((order.ChairStocks.length
-                        ? order.ChairStocks.map(
-                            (item) =>
-                              item.ChairToOrder.unitPrice *
-                              item.ChairToOrder.qty
-                          ).reduce((acc, cur) => acc + cur)
-                        : 0) +
-                        (order.DeskStocks.length
-                          ? order.DeskStocks.map(
-                              (item) =>
-                                item.DeskToOrder.unitPrice *
-                                item.DeskToOrder.qty
-                            ).reduce((acc, cur) => acc + cur)
-                          : 0) +
-                        (order.AccessoryStocks.length
-                          ? order.AccessoryStocks.map(
-                              (item) =>
-                                item.AccessoryToOrder.unitPrice *
-                                item.AccessoryToOrder.qty
-                            ).reduce((acc, cur) => acc + cur)
-                          : 0)) *
-                        (100 - order.discount)) /
-                      100
+                      order.discountType
+                        ? (order.ChairStocks.length
+                            ? order.ChairStocks.map(
+                                (item) =>
+                                  item.ChairToOrder.unitPrice *
+                                  item.ChairToOrder.qty
+                              ).reduce((acc, cur) => acc + cur)
+                            : 0) +
+                          (order.DeskStocks.length
+                            ? order.DeskStocks.map(
+                                (item) =>
+                                  item.DeskToOrder.unitPrice *
+                                  item.DeskToOrder.qty
+                              ).reduce((acc, cur) => acc + cur)
+                            : 0) -
+                          order.discount
+                        : (((order.ChairStocks.length
+                            ? order.ChairStocks.map(
+                                (item) =>
+                                  item.ChairToOrder.unitPrice *
+                                  item.ChairToOrder.qty
+                              ).reduce((acc, cur) => acc + cur)
+                            : 0) +
+                            (order.DeskStocks.length
+                              ? order.DeskStocks.map(
+                                  (item) =>
+                                    item.DeskToOrder.unitPrice *
+                                    item.DeskToOrder.qty
+                                ).reduce((acc, cur) => acc + cur)
+                              : 0)) *
+                            //   +
+                            // (order.AccessoryStocks.length
+                            //   ? order.AccessoryStocks.map(
+                            //       (item) =>
+                            //         item.AccessoryToOrder.unitPrice *
+                            //         item.AccessoryToOrder.qty
+                            //     ).reduce((acc, cur) => acc + cur)
+                            //   : 0)
+                            (100 - order.discount)) /
+                          100
                     }`,
                     width: '15%',
                   },

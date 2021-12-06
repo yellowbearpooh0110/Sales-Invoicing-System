@@ -179,7 +179,7 @@ export default connect(mapStateToProps)((props) => {
               <Text style={styles.title}>Quotation</Text>
               <Text>Date: {getDateString(quotation.createdAt)}</Text>
               <Text>
-                {`No: Q_${quotation.Seller.prefix}${getDateNum(
+                {`No: Q-${quotation.Seller.prefix}${getDateNum(
                   quotation.createdAt
                 )}${('000' + quotation.quotationNum).substr(-3)}`}
               </Text>
@@ -362,29 +362,29 @@ export default connect(mapStateToProps)((props) => {
                   },
                 ],
               })),
-              ...quotation.AccessoryStocks.map((item) => ({
-                cells: [
-                  {
-                    content: `${item.AccessoryToQuotation.qty}`,
-                    width: '15%',
-                  },
-                  {
-                    content: `Accessory Name: ${item.name}\nAccessory Color: ${item.color}\nRemark: ${item.remark}\nWith delivery and installation included`,
-                    width: '55%',
-                  },
-                  {
-                    content: `${item.AccessoryToQuotation.unitPrice}`,
-                    width: '15%',
-                  },
-                  {
-                    content: `${
-                      item.AccessoryToQuotation.unitPrice *
-                      item.AccessoryToQuotation.qty
-                    }`,
-                    width: '15%',
-                  },
-                ],
-              })),
+              // ...quotation.AccessoryStocks.map((item) => ({
+              //   cells: [
+              //     {
+              //       content: `${item.AccessoryToQuotation.qty}`,
+              //       width: '15%',
+              //     },
+              //     {
+              //       content: `Accessory Name: ${item.name}\nAccessory Color: ${item.color}\nRemark: ${item.remark}\nWith delivery and installation included`,
+              //       width: '55%',
+              //     },
+              //     {
+              //       content: `${item.AccessoryToQuotation.unitPrice}`,
+              //       width: '15%',
+              //     },
+              //     {
+              //       content: `${
+              //         item.AccessoryToQuotation.unitPrice *
+              //         item.AccessoryToQuotation.qty
+              //       }`,
+              //       width: '15%',
+              //     },
+              //   ],
+              // })),
               ...Array(
                 Math.max(
                   0,
@@ -424,14 +424,15 @@ export default connect(mapStateToProps)((props) => {
                               item.DeskToQuotation.unitPrice *
                               item.DeskToQuotation.qty
                           ).reduce((acc, cur) => acc + cur)
-                        : 0) +
-                      (quotation.AccessoryStocks.length
-                        ? quotation.AccessoryStocks.map(
-                            (item) =>
-                              item.AccessoryToQuotation.unitPrice *
-                              item.AccessoryToQuotation.qty
-                          ).reduce((acc, cur) => acc + cur)
                         : 0)
+                      //   +
+                      // (quotation.AccessoryStocks.length
+                      //   ? quotation.AccessoryStocks.map(
+                      //       (item) =>
+                      //         item.AccessoryToQuotation.unitPrice *
+                      //         item.AccessoryToQuotation.qty
+                      //     ).reduce((acc, cur) => acc + cur)
+                      //   : 0)
                     }`,
                     width: '15%',
                     borderBottom: '0.5px solid #808080',
@@ -449,29 +450,32 @@ export default connect(mapStateToProps)((props) => {
                   { content: 'DISCOUNT', width: '15%' },
                   {
                     content: `${
-                      (((quotation.ChairStocks.length
-                        ? quotation.ChairStocks.map(
-                            (item) =>
-                              item.ChairToQuotation.unitPrice *
-                              item.ChairToQuotation.qty
-                          ).reduce((acc, cur) => acc + cur)
-                        : 0) +
-                        (quotation.DeskStocks.length
-                          ? quotation.DeskStocks.map(
-                              (item) =>
-                                item.DeskToQuotation.unitPrice *
-                                item.DeskToQuotation.qty
-                            ).reduce((acc, cur) => acc + cur)
-                          : 0) +
-                        (quotation.AccessoryStocks.length
-                          ? quotation.AccessoryStocks.map(
-                              (item) =>
-                                item.AccessoryToQuotation.unitPrice *
-                                item.AccessoryToQuotation.qty
-                            ).reduce((acc, cur) => acc + cur)
-                          : 0)) *
-                        quotation.discount) /
-                      100
+                      quotation.discountType
+                        ? quotation.discount
+                        : (((quotation.ChairStocks.length
+                            ? quotation.ChairStocks.map(
+                                (item) =>
+                                  item.ChairToQuotation.unitPrice *
+                                  item.ChairToQuotation.qty
+                              ).reduce((acc, cur) => acc + cur)
+                            : 0) +
+                            (quotation.DeskStocks.length
+                              ? quotation.DeskStocks.map(
+                                  (item) =>
+                                    item.DeskToQuotation.unitPrice *
+                                    item.DeskToQuotation.qty
+                                ).reduce((acc, cur) => acc + cur)
+                              : 0)) *
+                            // +
+                            // (quotation.AccessoryStocks.length
+                            //   ? quotation.AccessoryStocks.map(
+                            //       (item) =>
+                            //         item.AccessoryToQuotation.unitPrice *
+                            //         item.AccessoryToQuotation.qty
+                            //     ).reduce((acc, cur) => acc + cur)
+                            //   : 0)
+                            quotation.discount) /
+                          100
                     }`,
                     width: '15%',
                     borderBottom: '0.5px solid #808080',
@@ -489,29 +493,46 @@ export default connect(mapStateToProps)((props) => {
                   { content: 'TOTAL', width: '15%' },
                   {
                     content: `${
-                      (((quotation.ChairStocks.length
-                        ? quotation.ChairStocks.map(
-                            (item) =>
-                              item.ChairToQuotation.unitPrice *
-                              item.ChairToQuotation.qty
-                          ).reduce((acc, cur) => acc + cur)
-                        : 0) +
-                        (quotation.DeskStocks.length
-                          ? quotation.DeskStocks.map(
-                              (item) =>
-                                item.DeskToQuotation.unitPrice *
-                                item.DeskToQuotation.qty
-                            ).reduce((acc, cur) => acc + cur)
-                          : 0) +
-                        (quotation.AccessoryStocks.length
-                          ? quotation.AccessoryStocks.map(
-                              (item) =>
-                                item.AccessoryToQuotation.unitPrice *
-                                item.AccessoryToQuotation.qty
-                            ).reduce((acc, cur) => acc + cur)
-                          : 0)) *
-                        (100 - quotation.discount)) /
-                      100
+                      quotation.discountType
+                        ? (quotation.ChairStocks.length
+                            ? quotation.ChairStocks.map(
+                                (item) =>
+                                  item.ChairToQuotation.unitPrice *
+                                  item.ChairToQuotation.qty
+                              ).reduce((acc, cur) => acc + cur)
+                            : 0) +
+                          (quotation.DeskStocks.length
+                            ? quotation.DeskStocks.map(
+                                (item) =>
+                                  item.DeskToQuotation.unitPrice *
+                                  item.DeskToQuotation.qty
+                              ).reduce((acc, cur) => acc + cur)
+                            : 0) -
+                          quotation.discount
+                        : (((quotation.ChairStocks.length
+                            ? quotation.ChairStocks.map(
+                                (item) =>
+                                  item.ChairToQuotation.unitPrice *
+                                  item.ChairToQuotation.qty
+                              ).reduce((acc, cur) => acc + cur)
+                            : 0) +
+                            (quotation.DeskStocks.length
+                              ? quotation.DeskStocks.map(
+                                  (item) =>
+                                    item.DeskToQuotation.unitPrice *
+                                    item.DeskToQuotation.qty
+                                ).reduce((acc, cur) => acc + cur)
+                              : 0)) *
+                            //   +
+                            // (quotation.AccessoryStocks.length
+                            //   ? quotation.AccessoryStocks.map(
+                            //       (item) =>
+                            //         item.AccessoryToQuotation.unitPrice *
+                            //         item.AccessoryToQuotation.qty
+                            //     ).reduce((acc, cur) => acc + cur)
+                            //   : 0)
+                            (100 - quotation.discount)) /
+                          100
                     }`,
                     width: '15%',
                   },

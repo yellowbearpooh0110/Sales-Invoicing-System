@@ -46,7 +46,8 @@ function createSchema(req, res, next) {
       'any.required': `Due Date field is required.`,
       'date.base': `Due Date should be a valid date type.`,
     }),
-    discount: Joi.number().min(0).max(100).required(),
+    discount: Joi.number().min(0).required(),
+    discountType: Joi.number().integer().min(0).required(),
   });
   validateRequest(req, next, schema);
 }
@@ -91,7 +92,7 @@ function getAll(req, res, next) {
     .then((salesOrders) =>
       res.json(
         salesOrders.map((item) => {
-          item.invoiceNum = `I_${item.Seller.prefix}${new Date(
+          item.invoiceNum = `I-${item.Seller.prefix}${new Date(
             item.createdAt
           ).getFullYear()}-${('000' + item.invoiceNum).substr(-3)}`;
           return item;
@@ -107,7 +108,7 @@ function getCurrent(req, res, next) {
     .then((salesOrders) =>
       res.json(
         salesOrders.map((item) => {
-          item.invoiceNum = `I_${item.Seller.prefix}${new Date(
+          item.invoiceNum = `I-${item.Seller.prefix}${new Date(
             item.createdAt
           ).getFullYear()}-${('000' + item.invoiceNum).substr(-3)}`;
           return item;

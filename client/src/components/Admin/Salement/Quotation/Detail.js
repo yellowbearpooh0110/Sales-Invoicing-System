@@ -244,6 +244,9 @@ export default connect(mapStateToProps)((props) => {
   const theme = useTheme();
   const { componentType, initialClient, initialCart } = props;
 
+  const [topHoleCount, setTopHoleCount] = useState(0);
+  const [topHoleType, setTopHoleType] = useState('Rounded');
+
   const steps = [
     'Input Client Info',
     'Select Products',
@@ -1056,9 +1059,12 @@ export default connect(mapStateToProps)((props) => {
                 paid: Boolean(paymentData.get('paid')),
                 validTil: paymentData.get('validTil') || null,
                 discount: Math.max(
-                  Math.min(paymentData.get('discount'), 100),
+                  paymentData.get('discountType') > 0
+                    ? paymentData.get('discount')
+                    : Math.min(paymentData.get('discount'), 100),
                   0
                 ),
+                discountType: paymentData.get('discountType'),
               })
               .then(() => {
                 // handle success
@@ -1100,9 +1106,12 @@ export default connect(mapStateToProps)((props) => {
                 paid: Boolean(paymentData.get('paid')),
                 validTil: paymentData.get('validTil') || null,
                 discount: Math.max(
-                  Math.min(paymentData.get('discount'), 100),
+                  paymentData.get('discountType') > 0
+                    ? paymentData.get('discount')
+                    : Math.min(paymentData.get('discount'), 100),
                   0
                 ),
+                discountType: paymentData.get('discountType'),
               })
               .then(() => {
                 // handle success
@@ -1160,34 +1169,40 @@ export default connect(mapStateToProps)((props) => {
                 defaultValue={initialClient.validTil}
                 InputLabelProps={{ shrink: true }}
                 fullWidth
-                sx={{ m: '10px 5px 0 0' }}
+                sx={{ m: '10px 5px 10px 0' }}
               />
             }
             label="month(s)"
           />
-          <FormControlLabel
+          <TextField
             sx={{
-              flexBasis: '100%',
-              minWidth: '100%',
+              flexBasis: ['58%', '68%'],
+              minWidth: ['58%', '68%'],
               alignItems: 'baseline',
               m: 0,
             }}
-            control={
-              <TextField
-                label="Discount"
-                type="number"
-                name="discount"
-                inputProps={{
-                  max: 100,
-                  min: 0,
-                }}
-                defaultValue={initialClient.discount}
-                fullWidth
-                sx={{ m: '10px 5px 0 0' }}
-              />
-            }
-            label="%"
+            label="Discount"
+            type="number"
+            name="discount"
+            inputProps={{
+              min: 0,
+            }}
+            defaultValue={initialClient.discount}
+            fullWidth
           />
+          <Select
+            sx={{
+              flexBasis: ['40%', '30%'],
+              minWidth: ['40%', '30%'],
+              alignItems: 'baseline',
+              m: 0,
+            }}
+            name="discountType"
+            defaultValue={initialClient.discountType}
+          >
+            <MenuItem value={0}>%</MenuItem>
+            <MenuItem value={1}>HKD</MenuItem>
+          </Select>
         </Paper>
         <Button
           sx={{ marginTop: '10px' }}
@@ -1407,7 +1422,7 @@ export default connect(mapStateToProps)((props) => {
                   }}
                 />
               }
-              label="With TableTop"
+              label="with Table Top"
               sx={{ flexBasis: '100%', minWidth: '100%' }}
             />
             {[
@@ -1481,7 +1496,11 @@ export default connect(mapStateToProps)((props) => {
                 name: 'topHoleCount',
                 label: 'Number of Holes',
                 type: 'select',
-                defaultValue: 0,
+                value: topHoleCount,
+                onChange: (e) => {
+                  e.preventDefault();
+                  setTopHoleCount(e.target.value);
+                },
                 options: [0, 1, 2, 3],
                 width: '48%',
               },
@@ -1489,7 +1508,11 @@ export default connect(mapStateToProps)((props) => {
                 name: 'topHoleType',
                 label: 'Type of Holes',
                 type: 'select',
-                defaultValue: 'Rounded',
+                value: topHoleType,
+                onChange: (e) => {
+                  e.preventDefault();
+                  setTopHoleType(e.target.value);
+                },
                 options: ['Rounded', 'Rectangular'],
                 width: '48%',
               },
@@ -1499,6 +1522,7 @@ export default connect(mapStateToProps)((props) => {
                 type: 'select',
                 defaultValue: 'Left',
                 options: ['Left', 'Right', 'Center'],
+                disabled: topHoleCount !== 1 || topHoleType !== 'Rounded',
                 width: '48%',
               },
               {

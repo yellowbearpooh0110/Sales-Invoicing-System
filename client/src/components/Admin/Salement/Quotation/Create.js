@@ -6,7 +6,7 @@ const Create = (props) => {
   return (
     <Detail
       componentType="create"
-      initialClient={{ phone, setPhone, paid: true }}
+      initialClient={{ phone, setPhone, paid: true, discountType: 1 }}
       initialCart={[]}
       {...props}
     />
