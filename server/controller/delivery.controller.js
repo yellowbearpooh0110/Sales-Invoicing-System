@@ -18,17 +18,17 @@ async function getAllChairDelivery(req, res, next) {
       attributes: ['id', 'deliveryDate', 'from', 'to', 'delivered', 'signUrl'],
       include: [
         {
-          attributes: [
-            'name',
-            'phone',
-            'email',
-            'district',
-            'street',
-            'block',
-            'floor',
-            'unit',
-          ],
           model: db.SalesOrder,
+          include: [
+            {
+              model: db.User,
+              as: 'Seller',
+              attributes: ['id', 'firstName', 'lastName', 'prefix'],
+            },
+          ],
+        },
+        {
+          model: db.ChairStock,
         },
       ],
       order: [['createdAt', 'DESC']],
@@ -37,23 +37,7 @@ async function getAllChairDelivery(req, res, next) {
     const host = req.get('host');
     const protocol = req.protocol;
 
-    res.json(
-      result.map((item) => {
-        const { SalesOrder, signUrl, ...restProps } = item.get();
-        return {
-          clientName: SalesOrder.name,
-          clientPhone: SalesOrder.phone,
-          clientEmail: SalesOrder.email,
-          clientDistrict: SalesOrder.district,
-          clientStreet: SalesOrder.street,
-          clientBlock: SalesOrder.block,
-          clientFloor: SalesOrder.floor,
-          clientUnit: SalesOrder.unit,
-          pdfURL: `${protocol}://${host}/deliveryPDFs/Chair-${restProps.id}.pdf`,
-          ...restProps,
-        };
-      })
-    );
+    res.json(result);
   } catch (err) {
     next(err);
   }
@@ -120,20 +104,20 @@ async function getChairDelivery(req, res, next) {
 async function getAllDeskDelivery(req, res, next) {
   try {
     const result = await db.DeskToOrder.findAll({
-      attributes: ['id', 'deliveryDate', 'from', 'to', 'delivered', 'signUrl'],
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
       include: [
         {
-          attributes: [
-            'name',
-            'phone',
-            'email',
-            'district',
-            'street',
-            'block',
-            'floor',
-            'unit',
-          ],
           model: db.SalesOrder,
+          include: [
+            {
+              model: db.User,
+              as: 'Seller',
+              attributes: ['id', 'firstName', 'lastName', 'prefix'],
+            },
+          ],
+        },
+        {
+          model: db.DeskStock,
         },
       ],
       order: [['createdAt', 'DESC']],
@@ -142,23 +126,7 @@ async function getAllDeskDelivery(req, res, next) {
     const host = req.get('host');
     const protocol = req.protocol;
 
-    res.json(
-      result.map((item) => {
-        const { SalesOrder, signUrl, ...restProps } = item.get();
-        return {
-          clientName: SalesOrder.name,
-          clientPhone: SalesOrder.phone,
-          clientEmail: SalesOrder.email,
-          clientDistrict: SalesOrder.district,
-          clientStreet: SalesOrder.street,
-          clientBlock: SalesOrder.block,
-          clientFloor: SalesOrder.floor,
-          clientUnit: SalesOrder.unit,
-          pdfURL: `${protocol}://${host}/deliveryPDFs/Desk-${restProps.id}.pdf`,
-          ...restProps,
-        };
-      })
-    );
+    res.json(result);
   } catch (err) {
     next(err);
   }

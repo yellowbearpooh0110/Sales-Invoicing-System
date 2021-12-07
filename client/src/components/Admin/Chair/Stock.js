@@ -552,11 +552,6 @@ const Stock = connect(mapStateToProps)((props) => {
       <DataGrid
         title="Chair Stocks"
         rows={stocks
-          .filter(
-            (item) =>
-              (!filterBrand || item.brand === filterBrand) &&
-              (!filterModel || item.model === filterModel)
-          )
           .map(
             (
               {
@@ -603,6 +598,11 @@ const Stock = connect(mapStateToProps)((props) => {
               arrivalDate: arrivalDate || 'No',
               ...restProps,
             })
+          )
+          .filter(
+            (item) =>
+              (!filterBrand || item.brand === filterBrand) &&
+              (!filterModel || item.model === filterModel)
           )}
         columns={columns}
         onEditClick={handleEditClick}

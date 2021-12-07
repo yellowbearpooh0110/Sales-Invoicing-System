@@ -453,7 +453,6 @@ const Stock = connect(mapStateToProps)((props) => {
       <DataGrid
         title="Accessory Stocks"
         rows={stocks
-          .filter((item) => !filterColor || item.color === filterColor)
           .map(
             (
               { thumbnailUrl, shipmentDate, arrivalDate, ...restProps },
@@ -491,7 +490,8 @@ const Stock = connect(mapStateToProps)((props) => {
               arrivalDate: arrivalDate || 'No',
               ...restProps,
             })
-          )}
+          )
+          .filter((item) => !filterColor || item.color === filterColor)}
         columns={columns}
         onEditClick={handleEditClick}
         onRemoveClick={handleRemoveClick}

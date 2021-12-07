@@ -134,7 +134,6 @@ const Stock = connect(mapStateToProps)((props) => {
         nonSelect={true}
         title="Accessory Stocks"
         rows={stocks
-          .filter((item) => !filterColor || item.color === filterColor)
           .map(
             (
               { thumbnailUrl, shipmentDate, arrivalDate, ...restProps },
@@ -166,7 +165,8 @@ const Stock = connect(mapStateToProps)((props) => {
               })(),
               ...restProps,
             })
-          )}
+          )
+          .filter((item) => !filterColor || item.color === filterColor)}
         columns={columns}
       />
     </Box>

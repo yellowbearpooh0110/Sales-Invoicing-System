@@ -8,12 +8,20 @@ import axios from 'axios';
 import DataGrid from 'components/Common/DataGrid';
 
 const columns = [
-  { id: 'clientName', label: 'Client Name' },
-  { id: 'clientPhone', label: 'Client Phone' },
-  { id: 'clientEmail', label: 'Client Email' },
-  { id: 'clientAddress', label: 'Client Address' },
-  { id: 'deliveryDate', label: 'Delivery Date' },
-  { id: 'deliveryPDF', label: 'Note' },
+  { id: 'deliveryDate', label: 'Delivery Date', sx: { paddingLeft: '10px' } },
+  { id: 'invoiceNum', label: 'Inovice #' },
+  { id: 'address', label: 'Address' },
+  { id: 'name', label: 'Name' },
+  { id: 'phone', label: 'Phone' },
+  { id: 'email', label: 'Email' },
+  { id: 'model', label: 'Model' },
+  { id: 'color', label: 'Color' },
+  { id: 'armSize', label: 'Arm Size' },
+  { id: 'feetSize', label: 'Feet Size' },
+  { id: 'beamSize', label: 'Beam Size' },
+  { id: 'deskTop', label: 'Table Top' },
+  { id: 'remark', label: 'Remark' },
+  { id: 'deliveryPDF', label: 'Note', sx: { paddingRight: '10px' } },
 ];
 
 function mapStateToProps(state) {
@@ -31,6 +39,7 @@ export default connect(mapStateToProps)((props) => {
       .get('/delivery/allDesk', props)
       .then((response) => {
         // handle success
+        console.log(response.data);
         setDeliveries(response.data);
       })
       .catch(function (error) {
@@ -135,31 +144,39 @@ export default connect(mapStateToProps)((props) => {
       <DataGrid
         nonSelect={true}
         title="Desk Delivery"
-        rows={deliveries.map(
-          ({
-            id,
-            clientUnit,
-            clientFloor,
-            clientBlock,
-            clientStreet,
-            clientDistrict,
-            ...restProps
-          }) => ({
-            clientAddress: `${clientUnit}, ${clientFloor}, ${clientBlock}, ${clientStreet}, ${clientDistrict}`,
-            deliveryPDF: (
-              <Button
-                variant="contained"
-                sx={{ mt: '5px' }}
-                component={RouterLink}
-                target="_blank"
-                to={`/deliveryPDF/desk/${id}`}
-              >
-                Delivery Note
-              </Button>
-            ),
-            ...restProps,
-          })
-        )}
+        rows={deliveries.map(({ id, SalesOrder, DeskStock, ...restProps }) => ({
+          invoiceNum: `I-${SalesOrder.Seller.prefix}${new Date(
+            SalesOrder.createdAt
+          ).getFullYear()}-${('000' + SalesOrder.invoiceNum).substr(-3)}`,
+          address: `${SalesOrder.unit}, ${SalesOrder.floor}, ${SalesOrder.block}, ${SalesOrder.street}, ${SalesOrder.district}`,
+          name: SalesOrder.name,
+          phone: SalesOrder.phone,
+          email: SalesOrder.email,
+          model: DeskStock.model,
+          color: DeskStock.color,
+          color: DeskStock.color,
+          armSize: DeskStock.armSize,
+          feetSize: DeskStock.feetSize,
+          beamSize: DeskStock.beamSize,
+          deskTop: `${
+            restProps.hasDeskTop
+              ? `${restProps.topMaterial}, ${restProps.topColor}, ${restProps.topLength}x${restProps.topWidth}x${restProps.topThickness}, ${restProps.topRoundedCorners}-R${restProps.topCornerRadius}, ${restProps.topHoleCount}-${restProps.topHoleType}`
+              : 'Without DeskTop'
+          }`,
+          remark: DeskStock.reamrk,
+          deliveryPDF: (
+            <Button
+              variant="contained"
+              sx={{ my: '5px', width: 100, fontSize: 10 }}
+              component={RouterLink}
+              target="_blank"
+              to={`/deliveryPDF/desk/${id}`}
+            >
+              Delivery Note
+            </Button>
+          ),
+          ...restProps,
+        }))}
         columns={columns}
       />
     </Box>

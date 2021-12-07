@@ -681,11 +681,6 @@ export default connect(mapStateToProps)((props) => {
                 nonSelect={true}
                 title="Chair Stocks"
                 rows={chairStocks
-                  .filter(
-                    (item) =>
-                      (!chairFilterBrand || item.brand === chairFilterBrand) &&
-                      (!chairFilterModel || item.model === chairFilterModel)
-                  )
                   .map(
                     (
                       {
@@ -758,6 +753,11 @@ export default connect(mapStateToProps)((props) => {
                       })(),
                       ...restProps,
                     })
+                  )
+                  .filter(
+                    (item) =>
+                      (!chairFilterBrand || item.brand === chairFilterBrand) &&
+                      (!chairFilterModel || item.model === chairFilterModel)
                   )}
                 columns={chairColumns}
               />
@@ -815,11 +815,6 @@ export default connect(mapStateToProps)((props) => {
                 nonSelect={true}
                 title="Desk Leg Stocks"
                 rows={deskStocks
-                  .filter(
-                    (item) =>
-                      (!deskFilterModel || item.model === deskFilterModel) &&
-                      (!deskFilterColor || item.color === deskFilterColor)
-                  )
                   .map(
                     (
                       { thumbnailUrl, shipmentDate, arrivalDate, ...restProps },
@@ -884,6 +879,11 @@ export default connect(mapStateToProps)((props) => {
                       })(),
                       ...restProps,
                     })
+                  )
+                  .filter(
+                    (item) =>
+                      (!deskFilterModel || item.model === deskFilterModel) &&
+                      (!deskFilterColor || item.color === deskFilterColor)
                   )}
                 columns={deskColumns}
               />
@@ -925,11 +925,6 @@ export default connect(mapStateToProps)((props) => {
                 nonSelect={true}
                 title="Accessory Stocks"
                 rows={accessoryStocks
-                  .filter(
-                    (item) =>
-                      !accessoryFilterColor ||
-                      item.color === accessoryFilterColor
-                  )
                   .map(
                     (
                       { thumbnailUrl, shipmentDate, arrivalDate, ...restProps },
@@ -993,6 +988,11 @@ export default connect(mapStateToProps)((props) => {
                       })(),
                       ...restProps,
                     })
+                  )
+                  .filter(
+                    (item) =>
+                      !accessoryFilterColor ||
+                      item.color === accessoryFilterColor
                   )}
                 columns={accessoryColumns}
               />

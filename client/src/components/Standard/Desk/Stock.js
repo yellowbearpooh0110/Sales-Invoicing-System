@@ -193,11 +193,6 @@ const Stock = connect(mapStateToProps)((props) => {
         nonSelect={true}
         title="Desk Leg Stocks"
         rows={stocks
-          .filter(
-            (item) =>
-              (!filterModel || item.model === filterModel) &&
-              (!filterColor || item.color === filterColor)
-          )
           .map(
             (
               {
@@ -238,6 +233,11 @@ const Stock = connect(mapStateToProps)((props) => {
               })(),
               ...restProps,
             })
+          )
+          .filter(
+            (item) =>
+              (!filterModel || item.model === filterModel) &&
+              (!filterColor || item.color === filterColor)
           )}
         columns={columns}
       />

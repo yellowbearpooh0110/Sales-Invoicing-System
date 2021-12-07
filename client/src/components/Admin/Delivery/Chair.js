@@ -8,12 +8,21 @@ import axios from 'axios';
 import DataGrid from 'components/Common/DataGrid';
 
 const columns = [
-  { id: 'clientName', label: 'Client Name' },
-  { id: 'clientPhone', label: 'Client Phone' },
-  { id: 'clientEmail', label: 'Client Email' },
-  { id: 'clientAddress', label: 'Client Address' },
-  { id: 'deliveryDate', label: 'Delivery Date' },
-  { id: 'deliveryPDF', label: 'Note' },
+  { id: 'deliveryDate', label: 'Delivery Date', sx: { paddingLeft: '10px' } },
+  { id: 'invoiceNum', label: 'Inovice #' },
+  { id: 'address', label: 'Address' },
+  { id: 'name', label: 'Name' },
+  { id: 'phone', label: 'Phone' },
+  { id: 'email', label: 'Email' },
+  { id: 'brand', label: 'Brand' },
+  { id: 'model', label: 'Model' },
+  { id: 'frameColor', label: 'FColor' },
+  { id: 'backColor', label: 'BColor' },
+  { id: 'seatColor', label: 'SColor' },
+  { id: 'withHeadrest', label: 'Headrest' },
+  { id: 'withAdArmrest', label: 'Armrest' },
+  { id: 'remark', label: 'Remark' },
+  { id: 'deliveryPDF', label: 'Note', sx: { paddingRight: '10px' } },
 ];
 
 function mapStateToProps(state) {
@@ -136,20 +145,26 @@ export default connect(mapStateToProps)((props) => {
         nonSelect={true}
         title="Chair Delivery"
         rows={deliveries.map(
-          ({
-            id,
-            clientUnit,
-            clientFloor,
-            clientBlock,
-            clientStreet,
-            clientDistrict,
-            ...restProps
-          }) => ({
-            clientAddress: `${clientUnit}, ${clientFloor}, ${clientBlock}, ${clientStreet}, ${clientDistrict}`,
+          ({ id, SalesOrder, ChairStock, ...restProps }) => ({
+            invoiceNum: `I-${SalesOrder.Seller.prefix}${new Date(
+              SalesOrder.createdAt
+            ).getFullYear()}-${('000' + SalesOrder.invoiceNum).substr(-3)}`,
+            address: `${SalesOrder.unit}, ${SalesOrder.floor}, ${SalesOrder.block}, ${SalesOrder.street}, ${SalesOrder.district}`,
+            name: SalesOrder.name,
+            phone: SalesOrder.phone,
+            email: SalesOrder.email,
+            brand: ChairStock.brand,
+            model: ChairStock.model,
+            frameColor: ChairStock.frameColor,
+            backColor: ChairStock.backColor,
+            seatColor: ChairStock.seatColor,
+            withHeadrest: ChairStock.withHeadrest ? 'Yes' : 'No',
+            withAdArmrest: ChairStock.withAdArmrest ? 'Yes' : 'No',
+            remark: ChairStock.reamrk,
             deliveryPDF: (
               <Button
                 variant="contained"
-                sx={{ mt: '5px' }}
+                sx={{ my: '5px', width: 100, fontSize: 10 }}
                 component={RouterLink}
                 target="_blank"
                 to={`/deliveryPDF/chair/${id}`}
