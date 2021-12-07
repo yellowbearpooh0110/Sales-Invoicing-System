@@ -39,6 +39,11 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: false,
     },
+    poNum: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
+    },
     signUrl: {
       type: DataTypes.STRING,
       allowNull: false,

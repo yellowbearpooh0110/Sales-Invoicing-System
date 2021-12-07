@@ -94,6 +94,16 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: false,
     },
+    akNum: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
+    },
+    heworkNum: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
+    },
     signUrl: {
       type: DataTypes.STRING,
       allowNull: false,

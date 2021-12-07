@@ -15,7 +15,7 @@ module.exports = {
 async function getAllChairDelivery(req, res, next) {
   try {
     const result = await db.ChairToOrder.findAll({
-      attributes: ['id', 'deliveryDate', 'from', 'to', 'delivered', 'signUrl'],
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
       include: [
         {
           model: db.SalesOrder,
