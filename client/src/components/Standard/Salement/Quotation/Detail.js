@@ -694,12 +694,25 @@ export default connect(mapStateToProps)((props) => {
                       index
                     ) => ({
                       thumbnail: (
-                        <img
-                          alt=""
-                          width="80px"
-                          src={thumbnailUrl}
-                          style={{ marginTop: '5px' }}
-                        />
+                        <a
+                          href="javascript:void();"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            Swal.fire({
+                              html: `<img alt="" width="400px" src="${thumbnailUrl}" />`,
+                              showCloseButton: true,
+                              showConfirmButton: false,
+                              allowOutsideClick: false,
+                            });
+                          }}
+                        >
+                          <img
+                            alt=""
+                            width="80px"
+                            src={thumbnailUrl}
+                            style={{ marginTop: '5px' }}
+                          />
+                        </a>
                       ),
                       withHeadrest: withHeadrest ? 'Yes' : 'No',
                       withAdArmrest: withAdArmrest ? 'Yes' : 'No',
@@ -821,12 +834,25 @@ export default connect(mapStateToProps)((props) => {
                       index
                     ) => ({
                       thumbnail: (
-                        <img
-                          alt=""
-                          width="80px"
-                          src={thumbnailUrl}
-                          style={{ marginTop: '5px' }}
-                        />
+                        <a
+                          href="javascript:void();"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            Swal.fire({
+                              html: `<img alt="" width="400px" src="${thumbnailUrl}" />`,
+                              showCloseButton: true,
+                              showConfirmButton: false,
+                              allowOutsideClick: false,
+                            });
+                          }}
+                        >
+                          <img
+                            alt=""
+                            width="80px"
+                            src={thumbnailUrl}
+                            style={{ marginTop: '5px' }}
+                          />
+                        </a>
                       ),
                       add: (
                         <IconButton
@@ -931,12 +957,25 @@ export default connect(mapStateToProps)((props) => {
                       index
                     ) => ({
                       thumbnail: (
-                        <img
-                          alt=""
-                          width="80px"
-                          src={thumbnailUrl}
-                          style={{ marginTop: '5px' }}
-                        />
+                        <a
+                          href="javascript:void();"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            Swal.fire({
+                              html: `<img alt="" width="400px" src="${thumbnailUrl}" />`,
+                              showCloseButton: true,
+                              showConfirmButton: false,
+                              allowOutsideClick: false,
+                            });
+                          }}
+                        >
+                          <img
+                            alt=""
+                            width="80px"
+                            src={thumbnailUrl}
+                            style={{ marginTop: '5px' }}
+                          />
+                        </a>
                       ),
                       add: (
                         <IconButton

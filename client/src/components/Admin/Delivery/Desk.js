@@ -116,7 +116,6 @@ export default connect(mapStateToProps)((props) => {
       .get('/delivery/allDesk', props)
       .then((response) => {
         // handle success
-        console.log(response.data);
         setDeliveries(response.data);
       })
       .catch(function (error) {

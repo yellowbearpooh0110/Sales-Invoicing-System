@@ -92,6 +92,7 @@ const Stock = connect(mapStateToProps)((props) => {
   const [id, setID] = useState('');
 
   const [balance, setBalance] = useState(0);
+  const [unitPrice, setUnitPrice] = useState(1000);
   const [shipmentQty, setShipmentQty] = useState(0);
 
   const [features, setFeatures] = useState([]);
@@ -140,6 +141,7 @@ const Stock = connect(mapStateToProps)((props) => {
         },
       ]);
       setBalance(stocks[index].balance);
+      setUnitPrice(stocks[index].unitPrice);
       setShipmentQty(stocks[index].qty - stocks[index].balance);
     }
     setFormMode('edit');
@@ -411,6 +413,7 @@ const Stock = connect(mapStateToProps)((props) => {
             },
           ]);
           setBalance(0);
+          setUnitPrice(1000);
           setShipmentQty(0);
           setFormMode('create');
           setFormOpen(true);
@@ -459,12 +462,25 @@ const Stock = connect(mapStateToProps)((props) => {
               index
             ) => ({
               thumbnail: (
-                <img
-                  alt=""
-                  width="80px"
-                  src={thumbnailUrl}
-                  style={{ marginTop: '5px' }}
-                />
+                <a
+                  href="javascript:void();"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    Swal.fire({
+                      html: `<img alt="" width="400px" src="${thumbnailUrl}" />`,
+                      showCloseButton: true,
+                      showConfirmButton: false,
+                      allowOutsideClick: false,
+                    });
+                  }}
+                >
+                  <img
+                    alt=""
+                    width="80px"
+                    src={thumbnailUrl}
+                    style={{ marginTop: '5px' }}
+                  />
+                </a>
               ),
               edit: (
                 <IconButton
@@ -576,7 +592,7 @@ const Stock = connect(mapStateToProps)((props) => {
                   label="Unit Price"
                   type="number"
                   name="unitPrice"
-                  defaultValue={1000}
+                  defaultValue={unitPrice}
                   fullWidth
                   sx={{ m: '10px 5px 0 0' }}
                 />
@@ -604,6 +620,7 @@ const Stock = connect(mapStateToProps)((props) => {
                 onChange={(e) => {
                   if (e.target.value > 0) setBalance(e.target.value);
                   else setBalance(0);
+                  setUnitPrice(1000);
                 }}
               />
               <IconButton

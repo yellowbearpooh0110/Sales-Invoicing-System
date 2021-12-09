@@ -183,11 +183,11 @@ const useDataGridStyles = makeStyles((theme) => ({
     [`& .MuiTableCell-root.${tableCellClasses.head}`]: {
       backgroundColor: teal[400],
       '&, & *': { color: teal[50] },
-      fontSize: 12,
+      fontSize: 16,
       fontWeight: 600,
     },
     [`& .MuiTableCell-root.${tableCellClasses.body}`]: {
-      fontSize: 10,
+      fontSize: 14,
     },
     '& .MuiTableRow-root': {
       height: 40,

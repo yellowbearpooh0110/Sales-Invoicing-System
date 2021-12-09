@@ -314,7 +314,7 @@ async function _generateDeliveryPDF(type, id, host) {
           {
             model: db.User,
             as: 'Seller',
-            attributes: ['firstName', 'lastName'],
+            attributes: ['firstName', 'lastName', 'prefix'],
           },
         ],
       },
@@ -334,6 +334,10 @@ async function _generateDeliveryPDF(type, id, host) {
       : `Est ${deliveryInfo.SalesOrder.timeLine} working day${
           deliveryInfo.SalesOrder.timeLine === 1 ? '' : 's'
         } after payment`;
+
+  const invoiceNum = `I-${deliveryInfo.SalesOrder.Seller.prefix}${new Date(
+    deliveryInfo.SalesOrder.createdAt
+  ).getFullYear()}-${('000' + deliveryInfo.SalesOrder.invoiceNum).substr(-3)}`;
 
   const client = {
     name: deliveryInfo.SalesOrder.name,
@@ -392,6 +396,7 @@ async function _generateDeliveryPDF(type, id, host) {
   var document = {
     html,
     data: {
+      invoiceNum,
       client,
       delivery,
       product,
