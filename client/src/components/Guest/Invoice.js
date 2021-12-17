@@ -197,9 +197,9 @@ export default connect(mapStateToProps)((props) => {
             </View>
             <View style={styles.clientInfo}>
               <Text>Client's Name: {order.name}</Text>
-              <Text>{order.unit}</Text>
-              <Text>{order.floor}</Text>
-              <Text>{order.block}</Text>
+              <Text>Unit {order.unit}</Text>
+              <Text>Floor {order.floor}</Text>
+              <Text>Block {order.block}</Text>
               <Text>{order.street}</Text>
               <Text>{order.district}</Text>
               <Text>Phone: {order.phone}</Text>
@@ -215,7 +215,7 @@ export default connect(mapStateToProps)((props) => {
                   { content: 'Salesperson', width: '15%' },
                   { content: 'Delivery Date', width: '55%' },
                   { content: 'Payment Terms', width: '15%' },
-                  { content: 'Due Date', width: '15%' },
+                  { content: 'Due Date', textAlign: 'right', width: '15%' },
                 ],
                 backgroundColor: '#dbe5f1',
                 textTransform: 'uppercase',
@@ -240,6 +240,7 @@ export default connect(mapStateToProps)((props) => {
                   { content: order.paymentTerms, width: '15%' },
                   {
                     content: order.paid ? 'Paid' : order.dueDate,
+                    textAlign: 'right',
                     width: '15%',
                   },
                 ],
@@ -257,7 +258,7 @@ export default connect(mapStateToProps)((props) => {
                 ]}
               >
                 {cells.map(
-                  ({ content, width, cellRestProps }, index, cellArr) => (
+                  ({ content, width, ...cellRestProps }, index, cellArr) => (
                     <Text
                       key={index}
                       style={[
@@ -285,7 +286,11 @@ export default connect(mapStateToProps)((props) => {
                   { content: 'QTY', width: '15%' },
                   { content: 'Description', width: '55%' },
                   { content: 'Unit Price', width: '15%' },
-                  { content: 'Line Total (HKD)', width: '15%' },
+                  {
+                    content: 'Line Total (HKD)',
+                    textAlign: 'right',
+                    width: '15%',
+                  },
                 ],
                 backgroundColor: '#dbe5f1',
                 textTransform: 'uppercase',
@@ -314,12 +319,14 @@ export default connect(mapStateToProps)((props) => {
                   },
                   {
                     content: `${item.ChairToOrder.unitPrice}`,
+                    textAlign: 'right',
                     width: '15%',
                   },
                   {
                     content: `${
                       item.ChairToOrder.unitPrice * item.ChairToOrder.qty
                     }`,
+                    textAlign: 'right',
                     width: '15%',
                   },
                 ],
@@ -344,39 +351,43 @@ export default connect(mapStateToProps)((props) => {
                   },
                   {
                     content: `${item.DeskToOrder.unitPrice}`,
+                    textAlign: 'right',
                     width: '15%',
                   },
                   {
                     content: `${
                       item.DeskToOrder.unitPrice * item.DeskToOrder.qty
                     }`,
+                    textAlign: 'right',
                     width: '15%',
                   },
                 ],
               })),
-              // ...order.AccessoryStocks.map((item) => ({
-              //   cells: [
-              //     {
-              //       content: `${item.AccessoryToOrder.qty}`,
-              //       width: '15%',
-              //     },
-              //     {
-              //       content: `Accessory Name: ${item.name}\nAccessory Color: ${item.color}\nRemark: ${item.remark}\nWith delivery and installation included`,
-              //       width: '55%',
-              //     },
-              //     {
-              //       content: `${item.AccessoryToOrder.unitPrice}`,
-              //       width: '15%',
-              //     },
-              //     {
-              //       content: `${
-              //         item.AccessoryToOrder.unitPrice *
-              //         item.AccessoryToOrder.qty
-              //       }`,
-              //       width: '15%',
-              //     },
-              //   ],
-              // })),
+              ...order.AccessoryStocks.map((item) => ({
+                cells: [
+                  {
+                    content: `${item.AccessoryToOrder.qty}`,
+                    width: '15%',
+                  },
+                  {
+                    content: `Accessory Name: ${item.name}\nAccessory Color: ${item.color}\nRemark: ${item.remark}\nWith delivery and installation included`,
+                    width: '55%',
+                  },
+                  {
+                    content: `${item.AccessoryToOrder.unitPrice}`,
+                    textAlign: 'right',
+                    width: '15%',
+                  },
+                  {
+                    content: `${
+                      item.AccessoryToOrder.unitPrice *
+                      item.AccessoryToOrder.qty
+                    }`,
+                    textAlign: 'right',
+                    width: '15%',
+                  },
+                ],
+              })),
               ...Array(
                 Math.max(
                   0,
@@ -415,16 +426,16 @@ export default connect(mapStateToProps)((props) => {
                             (item) =>
                               item.DeskToOrder.unitPrice * item.DeskToOrder.qty
                           ).reduce((acc, cur) => acc + cur)
+                        : 0) +
+                      (order.AccessoryStocks.length
+                        ? order.AccessoryStocks.map(
+                            (item) =>
+                              item.AccessoryToOrder.unitPrice *
+                              item.AccessoryToOrder.qty
+                          ).reduce((acc, cur) => acc + cur)
                         : 0)
-                      //   +
-                      // (order.AccessoryStocks.length
-                      //   ? order.AccessoryStocks.map(
-                      //       (item) =>
-                      //         item.AccessoryToOrder.unitPrice *
-                      //         item.AccessoryToOrder.qty
-                      //     ).reduce((acc, cur) => acc + cur)
-                      //   : 0)
                     }`,
+                    textAlign: 'right',
                     width: '15%',
                     borderBottom: '0.5px solid #808080',
                   },
@@ -456,18 +467,18 @@ export default connect(mapStateToProps)((props) => {
                                     item.DeskToOrder.unitPrice *
                                     item.DeskToOrder.qty
                                 ).reduce((acc, cur) => acc + cur)
+                              : 0) +
+                            (order.AccessoryStocks.length
+                              ? order.AccessoryStocks.map(
+                                  (item) =>
+                                    item.AccessoryToOrder.unitPrice *
+                                    item.AccessoryToOrder.qty
+                                ).reduce((acc, cur) => acc + cur)
                               : 0)) *
-                            //   +
-                            // (order.AccessoryStocks.length
-                            //   ? order.AccessoryStocks.map(
-                            //       (item) =>
-                            //         item.AccessoryToOrder.unitPrice *
-                            //         item.AccessoryToOrder.qty
-                            //     ).reduce((acc, cur) => acc + cur)
-                            //   : 0)
                             order.discount) /
                           100
                     }`,
+                    textAlign: 'right',
                     width: '15%',
                     borderBottom: '0.5px solid #808080',
                   },
@@ -498,6 +509,13 @@ export default connect(mapStateToProps)((props) => {
                                   item.DeskToOrder.unitPrice *
                                   item.DeskToOrder.qty
                               ).reduce((acc, cur) => acc + cur)
+                            : 0) +
+                          (order.AccessoryStocks.length
+                            ? order.AccessoryStocks.map(
+                                (item) =>
+                                  item.AccessoryToOrder.unitPrice *
+                                  item.AccessoryToOrder.qty
+                              ).reduce((acc, cur) => acc + cur)
                             : 0) -
                           order.discount
                         : (((order.ChairStocks.length
@@ -513,18 +531,18 @@ export default connect(mapStateToProps)((props) => {
                                     item.DeskToOrder.unitPrice *
                                     item.DeskToOrder.qty
                                 ).reduce((acc, cur) => acc + cur)
+                              : 0) +
+                            (order.AccessoryStocks.length
+                              ? order.AccessoryStocks.map(
+                                  (item) =>
+                                    item.AccessoryToOrder.unitPrice *
+                                    item.AccessoryToOrder.qty
+                                ).reduce((acc, cur) => acc + cur)
                               : 0)) *
-                            //   +
-                            // (order.AccessoryStocks.length
-                            //   ? order.AccessoryStocks.map(
-                            //       (item) =>
-                            //         item.AccessoryToOrder.unitPrice *
-                            //         item.AccessoryToOrder.qty
-                            //     ).reduce((acc, cur) => acc + cur)
-                            //   : 0)
                             (100 - order.discount)) /
                           100
                     }`,
+                    textAlign: 'right',
                     width: '15%',
                   },
                 ],

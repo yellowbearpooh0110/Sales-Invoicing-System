@@ -23,6 +23,7 @@ import Tooltip from '@mui/material/Tooltip';
 import {
   ArrowDropDown as ArrowDropDownIcon,
   Delete as DeleteIcon,
+  Edit as EditIcon,
 } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 
@@ -126,7 +127,7 @@ EnhancedTableHead.propTypes = {
 };
 
 const EnhancedTableToolbar = (props) => {
-  const { title, numSelected, onBulkRemoveClick } = props;
+  const { title, numSelected, onBulkEditClick, onBulkRemoveClick } = props;
 
   return (
     <Toolbar
@@ -163,19 +164,32 @@ const EnhancedTableToolbar = (props) => {
       )}
 
       {numSelected > 0 && (
-        <Tooltip title="Delete">
-          <IconButton onClick={onBulkRemoveClick}>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
+        <>
+          {onBulkEditClick && (
+            <Tooltip title="Edit">
+              <IconButton onClick={onBulkEditClick}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+          {onBulkRemoveClick && (
+            <Tooltip title="Delete">
+              <IconButton onClick={onBulkRemoveClick}>
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+        </>
       )}
     </Toolbar>
   );
 };
 
 EnhancedTableToolbar.propTypes = {
-  numSelected: PropTypes.number.isRequired,
-  onBulkRemoveClick: PropTypes.func.isRequired,
+  title: PropTypes.string,
+  numSelected: PropTypes.number,
+  onBulkEditClick: PropTypes.func,
+  onBulkRemoveClick: PropTypes.func,
 };
 
 const useDataGridStyles = makeStyles((theme) => ({
@@ -202,7 +216,14 @@ const useDataGridStyles = makeStyles((theme) => ({
 }));
 
 const DataGrid = (props) => {
-  const { title, columns, nonSelect, onBulkRemoveClick, rows } = props;
+  const {
+    title,
+    columns,
+    nonSelect,
+    onBulkEditClick,
+    onBulkRemoveClick,
+    rows,
+  } = props;
 
   const classes = useDataGridStyles();
 
@@ -279,10 +300,22 @@ const DataGrid = (props) => {
         <EnhancedTableToolbar
           title={title}
           numSelected={selected.length}
-          onBulkRemoveClick={(event) => {
-            event.preventDefault();
-            onBulkRemoveClick && onBulkRemoveClick(selected);
-          }}
+          onBulkEditClick={
+            onBulkEditClick
+              ? (event) => {
+                  event.preventDefault();
+                  onBulkEditClick(selected);
+                }
+              : null
+          }
+          onBulkRemoveClick={
+            onBulkRemoveClick
+              ? (event) => {
+                  event.preventDefault();
+                  onBulkRemoveClick(selected);
+                }
+              : null
+          }
         />
         <TableContainer>
           <Table
@@ -378,9 +411,12 @@ const DataGrid = (props) => {
 };
 
 DataGrid.propTypes = {
+  title: PropTypes.string,
+  nonSelect: PropTypes.bool,
   columns: PropTypes.array.isRequired,
   rows: PropTypes.array.isRequired,
   onBulkRemoveClick: PropTypes.func,
+  onBulkEditClick: PropTypes.func,
 };
 
 export default DataGrid;

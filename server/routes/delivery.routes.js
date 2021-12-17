@@ -11,10 +11,10 @@ const validateRequest = require('server/middleware/validate-request');
 
 router.get('/allChair', authorize(), deliveryController.getAllChairDelivery);
 router.get('/chair', authorize(), deliveryController.getChairDelivery);
-router.put('/chair/:id', admin(), chairToOrderController.update);
+router.put('/chair', admin(), chairUpdateSchema, chairToOrderController.update);
 router.get('/allDesk', authorize(), deliveryController.getAllDeskDelivery);
 router.get('/desk', authorize(), deliveryController.getDeskDelivery);
-router.put('/desk/:id', admin(), deskToOrderController.update);
+router.put('/desk', admin(), deskUpdateSchema, deskToOrderController.update);
 router.get('/accessory', authorize(), deliveryController.getAccessoryDelivery);
 router.post(
   '/generatePDF',
@@ -28,6 +28,23 @@ function generateSchema(req, res, next) {
   const schema = Joi.object({
     productType: Joi.string().valid('chair', 'desk', 'accessory'),
     deliveryId: Joi.string().uuid().allow(null),
+  });
+  validateRequest(req, next, schema);
+}
+
+function chairUpdateSchema(req, res, next) {
+  const schema = Joi.object({
+    ids: Joi.array().required(),
+    poNum: Joi.string().required(),
+  });
+  validateRequest(req, next, schema);
+}
+
+function deskUpdateSchema(req, res, next) {
+  const schema = Joi.object({
+    ids: Joi.array().required(),
+    akNum: Joi.string().required(),
+    heworkNum: Joi.string().required(),
   });
   validateRequest(req, next, schema);
 }

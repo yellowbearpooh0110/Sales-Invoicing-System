@@ -1,27 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
-import {
-  Autocomplete,
-  Button,
-  Box,
-  Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControlLabel,
-  IconButton,
-  Paper,
-  TextField,
-} from '@mui/material';
-import {
-  Add as AddIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Remove as RemoveIcon,
-} from '@mui/icons-material';
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import { Autocomplete, Box, Paper, TextField } from '@mui/material';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
@@ -52,6 +31,14 @@ const columns = [
   {
     id: 'seatColor',
     label: 'Seat Color',
+  },
+  {
+    id: 'backMaterial',
+    label: 'Back Material',
+  },
+  {
+    id: 'seatMaterial',
+    label: 'Seat Material',
   },
   {
     id: 'withHeadrest',

@@ -1,26 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
-import {
-  Autocomplete,
-  Button,
-  Box,
-  Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControlLabel,
-  IconButton,
-  Paper,
-  TextField,
-} from '@mui/material';
-import {
-  Add as AddIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Remove as RemoveIcon,
-} from '@mui/icons-material';
-import { useTheme } from '@mui/material/styles';
+import { Autocomplete, Box, Paper, TextField } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import axios from 'axios';
 import Swal from 'sweetalert2';

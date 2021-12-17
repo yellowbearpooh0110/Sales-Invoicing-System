@@ -102,6 +102,14 @@ const chairColumns = [
     label: 'Seat Color',
   },
   {
+    id: 'backMaterial',
+    label: 'Back Material',
+  },
+  {
+    id: 'seatMaterial',
+    label: 'Seat Material',
+  },
+  {
     id: 'withHeadrest',
     label: 'Headrest',
   },

@@ -4,10 +4,8 @@ module.exports = {
 
 async function update(req, res, next) {
   try {
-    const deskToOrder = await db.DeskToOrder.findByPk(req.params.id);
-    if (!deskToOrder) throw 'DeskOrder was not found.';
-    Object.assign(deskToOrder, req.body);
-    await deskToOrder.save();
+    const { ids, ...restBody } = req.body;
+    await db.DeskToOrder.update(restBody, { where: { id: ids } });
     res.json({ success: true });
   } catch (err) {
     next(err);

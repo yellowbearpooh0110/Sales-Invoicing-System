@@ -25,7 +25,10 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: true,
     },
-    deliveryDate: {
+    proDeliveryDate: {
+      type: DataTypes.DATEONLY,
+    },
+    estDeliveryDate: {
       type: DataTypes.DATEONLY,
     },
     from: {

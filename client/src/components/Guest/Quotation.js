@@ -202,9 +202,9 @@ export default connect(mapStateToProps)((props) => {
             </View>
             <View style={styles.clientInfo}>
               <Text>Client's Name: {quotation.name}</Text>
-              <Text>{quotation.unit}</Text>
-              <Text>{quotation.floor}</Text>
-              <Text>{quotation.block}</Text>
+              <Text>Unit {quotation.unit}</Text>
+              <Text>Floor {quotation.floor}</Text>
+              <Text>Block {quotation.block}</Text>
               <Text>{quotation.street}</Text>
               <Text>{quotation.district}</Text>
               <Text>Phone: {quotation.phone}</Text>
@@ -220,7 +220,7 @@ export default connect(mapStateToProps)((props) => {
                   { content: 'Salesperson', width: '15%' },
                   { content: 'Delivery Date', width: '55%' },
                   { content: 'Payment Terms', width: '15%' },
-                  { content: 'Valid Til', width: '15%' },
+                  { content: 'Valid Til', textAlign: 'right', width: '15%' },
                 ],
                 backgroundColor: '#dbe5f1',
                 textTransform: 'uppercase',
@@ -247,6 +247,7 @@ export default connect(mapStateToProps)((props) => {
                     content: `${quotation.validTil} month${
                       quotation.validTil === 1 ? '' : 's'
                     }`,
+                    textAlign: 'right',
                     width: '15%',
                   },
                 ],
@@ -264,7 +265,7 @@ export default connect(mapStateToProps)((props) => {
                 ]}
               >
                 {cells.map(
-                  ({ content, width, cellRestProps }, index, cellArr) => (
+                  ({ content, width, ...cellRestProps }, index, cellArr) => (
                     <Text
                       key={index}
                       style={[
@@ -292,7 +293,11 @@ export default connect(mapStateToProps)((props) => {
                   { content: 'QTY', width: '15%' },
                   { content: 'Description', width: '55%' },
                   { content: 'Unit Price', width: '15%' },
-                  { content: 'Line Total (HKD)', width: '15%' },
+                  {
+                    content: 'Line Total (HKD)',
+                    textAlign: 'right',
+                    width: '15%',
+                  },
                 ],
                 backgroundColor: '#dbe5f1',
                 textTransform: 'uppercase',
@@ -321,6 +326,7 @@ export default connect(mapStateToProps)((props) => {
                   },
                   {
                     content: `${item.ChairToQuotation.unitPrice}`,
+                    textAlign: 'right',
                     width: '15%',
                   },
                   {
@@ -328,6 +334,7 @@ export default connect(mapStateToProps)((props) => {
                       item.ChairToQuotation.unitPrice *
                       item.ChairToQuotation.qty
                     }`,
+                    textAlign: 'right',
                     width: '15%',
                   },
                 ],
@@ -352,39 +359,43 @@ export default connect(mapStateToProps)((props) => {
                   },
                   {
                     content: `${item.DeskToQuotation.unitPrice}`,
+                    textAlign: 'right',
                     width: '15%',
                   },
                   {
                     content: `${
                       item.DeskToQuotation.unitPrice * item.DeskToQuotation.qty
                     }`,
+                    textAlign: 'right',
                     width: '15%',
                   },
                 ],
               })),
-              // ...quotation.AccessoryStocks.map((item) => ({
-              //   cells: [
-              //     {
-              //       content: `${item.AccessoryToQuotation.qty}`,
-              //       width: '15%',
-              //     },
-              //     {
-              //       content: `Accessory Name: ${item.name}\nAccessory Color: ${item.color}\nRemark: ${item.remark}\nWith delivery and installation included`,
-              //       width: '55%',
-              //     },
-              //     {
-              //       content: `${item.AccessoryToQuotation.unitPrice}`,
-              //       width: '15%',
-              //     },
-              //     {
-              //       content: `${
-              //         item.AccessoryToQuotation.unitPrice *
-              //         item.AccessoryToQuotation.qty
-              //       }`,
-              //       width: '15%',
-              //     },
-              //   ],
-              // })),
+              ...quotation.AccessoryStocks.map((item) => ({
+                cells: [
+                  {
+                    content: `${item.AccessoryToQuotation.qty}`,
+                    width: '15%',
+                  },
+                  {
+                    content: `Accessory Name: ${item.name}\nAccessory Color: ${item.color}\nRemark: ${item.remark}\nWith delivery and installation included`,
+                    width: '55%',
+                  },
+                  {
+                    content: `${item.AccessoryToQuotation.unitPrice}`,
+                    textAlign: 'right',
+                    width: '15%',
+                  },
+                  {
+                    content: `${
+                      item.AccessoryToQuotation.unitPrice *
+                      item.AccessoryToQuotation.qty
+                    }`,
+                    textAlign: 'right',
+                    width: '15%',
+                  },
+                ],
+              })),
               ...Array(
                 Math.max(
                   0,
@@ -424,16 +435,16 @@ export default connect(mapStateToProps)((props) => {
                               item.DeskToQuotation.unitPrice *
                               item.DeskToQuotation.qty
                           ).reduce((acc, cur) => acc + cur)
+                        : 0) +
+                      (quotation.AccessoryStocks.length
+                        ? quotation.AccessoryStocks.map(
+                            (item) =>
+                              item.AccessoryToQuotation.unitPrice *
+                              item.AccessoryToQuotation.qty
+                          ).reduce((acc, cur) => acc + cur)
                         : 0)
-                      //   +
-                      // (quotation.AccessoryStocks.length
-                      //   ? quotation.AccessoryStocks.map(
-                      //       (item) =>
-                      //         item.AccessoryToQuotation.unitPrice *
-                      //         item.AccessoryToQuotation.qty
-                      //     ).reduce((acc, cur) => acc + cur)
-                      //   : 0)
                     }`,
+                    textAlign: 'right',
                     width: '15%',
                     borderBottom: '0.5px solid #808080',
                   },
@@ -465,18 +476,18 @@ export default connect(mapStateToProps)((props) => {
                                     item.DeskToQuotation.unitPrice *
                                     item.DeskToQuotation.qty
                                 ).reduce((acc, cur) => acc + cur)
+                              : 0) +
+                            (quotation.AccessoryStocks.length
+                              ? quotation.AccessoryStocks.map(
+                                  (item) =>
+                                    item.AccessoryToQuotation.unitPrice *
+                                    item.AccessoryToQuotation.qty
+                                ).reduce((acc, cur) => acc + cur)
                               : 0)) *
-                            // +
-                            // (quotation.AccessoryStocks.length
-                            //   ? quotation.AccessoryStocks.map(
-                            //       (item) =>
-                            //         item.AccessoryToQuotation.unitPrice *
-                            //         item.AccessoryToQuotation.qty
-                            //     ).reduce((acc, cur) => acc + cur)
-                            //   : 0)
                             quotation.discount) /
                           100
                     }`,
+                    textAlign: 'right',
                     width: '15%',
                     borderBottom: '0.5px solid #808080',
                   },
@@ -507,6 +518,13 @@ export default connect(mapStateToProps)((props) => {
                                   item.DeskToQuotation.unitPrice *
                                   item.DeskToQuotation.qty
                               ).reduce((acc, cur) => acc + cur)
+                            : 0) +
+                          (quotation.AccessoryStocks.length
+                            ? quotation.AccessoryStocks.map(
+                                (item) =>
+                                  item.AccessoryToQuotation.unitPrice *
+                                  item.AccessoryToQuotation.qty
+                              ).reduce((acc, cur) => acc + cur)
                             : 0) -
                           quotation.discount
                         : (((quotation.ChairStocks.length
@@ -522,18 +540,18 @@ export default connect(mapStateToProps)((props) => {
                                     item.DeskToQuotation.unitPrice *
                                     item.DeskToQuotation.qty
                                 ).reduce((acc, cur) => acc + cur)
+                              : 0) +
+                            (quotation.AccessoryStocks.length
+                              ? quotation.AccessoryStocks.map(
+                                  (item) =>
+                                    item.AccessoryToQuotation.unitPrice *
+                                    item.AccessoryToQuotation.qty
+                                ).reduce((acc, cur) => acc + cur)
                               : 0)) *
-                            //   +
-                            // (quotation.AccessoryStocks.length
-                            //   ? quotation.AccessoryStocks.map(
-                            //       (item) =>
-                            //         item.AccessoryToQuotation.unitPrice *
-                            //         item.AccessoryToQuotation.qty
-                            //     ).reduce((acc, cur) => acc + cur)
-                            //   : 0)
                             (100 - quotation.discount)) /
                           100
                     }`,
+                    textAlign: 'right',
                     width: '15%',
                   },
                 ],

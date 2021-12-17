@@ -135,9 +135,9 @@
     <div class="client">
       {{#with client}}
       <b>Client’s Name: {{name}}</b>
-      <p>{{unit}}</p>
-      <p>{{floor}}</p>
-      <p>{{block}}</p>
+      <p>Unit {{unit}}</p>
+      <p>Floor {{floor}}</p>
+      <p>Block {{block}}</p>
       <p>{{street}}</p>
       <p>{{district}}</p>
       <p>Email: {{email}}</p>
@@ -158,7 +158,7 @@
       <tr>
         {{#with delivery}}
         <td>{{sellerName}}</td>
-        <td>{{deliveryDate}}</td>
+        <td>{{proDeliveryDate}}</td>
         <td>{{paymentTerms}}</td>
         <td>{{dueDate}}</td>
         {{/with}}

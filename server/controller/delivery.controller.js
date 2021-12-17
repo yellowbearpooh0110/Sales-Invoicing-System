@@ -48,9 +48,16 @@ async function getChairDelivery(req, res, next) {
     const fromDate = req.query.fromDate;
     const toDate = req.query.toDate;
     const result = await db.ChairToOrder.findAll({
-      attributes: ['id', 'deliveryDate', 'from', 'to', 'delivered', 'signUrl'],
+      attributes: [
+        'id',
+        'proDeliveryDate',
+        'from',
+        'to',
+        'delivered',
+        'signUrl',
+      ],
       where: {
-        deliveryDate: {
+        proDeliveryDate: {
           [Sequelize.Op.gte]: fromDate,
           [Sequelize.Op.lte]: toDate,
         },
@@ -137,9 +144,16 @@ async function getDeskDelivery(req, res, next) {
     const fromDate = req.query.fromDate;
     const toDate = req.query.toDate;
     const result = await db.DeskToOrder.findAll({
-      attributes: ['id', 'deliveryDate', 'from', 'to', 'delivered', 'signUrl'],
+      attributes: [
+        'id',
+        'proDeliveryDate',
+        'from',
+        'to',
+        'delivered',
+        'signUrl',
+      ],
       where: {
-        deliveryDate: {
+        proDeliveryDate: {
           [Sequelize.Op.gte]: fromDate,
           [Sequelize.Op.lte]: toDate,
         },
@@ -195,9 +209,16 @@ async function getAccessoryDelivery(req, res, next) {
     const fromDate = req.query.fromDate;
     const toDate = req.query.toDate;
     const result = await db.AccessoryToOrder.findAll({
-      attributes: ['id', 'deliveryDate', 'from', 'to', 'delivered', 'signUrl'],
+      attributes: [
+        'id',
+        'proDeliveryDate',
+        'from',
+        'to',
+        'delivered',
+        'signUrl',
+      ],
       where: {
-        deliveryDate: {
+        proDeliveryDate: {
           [Sequelize.Op.gte]: fromDate,
           [Sequelize.Op.lte]: toDate,
         },
@@ -326,7 +347,7 @@ async function _generateDeliveryPDF(type, id, host) {
 
   if (!deliveryInfo) throw 'Delivery was not found.';
 
-  const deliveryDate =
+  const proDeliveryDate =
     deliveryInfo.SalesOrder.timeLine % 7 === 0
       ? `Est ${deliveryInfo.SalesOrder.timeLine / 7} working week${
           deliveryInfo.SalesOrder.timeLine / 7 === 1 ? '' : 's'
@@ -352,7 +373,7 @@ async function _generateDeliveryPDF(type, id, host) {
 
   const delivery = {
     dueDate: deliveryInfo.SalesOrder.dueDate,
-    deliveryDate,
+    proDeliveryDate,
     sellerName: `${deliveryInfo.SalesOrder.Seller.firstName} ${deliveryInfo.SalesOrder.Seller.lastName}`,
     paymentTerms: deliveryInfo.SalesOrder.paymentTerms,
   };

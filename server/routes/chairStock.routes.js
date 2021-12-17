@@ -26,6 +26,8 @@ function createSchema(req, res, next) {
     frameColor: Joi.string().allow('').required(),
     backColor: Joi.string().allow('').required(),
     seatColor: Joi.string().allow('').required(),
+    backMaterial: Joi.string().allow('').required(),
+    seatMaterial: Joi.string().allow('').required(),
     withHeadrest: Joi.boolean().required(),
     withAdArmrest: Joi.boolean().required(),
     remark: Joi.string().allow('').required(),

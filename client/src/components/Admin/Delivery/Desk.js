@@ -53,13 +53,13 @@ export default connect(mapStateToProps)((props) => {
   const theme = useTheme();
 
   const [deliveries, setDeliveries] = useState([]);
-  const [id, setID] = useState('');
+  const [ids, setIDs] = useState([]);
   const [formOpen, setFormOpen] = useState(false);
   const [formProps, setFormProps] = useState([]);
 
   const handleEditClick = (index) => {
     if (index < deliveries.length && index >= 0) {
-      setID(deliveries[index].id);
+      setIDs([deliveries[index].id]);
       setFormProps([
         {
           name: 'akNum',
@@ -80,11 +80,31 @@ export default connect(mapStateToProps)((props) => {
     setFormOpen(true);
   };
 
+  const handleBulkEditClick = (selected) => {
+    setIDs(selected);
+    setFormProps([
+      {
+        name: 'akNum',
+        label: 'AK #',
+        type: 'text',
+        width: '100%',
+      },
+      {
+        name: 'heworkNum',
+        label: 'Hework #',
+        type: 'text',
+        width: '100%',
+      },
+    ]);
+    setFormOpen(true);
+  };
+
   const handleSave = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     axios
-      .put(`/delivery/desk/${id}`, {
+      .put(`/delivery/desk`, {
+        ids,
         akNum: data.get('akNum'),
         heworkNum: data.get('heworkNum'),
       })
@@ -205,10 +225,10 @@ export default connect(mapStateToProps)((props) => {
         </Button>
       </Paper> */}
       <DataGrid
-        nonSelect={true}
         title="Desk Delivery"
         rows={deliveries.map(
           ({ id, SalesOrder, DeskStock, ...restProps }, index) => ({
+            id,
             orderDate: (() => {
               const createdTime = new Date(SalesOrder.createdAt);
               createdTime.setMinutes(
@@ -259,6 +279,7 @@ export default connect(mapStateToProps)((props) => {
           })
         )}
         columns={columns}
+        onBulkEditClick={handleBulkEditClick}
       />
       <Dialog
         fullWidth

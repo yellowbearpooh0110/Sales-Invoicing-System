@@ -54,6 +54,14 @@ const columns = [
     label: 'Seat Color',
   },
   {
+    id: 'backMaterial',
+    label: 'Back Material',
+  },
+  {
+    id: 'seatMaterial',
+    label: 'Seat Material',
+  },
+  {
     id: 'withHeadrest',
     label: 'Headrest',
   },
@@ -158,6 +166,20 @@ const Stock = connect(mapStateToProps)((props) => {
           type: 'text',
           defaultValue: stocks[index].seatColor,
           width: '30%',
+        },
+        {
+          name: 'backMaterial',
+          label: 'Back Material',
+          type: 'text',
+          defaultValue: stocks[index].backMaterial,
+          width: '48%',
+        },
+        {
+          name: 'seatMaterial',
+          label: 'Seat Material',
+          type: 'text',
+          defaultValue: stocks[index].seatMaterial,
+          width: '48%',
         },
         {
           name: 'remark',
@@ -299,6 +321,8 @@ const Stock = connect(mapStateToProps)((props) => {
         frameColor: data.get('frameColor'),
         backColor: data.get('backColor'),
         seatColor: data.get('seatColor'),
+        backMaterial: data.get('backMaterial'),
+        seatMaterial: data.get('seatMaterial'),
         withHeadrest: Boolean(data.get('withHeadrest')),
         withAdArmrest: Boolean(data.get('withAdArmrest')),
         remark: data.get('remark'),
@@ -355,6 +379,8 @@ const Stock = connect(mapStateToProps)((props) => {
         frameColor: data.get('frameColor'),
         backColor: data.get('backColor'),
         seatColor: data.get('seatColor'),
+        backMaterial: data.get('backMaterial'),
+        seatMaterial: data.get('seatMaterial'),
         withHeadrest: Boolean(data.get('withHeadrest')),
         withAdArmrest: Boolean(data.get('withAdArmrest')),
         remark: data.get('remark'),
@@ -468,6 +494,18 @@ const Stock = connect(mapStateToProps)((props) => {
               label: 'Seat Color',
               type: 'text',
               width: '30%',
+            },
+            {
+              name: 'backMaterial',
+              label: 'Back Material',
+              type: 'text',
+              width: '48%',
+            },
+            {
+              name: 'seatMaterial',
+              label: 'Seat Material',
+              type: 'text',
+              width: '48%',
             },
             {
               name: 'remark',

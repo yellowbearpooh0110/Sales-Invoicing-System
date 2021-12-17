@@ -35,6 +35,16 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: '',
     },
+    backMaterial: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
+    },
+    seatMaterial: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '',
+    },
     withHeadrest: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
