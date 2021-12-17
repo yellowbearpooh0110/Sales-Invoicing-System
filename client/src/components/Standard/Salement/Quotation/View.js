@@ -242,7 +242,6 @@ export default connect(mapStateToProps)((props) => {
   };
 
   const handleBulkRemoveClick = (selected) => {
-    console.log(selected);
     Swal.fire({
       title: 'Are you sure?',
       text: 'This action will remove selected Quotations permanently.',

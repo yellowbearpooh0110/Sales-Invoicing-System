@@ -32,7 +32,8 @@
         "pureimage": "^0.3.6",
         "rootpath": "^0.1.2",
         "sequelize": "^6.3.4",
-        "whatsapp-web": "^1.0.3"
+        "whatsapp-web": "^1.0.3",
+        "xlsx": "^0.17.4"
     },
     "devDependencies": {
         "nodemon": "^2.0.4",

@@ -547,6 +547,40 @@ const Stock = connect(mapStateToProps)((props) => {
       >
         New Stock
       </Button>
+      <label htmlFor="contained-button-file">
+        <input
+          accept=".xlsx"
+          id="contained-button-file"
+          type="file"
+          style={{ display: 'none' }}
+          onChange={async (e) => {
+            e.preventDefault();
+            try {
+              if (e.target.files.length > 0) {
+                const uploadData = new FormData();
+                uploadData.append('file', e.target.files[0]);
+                const response = await axios.post(
+                  `/chairStock/uploadCreate`,
+                  uploadData,
+                  {
+                    headers: {
+                      'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                  }
+                );
+                getStocks();
+              }
+            } catch (err) {
+              console.log(err);
+            } finally {
+              e.target.value = null;
+            }
+          }}
+        />
+        <Button component="span" sx={{ ml: 2 }}>
+          Bulk Upload
+        </Button>
+      </label>
       <Paper
         sx={{
           marginTop: '10px',

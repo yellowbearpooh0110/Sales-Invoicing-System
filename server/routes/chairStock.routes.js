@@ -10,6 +10,7 @@ const uploadController = require('server/controller/upload.controller');
 
 router.post('/create', admin(), createSchema, chairStockController.create);
 router.post('/upload', admin(), uploadController.upload);
+router.post('/uploadCreate', admin(), uploadController.uploadCreate);
 router.get('/', authorize(), getAll);
 router.get('/features', authorize(), getFeatures);
 router.get('/:id', authorize(), getById);

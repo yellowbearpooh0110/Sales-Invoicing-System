@@ -9,6 +9,7 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     const uniquePrefix = Date.now();
     file.url = `uploads/stocks/${uniquePrefix}-${file.originalname}`;
+    file.src = `server/uploads/stocks/${uniquePrefix}-${file.originalname}`;
     cb(null, `${uniquePrefix}-${file.originalname}`);
   },
 });
