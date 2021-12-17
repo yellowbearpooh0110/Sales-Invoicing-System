@@ -20,6 +20,11 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: 1,
     },
+    deliveryOption: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: 'Delivery Included',
+    },
   };
 
   return sequelize.define('ChairToQuotation', attributes);

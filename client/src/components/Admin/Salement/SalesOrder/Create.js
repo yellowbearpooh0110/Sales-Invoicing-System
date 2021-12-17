@@ -11,6 +11,7 @@ const Create = (props) => {
         setPhone,
         paid: true,
         discountType: 1,
+        surchargeType: 1,
         dueDate: '',
       }}
       initialCart={[]}

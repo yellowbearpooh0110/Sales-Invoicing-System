@@ -63,7 +63,7 @@
       font-size: 0;
     }
 
-    .contact-info > * {
+    .contact-info>* {
       font-size: 16px;
       display: inline-block;
     }
@@ -101,12 +101,14 @@
       width: 70%;
       min-height: 200px;
     }
+
     .sign-desc {
       font-style: italic;
       font-size: 16px;
       margin-bottom: 30px;
       flex-grow: 1;
     }
+
     .sign-img {
       display: block;
       margin: 0 auto;
@@ -135,9 +137,15 @@
     <div class="client">
       {{#with client}}
       <b>Client’s Name: {{name}}</b>
+      {{#if unit}}
       <p>Unit {{unit}}</p>
+      {{/if}}
+      {{#if floor}}
       <p>Floor {{floor}}</p>
+      {{/if}}
+      {{#if block}}
       <p>Block {{block}}</p>
+      {{/if}}
       <p>{{street}}</p>
       <p>{{district}}</p>
       <p>Email: {{email}}</p>

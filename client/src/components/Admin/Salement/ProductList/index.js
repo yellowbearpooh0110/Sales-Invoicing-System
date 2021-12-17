@@ -26,16 +26,16 @@ export const ProductListItemText = styled(ListItemText)(({ theme }) => ({
   color: indigo[900],
 }));
 
-export const ProductPriceAmount = ({ unitPrice, amount }) => {
+export const ProductPriceAmount = ({ unitPrice, amount, deliveryOption }) => {
   return (
     <Box flexBasis="100%" display="flex" flexWrap="wrap" alignItems="center">
-      {[unitPrice, amount].map((item, index) => (
+      {[unitPrice, amount, deliveryOption].map((item, index) => (
         <Typography
           key={index}
           variant="span"
           sx={{
             color: 'white',
-            width: 80,
+            width: index === 2 ? 150 : 80,
             whiteSpace: 'noWrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',

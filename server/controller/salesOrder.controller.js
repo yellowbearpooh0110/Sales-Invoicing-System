@@ -83,6 +83,7 @@ async function create(req, res, next) {
         const {
           productPrice: unitPrice,
           productAmount: qty,
+          productDeliveryOption: deliveryOption,
           productType,
           ...restParams
         } = products[index];
@@ -90,6 +91,7 @@ async function create(req, res, next) {
           through: {
             unitPrice,
             qty,
+            deliveryOption,
             preOrder,
             ...restParams,
           },
@@ -111,18 +113,25 @@ async function create(req, res, next) {
         const {
           productPrice: unitPrice,
           productAmount: qty,
+          productDeliveryOption: deliveryOption,
           productType,
           ...restParams
         } = products[index];
 
-        if (restParams.hasDeskTop && !restParams.topSketchUrl)
-          restParams.topSketchUrl = `${protocol}://${host}/${await drawDeskTop(
-            restParams
-          )}`;
+        if (restParams.hasDeskTop && !restParams.topSketchUrl) {
+          const invoiceNum = `I-${salesOrder.Seller.prefix}${new Date(
+            salesOrder.createdAt
+          ).getFullYear()}-${('000' + salesOrder.invoiceNum).substr(-3)}`;
+          restParams.topSketchUrl = `${protocol}://${host}/${await drawDeskTop({
+            invoiceNum,
+            ...restParams,
+          })}`;
+        }
         await salesOrder.addDeskStock(stock, {
           through: {
             unitPrice,
             qty,
+            deliveryOption,
             preOrder,
             ...restParams,
           },
@@ -143,6 +152,7 @@ async function create(req, res, next) {
         const {
           productPrice: unitPrice,
           productAmount: qty,
+          productDeliveryOption: deliveryOption,
           productType,
           ...restParams
         } = products[index];
@@ -150,6 +160,7 @@ async function create(req, res, next) {
           through: {
             unitPrice,
             qty,
+            deliveryOption,
             preOrder,
             ...restParams,
           },
@@ -219,6 +230,7 @@ async function update(req, res, next) {
         const {
           productPrice: unitPrice,
           productAmount: qty,
+          productDeliveryOption: deliveryOption,
           productType,
           ...restParams
         } = products[index];
@@ -226,6 +238,7 @@ async function update(req, res, next) {
           through: {
             unitPrice,
             qty,
+            deliveryOption,
             preOrder,
             ...restParams,
           },
@@ -247,18 +260,25 @@ async function update(req, res, next) {
         const {
           productPrice: unitPrice,
           productAmount: qty,
+          productDeliveryOption: deliveryOption,
           productType,
           ...restParams
         } = products[index];
-
-        if (restParams.hasDeskTop && !restParams.topSketchUrl)
-          restParams.topSketchUrl = `${protocol}://${host}/${await drawDeskTop(
-            restParams
-          )}`;
+        if (restParams.hasDeskTop && !restParams.topSketchUrl) {
+          const invoiceNum = `I-${salesOrder.Seller.prefix}${new Date(
+            salesOrder.createdAt
+          ).getFullYear()}-${('000' + salesOrder.invoiceNum).substr(-3)}`;
+          restParams.topSketchUrl = `${protocol}://${host}/${await drawDeskTop({
+            invoiceNum,
+            ...restParams,
+          })}`;
+        }
+        console.log(restParams);
         await salesOrder.addDeskStock(stock, {
           through: {
             unitPrice,
             qty,
+            deliveryOption,
             preOrder,
             ...restParams,
           },
@@ -279,6 +299,7 @@ async function update(req, res, next) {
         const {
           productPrice: unitPrice,
           productAmount: qty,
+          productDeliveryOption: deliveryOption,
           productType,
           ...restParams
         } = products[index];
@@ -286,6 +307,7 @@ async function update(req, res, next) {
           through: {
             unitPrice,
             qty,
+            deliveryOption,
             preOrder,
             ...restParams,
           },

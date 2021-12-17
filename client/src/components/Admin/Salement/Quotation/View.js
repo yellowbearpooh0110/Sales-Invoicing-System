@@ -76,6 +76,10 @@ const columns = [
     label: 'Discount',
   },
   {
+    id: 'surcharge',
+    label: 'SurCharge',
+  },
+  {
     id: 'products',
     label: 'Products',
   },
@@ -325,6 +329,8 @@ export default connect(mapStateToProps)((props) => {
               Seller,
               discount,
               discountType,
+              surcharge,
+              surchargeType,
               createdAt,
               timeLine,
               paid,
@@ -350,6 +356,7 @@ export default connect(mapStateToProps)((props) => {
               return createdTime.toISOString().split('T')[0];
             })(),
             discount: `${discount}${discountType ? ' HKD' : '%'}`,
+            surcharge: `${surcharge}${surchargeType ? ' HKD' : '%'}`,
             clientAddress: [district, street, block, floor, unit].join(', '),
             products: (
               <IconButton
@@ -610,6 +617,7 @@ export default connect(mapStateToProps)((props) => {
                   <ProductPriceAmount
                     unitPrice={`${item.ChairToQuotation.unitPrice} HKD`}
                     amount={`Amount: ${item.ChairToQuotation.qty}`}
+                    deliveryOption={`${item.ChairToQuotation.deliveryOption}`}
                   />
                 </ProductListItem>
               ))}
@@ -637,6 +645,7 @@ export default connect(mapStateToProps)((props) => {
                   <ProductPriceAmount
                     unitPrice={`${item.DeskToQuotation.unitPrice} HKD`}
                     amount={`Amount: ${item.DeskToQuotation.qty}`}
+                    deliveryOption={`${item.DeskToQuotation.deliveryOption}`}
                   />
                 </ProductListItem>
               ))}
@@ -650,6 +659,7 @@ export default connect(mapStateToProps)((props) => {
                   <ProductPriceAmount
                     unitPrice={`${item.AccessoryToQuotation.unitPrice} HKD`}
                     amount={`Amount: ${item.AccessoryToQuotation.qty}`}
+                    deliveryOption={`${item.AccessoryToQuotation.deliveryOption}`}
                   />
                 </ProductListItem>
               ))}

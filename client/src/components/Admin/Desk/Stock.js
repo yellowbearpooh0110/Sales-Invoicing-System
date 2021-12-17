@@ -554,7 +554,7 @@ const Stock = connect(mapStateToProps)((props) => {
             ) => ({
               thumbnail: (
                 <a
-                  href="javascript:void();"
+                  href="/"
                   onClick={(e) => {
                     e.preventDefault();
                     Swal.fire({

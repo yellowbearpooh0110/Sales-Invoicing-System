@@ -73,6 +73,7 @@ async function create(req, res, next) {
           through: {
             unitPrice: products[index].productPrice,
             qty: products[index].productAmount,
+            deliveryOption: products[index].productDeliveryOption,
           },
         });
       } else if (products[index].productType === 'desk') {
@@ -82,18 +83,28 @@ async function create(req, res, next) {
         const {
           productPrice: unitPrice,
           productAmount: qty,
+          productDeliveryOption: deliveryOption,
           productType,
           ...restParams
         } = products[index];
 
-        if (restParams.hasDeskTop && !restParams.topSketchUrl)
-          restParams.topSketchUrl = `${protocol}://${host}/${await drawDeskTop(
-            restParams
-          )}`;
+        if (restParams.hasDeskTop && !restParams.topSketchUrl) {
+          const tmp = new Date(quotation.createdAt);
+          const quotationNum = `Q-${
+            quotation.Seller.prefix
+          }${tmp.getFullYear()}${tmp.getMonth()}${tmp.getDate()}${(
+            '000' + quotation.quotationNum
+          ).substr(-3)}`;
+          restParams.topSketchUrl = `${protocol}://${host}/${await drawDeskTop({
+            quotationNum,
+            ...restParams,
+          })}`;
+        }
         await quotation.addDeskStock(stock, {
           through: {
             unitPrice,
             qty,
+            deliveryOption,
             ...restParams,
           },
         });
@@ -105,6 +116,7 @@ async function create(req, res, next) {
           through: {
             unitPrice: products[index].productPrice,
             qty: products[index].productAmount,
+            deliveryOption: products[index].productDeliveryOption,
           },
         });
       }
@@ -143,6 +155,7 @@ async function update(req, res, next) {
           through: {
             unitPrice: products[index].productPrice,
             qty: products[index].productAmount,
+            deliveryOption: products[index].productDeliveryOption,
           },
         });
       } else if (products[index].productType === 'desk') {
@@ -152,17 +165,27 @@ async function update(req, res, next) {
         const {
           productPrice: unitPrice,
           productAmount: qty,
+          productDeliveryOption: deliveryOption,
           productType,
           ...restParams
         } = products[index];
-        if (restParams.hasDeskTop && !restParams.topSketchUrl)
-          restParams.topSketchUrl = `${protocol}://${host}/${await drawDeskTop(
-            restParams
-          )}`;
+        if (restParams.hasDeskTop && !restParams.topSketchUrl) {
+          const tmp = new Date(quotation.createdAt);
+          const quotationNum = `Q-${
+            quotation.Seller.prefix
+          }${tmp.getFullYear()}${tmp.getMonth()}${tmp.getDate()}${(
+            '000' + quotation.quotationNum
+          ).substr(-3)}`;
+          restParams.topSketchUrl = `${protocol}://${host}/${await drawDeskTop({
+            quotationNum,
+            ...restParams,
+          })}`;
+        }
         await quotation.addDeskStock(stock, {
           through: {
             unitPrice,
             qty,
+            deliveryOption,
             ...restParams,
           },
         });
@@ -174,6 +197,7 @@ async function update(req, res, next) {
           through: {
             unitPrice: products[index].productPrice,
             qty: products[index].productAmount,
+            deliveryOption: products[index].productDeliveryOption,
           },
         });
       }

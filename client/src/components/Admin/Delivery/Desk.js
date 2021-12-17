@@ -22,8 +22,8 @@ import DataGrid from 'components/Common/DataGrid';
 
 const columns = [
   {
-    id: 'deliveryDate',
-    label: 'Delivery Date',
+    id: 'proDeliveryDate',
+    label: 'Proposed Delivery Date',
     sx: { paddingLeft: '10px', minWidth: 120 },
   },
   { id: 'orderDate', label: 'Order Date', sx: { minWidth: 100 } },

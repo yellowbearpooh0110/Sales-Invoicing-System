@@ -48,7 +48,9 @@ async function initialize() {
     sequelize
   );
 
-  db.ChairStock.belongsToMany(db.SalesOrder, { through: db.ChairToOrder });
+  db.ChairStock.belongsToMany(db.SalesOrder, {
+    through: { model: db.ChairToOrder, as: 'ChairToOrder', unique: true },
+  });
   db.SalesOrder.belongsToMany(db.ChairStock, { through: db.ChairToOrder });
   db.ChairStock.hasMany(db.ChairToOrder);
   db.ChairToOrder.belongsTo(db.ChairStock);

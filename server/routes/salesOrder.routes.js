@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const Joi = require('joi');
-const Sequelize = require('sequelize');
 
 const admin = require('server/middleware/admin');
 const salesman = require('server/middleware/salesman');
@@ -48,6 +47,8 @@ function createSchema(req, res, next) {
     }),
     discount: Joi.number().min(0).required(),
     discountType: Joi.number().integer().min(0).required(),
+    surcharge: Joi.number().min(0).required(),
+    surchargeType: Joi.number().integer().min(0).required(),
   });
   validateRequest(req, next, schema);
 }

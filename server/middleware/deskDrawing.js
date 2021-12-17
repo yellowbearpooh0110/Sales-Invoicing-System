@@ -8,6 +8,10 @@ module.exports = {
 function drawDeskTop(params) {
   return new Promise((resolve, reject) => {
     var {
+      invoiceNum,
+      quotationNum,
+      topMaterial,
+      topColor,
       topLength,
       topWidth,
       topThickness,
@@ -46,7 +50,15 @@ function drawDeskTop(params) {
           ctx.translate(1050, 590);
           ctx.rotate((26 * Math.PI) / 180);
           ctx.fillText(`${topRoundedCorners}-R${topCornerRadius}`, 0, 0);
+          ctx.restore();
         }
+        ctx.textAlign = 'right';
+        ctx.font = "30pt 'Microsoft Sans Serif'";
+        invoiceNum && ctx.fillText(`InvoiceNum: ${invoiceNum}`, 950, 450);
+        quotationNum &&
+          ctx.fillText(`Quotation Num: ${quotationNum}`, 950, 450);
+        topMaterial && ctx.fillText(`Material: ${topMaterial}`, 950, 500);
+        topColor && ctx.fillText(`Color: ${topColor}`, 950, 550);
         const uniquePrefix = Date.now();
         PImage.encodePNGToStream(
           img,

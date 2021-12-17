@@ -38,6 +38,8 @@ function createSchema(req, res, next) {
     validTil: Joi.number().integer().min(0).required(),
     discount: Joi.number().min(0).required(),
     discountType: Joi.number().integer().min(0).required(),
+    surcharge: Joi.number().min(0).required(),
+    surchargeType: Joi.number().integer().min(0).required(),
   });
   validateRequest(req, next, schema);
 }

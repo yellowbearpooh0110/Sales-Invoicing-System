@@ -80,6 +80,10 @@ const columns = [
     label: 'Discount',
   },
   {
+    id: 'surcharge',
+    label: 'SurCharge',
+  },
+  {
     id: 'products',
     label: 'Products',
   },
@@ -329,6 +333,8 @@ export default connect(mapStateToProps)((props) => {
               isPreOrder,
               discount,
               discountType,
+              surcharge,
+              surchargeType,
               createdAt,
               timeLine,
               paid,
@@ -354,6 +360,7 @@ export default connect(mapStateToProps)((props) => {
               return createdTime.toISOString().split('T')[0];
             })(),
             discount: `${discount}${discountType ? ' HKD' : '%'}`,
+            surcharge: `${surcharge}${surchargeType ? ' HKD' : '%'}`,
             clientAddress: [district, street, block, floor, unit].join(', '),
             isPreOrder:
               (!orders[index].ChairStocks.length ||
@@ -624,6 +631,7 @@ export default connect(mapStateToProps)((props) => {
                   <ProductPriceAmount
                     unitPrice={`${item.ChairToOrder.unitPrice} HKD`}
                     amount={`Amount: ${item.ChairToOrder.qty}`}
+                    deliveryOption={`${item.ChairToOrder.deliveryOption}`}
                   />
                   <Button
                     variant="contained"
@@ -654,10 +662,21 @@ export default connect(mapStateToProps)((props) => {
                         value={item.ChairToOrder.id}
                       />
                       <TextField
-                        name="deliveryDate"
+                        name="proDeliveryDate"
                         type="date"
-                        label="Preferred Delivery Date"
-                        defaultValue={item.ChairToOrder.deliveryDate}
+                        label="Proposed Delivery Date"
+                        defaultValue={item.ChairToOrder.proDeliveryDate}
+                        InputLabelProps={{ shrink: true }}
+                        sx={{
+                          flexBasis: '100%',
+                          my: '5px',
+                        }}
+                      />
+                      <TextField
+                        name="estDeliveryDate"
+                        type="date"
+                        label="Est. Delivery Date"
+                        defaultValue={item.ChairToOrder.estDeliveryDate}
                         InputLabelProps={{ shrink: true }}
                         sx={{
                           flexBasis: '100%',
@@ -718,6 +737,7 @@ export default connect(mapStateToProps)((props) => {
                   <ProductPriceAmount
                     unitPrice={`${item.DeskToOrder.unitPrice} HKD`}
                     amount={`Amount: ${item.DeskToOrder.qty}`}
+                    deliveryOption={`${item.DeskToOrder.deliveryOption}`}
                   />
                   <Button
                     variant="contained"
@@ -748,10 +768,21 @@ export default connect(mapStateToProps)((props) => {
                         value={item.DeskToOrder.id}
                       />
                       <TextField
-                        name="deliveryDate"
+                        name="proDeliveryDate"
                         type="date"
-                        label="Preferred Delivery Date"
-                        defaultValue={item.DeskToOrder.deliveryDate}
+                        label="Proposed Delivery Date"
+                        defaultValue={item.DeskToOrder.proDeliveryDate}
+                        InputLabelProps={{ shrink: true }}
+                        sx={{
+                          flexBasis: '100%',
+                          my: '5px',
+                        }}
+                      />
+                      <TextField
+                        name="estDeliveryDate"
+                        type="date"
+                        label="Est. Delivery Date"
+                        defaultValue={item.DeskToOrder.estDeliveryDate}
                         InputLabelProps={{ shrink: true }}
                         sx={{
                           flexBasis: '100%',
@@ -798,6 +829,7 @@ export default connect(mapStateToProps)((props) => {
                   <ProductPriceAmount
                     unitPrice={`${item.AccessoryToOrder.unitPrice} HKD`}
                     amount={`Amount: ${item.AccessoryToOrder.qty}`}
+                    deliveryOption={`${item.AccessoryToOrder.deliveryOption}`}
                   />
                   <Button
                     variant="contained"
@@ -828,10 +860,21 @@ export default connect(mapStateToProps)((props) => {
                         value={item.AccessoryToOrder.id}
                       />
                       <TextField
-                        name="deliveryDate"
+                        name="proDeliveryDate"
                         type="date"
-                        label="Preferred Delivery Date"
-                        defaultValue={item.AccessoryToOrder.deliveryDate}
+                        label="Proposed Delivery Date"
+                        defaultValue={item.AccessoryToOrder.proDeliveryDate}
+                        InputLabelProps={{ shrink: true }}
+                        sx={{
+                          flexBasis: '100%',
+                          my: '5px',
+                        }}
+                      />
+                      <TextField
+                        name="estDeliveryDate"
+                        type="date"
+                        label="Est. Delivery Date"
+                        defaultValue={item.AccessoryToOrder.estDeliveryDate}
                         InputLabelProps={{ shrink: true }}
                         sx={{
                           flexBasis: '100%',
@@ -884,14 +927,16 @@ export default connect(mapStateToProps)((props) => {
               event.preventDefault();
               const chairToOrders = chairDeliveries.current.map((item) => ({
                 id: item.id.value,
-                deliveryDate: item.deliveryDate.value || null,
+                proDeliveryDate: item.proDeliveryDate.value || null,
+                estDeliveryDate: item.estDeliveryDate.value || null,
                 from: item.from.value || null,
                 to: item.to.value || null,
                 delivered: item.delivered.checked,
               }));
               const deskToOrders = deskDeliveries.current.map((item) => ({
                 id: item.id.value,
-                deliveryDate: item.deliveryDate.value || null,
+                proDeliveryDate: item.proDeliveryDate.value || null,
+                estDeliveryDate: item.estDeliveryDate.value || null,
                 from: item.from.value || null,
                 to: item.to.value || null,
                 delivered: item.delivered.checked,
@@ -899,7 +944,8 @@ export default connect(mapStateToProps)((props) => {
               const accessoryToOrders = accessoryDeliveries.current.map(
                 (item) => ({
                   id: item.id.value,
-                  deliveryDate: item.deliveryDate.value || null,
+                  proDeliveryDate: item.proDeliveryDate.value || null,
+                  estDeliveryDate: item.estDeliveryDate.value || null,
                   from: item.from.value || null,
                   to: item.to.value || null,
                   delivered: item.delivered.checked,

@@ -29,15 +29,22 @@ const Edit = (props) => {
         productDetail: restProps,
         productPrice: ChairToOrder.unitPrice,
         productAmount: ChairToOrder.qty,
+        productDeliveryOption: ChairToOrder.deliveryOption,
       }))
         .concat(
           DeskStocks.map(({ DeskToOrder, ...restProps }) => {
-            const { unitPrice, qty, ...deskTopProps } = DeskToOrder;
+            const {
+              unitPrice,
+              qty,
+              deliveryOption,
+              ...deskTopProps
+            } = DeskToOrder;
             return {
               productType: 'desk',
               productDetail: restProps,
               productPrice: unitPrice,
               productAmount: qty,
+              productDeliveryOption: deliveryOption,
               ...deskTopProps,
             };
           })
@@ -48,6 +55,7 @@ const Edit = (props) => {
             productDetail: restProps,
             productPrice: AccessoryToOrder.unitPrice,
             productAmount: AccessoryToOrder.qty,
+            productDeliveryOption: AccessoryToOrder.deliveryOption,
           }))
         )}
       {...props}

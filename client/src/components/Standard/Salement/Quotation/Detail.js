@@ -14,6 +14,7 @@ import {
   FormControl,
   FormControlLabel,
   IconButton,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Paper,
@@ -615,6 +616,7 @@ export default connect(mapStateToProps)((props) => {
                     <ProductPriceAmount
                       unitPrice={`${item.productPrice} HKD`}
                       amount={`Amount: ${item.productAmount}`}
+                      deliveryOption={`${item.productDeliveryOption}`}
                     />
                   </ProductListItem>
                 ))}
@@ -703,7 +705,7 @@ export default connect(mapStateToProps)((props) => {
                     ) => ({
                       thumbnail: (
                         <a
-                          href="javascript:void();"
+                          href="/"
                           onClick={(e) => {
                             e.preventDefault();
                             Swal.fire({
@@ -843,7 +845,7 @@ export default connect(mapStateToProps)((props) => {
                     ) => ({
                       thumbnail: (
                         <a
-                          href="javascript:void();"
+                          href="/"
                           onClick={(e) => {
                             e.preventDefault();
                             Swal.fire({
@@ -966,7 +968,7 @@ export default connect(mapStateToProps)((props) => {
                     ) => ({
                       thumbnail: (
                         <a
-                          href="javascript:void();"
+                          href="/"
                           onClick={(e) => {
                             e.preventDefault();
                             Swal.fire({
@@ -1112,6 +1114,13 @@ export default connect(mapStateToProps)((props) => {
                   0
                 ),
                 discountType: paymentData.get('discountType'),
+                surcharge: Math.max(
+                  paymentData.get('surchargeType') > 0
+                    ? paymentData.get('surcharge')
+                    : Math.min(paymentData.get('surcharge'), 100),
+                  0
+                ),
+                surchargeType: paymentData.get('surchargeType'),
               })
               .then(() => {
                 // handle success
@@ -1159,6 +1168,13 @@ export default connect(mapStateToProps)((props) => {
                   0
                 ),
                 discountType: paymentData.get('discountType'),
+                surcharge: Math.max(
+                  paymentData.get('surchargeType') > 0
+                    ? paymentData.get('surcharge')
+                    : Math.min(paymentData.get('surcharge'), 100),
+                  0
+                ),
+                surchargeType: paymentData.get('surchargeType'),
               })
               .then(() => {
                 // handle success
@@ -1250,6 +1266,37 @@ export default connect(mapStateToProps)((props) => {
             <MenuItem value={0}>%</MenuItem>
             <MenuItem value={1}>HKD</MenuItem>
           </Select>
+          <TextField
+            sx={{
+              flexBasis: ['58%', '68%'],
+              minWidth: ['58%', '68%'],
+              alignItems: 'baseline',
+              mt: '10px',
+              mb: 0,
+            }}
+            label="Surcharge"
+            type="number"
+            name="surcharge"
+            inputProps={{
+              min: 0,
+            }}
+            defaultValue={initialClient.surcharge}
+            fullWidth
+          />
+          <Select
+            sx={{
+              flexBasis: ['40%', '30%'],
+              minWidth: ['40%', '30%'],
+              alignItems: 'baseline',
+              mt: '10px',
+              mb: 0,
+            }}
+            name="surchargeType"
+            defaultValue={initialClient.surchargeType}
+          >
+            <MenuItem value={0}>%</MenuItem>
+            <MenuItem value={1}>HKD</MenuItem>
+          </Select>
         </Paper>
         <Button
           sx={{ marginTop: '10px' }}
@@ -1273,6 +1320,7 @@ export default connect(mapStateToProps)((props) => {
           component: 'form',
           onSubmit: (e) => {
             e.preventDefault();
+            const data = new FormData(e.currentTarget);
             setAddOpen(false);
             if (
               cart.find(
@@ -1294,6 +1342,7 @@ export default connect(mapStateToProps)((props) => {
                 productType,
                 productDetail,
                 productAmount,
+                productDeliveryOption: data.get('deliveryOption'),
                 productPrice: e.currentTarget.unitPrice.value,
               })
             );
@@ -1302,24 +1351,18 @@ export default connect(mapStateToProps)((props) => {
       >
         <DialogTitle>Price and Amount</DialogTitle>
         <DialogContent sx={{ textAlign: 'center' }}>
-          <FormControlLabel
-            sx={{
-              width: '200px',
-              alignItems: 'baseline',
-              m: 0,
+          <TextField
+            label="Unit Price"
+            type="number"
+            name="unitPrice"
+            // inputProps={{ readOnly: true }}
+            value={productPrice}
+            fullWidth
+            sx={{ width: '200px' }}
+            InputProps={{
+              readOnly: true,
+              endAdornment: <InputAdornment position="end">HKD</InputAdornment>,
             }}
-            control={
-              <TextField
-                label="Unit Price"
-                type="number"
-                name="unitPrice"
-                inputProps={{ readOnly: true }}
-                value={productPrice}
-                fullWidth
-                sx={{ m: '10px 5px 0 0' }}
-              />
-            }
-            label="HKD"
           />
           <Box
             sx={{
@@ -1328,7 +1371,7 @@ export default connect(mapStateToProps)((props) => {
               width: '200px',
               border: '1px solid #0000003b',
               borderRadius: '4px',
-              mt: '10px',
+              my: '10px',
               mx: 'auto',
               p: '5px 3px',
             }}
@@ -1356,6 +1399,27 @@ export default connect(mapStateToProps)((props) => {
               <AddIcon />
             </IconButton>
           </Box>
+          <FormControl sx={{ width: 200 }}>
+            <InputLabel id="delivery-options-select-label">
+              Delivery Options
+            </InputLabel>
+            <Select
+              labelId="delivery-options-select-label"
+              id="delivery-options-select"
+              name="deliveryOption"
+              defaultValue="Delivery Included"
+              label="Delivery Options"
+            >
+              <MenuItem value="Delivery Included">Delivery Included</MenuItem>
+              <MenuItem value="Delivery and installation included">
+                Delivery and installation included
+              </MenuItem>
+              <MenuItem value="Remote Area Surcharge">
+                Remote Area Surcharge
+              </MenuItem>
+              <MenuItem value="Stairs Surcharge">Stairs Surcharge</MenuItem>
+            </Select>
+          </FormControl>
         </DialogContent>
         <DialogActions>
           <Button
@@ -1414,6 +1478,7 @@ export default connect(mapStateToProps)((props) => {
                 productType,
                 productDetail,
                 productAmount,
+                productDeliveryOption: data.get('deliveryOption'),
                 productPrice: Boolean(data.get('hasDeskTop'))
                   ? Number(data.get('deskTotalPrice'))
                   : Number(data.get('deskLegPrice')),
@@ -1437,25 +1502,16 @@ export default connect(mapStateToProps)((props) => {
       >
         <DialogTitle>Price and Amount</DialogTitle>
         <DialogContent sx={{ textAlign: 'center' }}>
-          <FormControlLabel
-            sx={{
-              width: '200px',
-              alignItems: 'baseline',
-              m: 0,
-              visibility: hasDeskTop ? 'hidden' : 'visible',
+          <TextField
+            label="Desk Leg Price"
+            type="number"
+            name="deskLegPrice"
+            value={productPrice}
+            sx={{ width: 200, visibility: hasDeskTop ? 'hidden' : 'visible' }}
+            InputProps={{
+              readOnly: true,
+              endAdornment: <InputAdornment position="end">HKD</InputAdornment>,
             }}
-            control={
-              <TextField
-                label="Desk Leg Price"
-                type="number"
-                name="deskLegPrice"
-                inputProps={{ readOnly: true }}
-                value={productPrice}
-                fullWidth
-                sx={{ m: '10px 5px 0 0' }}
-              />
-            }
-            label="HKD"
           />
           <Divider sx={{ my: '10px' }} />
           <Box display="flex" flexWrap="wrap" justifyContent="space-between">
@@ -1663,25 +1719,19 @@ export default connect(mapStateToProps)((props) => {
                   />
                 );
             })}
-            <FormControlLabel
-              sx={{
-                width: '200px',
-                alignItems: 'baseline',
-                m: '0 auto',
+            <TextField
+              label="Desk Total Price"
+              type="number"
+              name="deskTotalPrice"
+              value={productPrice}
+              sx={{ flexBasis: 200, minWidth: 200, mx: 'auto' }}
+              disabled={!hasDeskTop}
+              InputProps={{
+                readOnly: true,
+                endAdornment: (
+                  <InputAdornment position="end">HKD</InputAdornment>
+                ),
               }}
-              control={
-                <TextField
-                  label="Desk Total Price"
-                  type="number"
-                  name="deskTotalPrice"
-                  inputProps={{ min: 0 }}
-                  defaultValue={1000}
-                  fullWidth
-                  sx={{ m: '10px 5px 0 0' }}
-                  disabled={!hasDeskTop}
-                />
-              }
-              label="HKD"
             />
           </Box>
           <Divider sx={{ my: '10px' }} />
@@ -1720,6 +1770,27 @@ export default connect(mapStateToProps)((props) => {
               <AddIcon />
             </IconButton>
           </Box>
+          <FormControl sx={{ width: 200 }}>
+            <InputLabel id="desk-delivery-options-select-label">
+              Delivery Options
+            </InputLabel>
+            <Select
+              labelId="desk-delivery-options-select-label"
+              id="desk-delivery-options-select"
+              name="deliveryOption"
+              defaultValue="Delivery Included"
+              label="Delivery Options"
+            >
+              <MenuItem value="Delivery Included">Delivery Included</MenuItem>
+              <MenuItem value="Delivery and installation included">
+                Delivery and installation included
+              </MenuItem>
+              <MenuItem value="Remote Area Surcharge">
+                Remote Area Surcharge
+              </MenuItem>
+              <MenuItem value="Stairs Surcharge">Stairs Surcharge</MenuItem>
+            </Select>
+          </FormControl>
         </DialogContent>
         <DialogActions>
           <Button
