@@ -83,5 +83,7 @@ function model(sequelize) {
     },
   };
 
-  return sequelize.define('DeskStock', attributes);
+  return sequelize.define('DeskStock', attributes, {
+    tableName: 'DeskStock',
+  });
 }

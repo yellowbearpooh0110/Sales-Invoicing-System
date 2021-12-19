@@ -93,5 +93,7 @@ function model(sequelize) {
     },
   };
 
-  return sequelize.define('ChairStock', attributes);
+  return sequelize.define('ChairStock', attributes, {
+    tableName: 'ChairStock',
+  });
 }

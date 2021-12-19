@@ -58,5 +58,7 @@ function model(sequelize) {
     },
   };
 
-  return sequelize.define('AccessoryStock', attributes);
+  return sequelize.define('AccessoryStock', attributes, {
+    tableName: 'AccessoryStock',
+  });
 }

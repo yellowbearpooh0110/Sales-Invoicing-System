@@ -54,5 +54,7 @@ function model(sequelize) {
     },
   };
 
-  return sequelize.define('AccessoryToOrder', attributes);
+  return sequelize.define('AccessoryToOrder', attributes, {
+    tableName: 'AccessoryToOrder',
+  });
 }

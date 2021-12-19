@@ -119,5 +119,7 @@ function model(sequelize) {
     },
   };
 
-  return sequelize.define('DeskToOrder', attributes);
+  return sequelize.define('DeskToOrder', attributes, {
+    tableName: 'DeskToOrder',
+  });
 }

@@ -82,5 +82,7 @@ function model(sequelize) {
     },
   };
 
-  return sequelize.define('DeskToQuotation', attributes);
+  return sequelize.define('DeskToQuotation', attributes, {
+    tableName: 'DeskToQuotation',
+  });
 }

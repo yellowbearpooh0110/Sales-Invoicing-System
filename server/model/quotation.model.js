@@ -83,5 +83,7 @@ function model(sequelize) {
     },
   };
 
-  return sequelize.define('Quotation', attributes);
+  return sequelize.define('Quotation', attributes, {
+    tableName: 'Quotation',
+  });
 }

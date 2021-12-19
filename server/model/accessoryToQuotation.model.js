@@ -27,5 +27,7 @@ function model(sequelize) {
     },
   };
 
-  return sequelize.define('AccessoryToQuotation', attributes);
+  return sequelize.define('AccessoryToQuotation', attributes, {
+    tableName: 'AccessoryToQuotation',
+  });
 }

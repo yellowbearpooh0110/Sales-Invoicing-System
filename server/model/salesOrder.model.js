@@ -91,5 +91,7 @@ function model(sequelize) {
     },
   };
 
-  return sequelize.define('SalesOrder', attributes);
+  return sequelize.define('SalesOrder', attributes, {
+    tableName: 'SalesOrder',
+  });
 }

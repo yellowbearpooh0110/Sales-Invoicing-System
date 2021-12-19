@@ -59,5 +59,7 @@ function model(sequelize) {
     },
   };
 
-  return sequelize.define('ChairToOrder', attributes);
+  return sequelize.define('ChairToOrder', attributes, {
+    tableName: 'ChairToOrder',
+  });
 }

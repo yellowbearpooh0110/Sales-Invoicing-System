@@ -27,5 +27,7 @@ function model(sequelize) {
     },
   };
 
-  return sequelize.define('ChairToQuotation', attributes);
+  return sequelize.define('ChairToQuotation', attributes, {
+    tableName: 'ChairToQuotation',
+  });
 }
