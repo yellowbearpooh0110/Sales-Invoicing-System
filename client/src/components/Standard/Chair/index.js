@@ -1,1 +1,1 @@
-export { default as ChairOrder } from './Order';
+export { default as ChairStock } from './Stock';

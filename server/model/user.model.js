@@ -35,5 +35,7 @@ function model(sequelize) {
     },
   };
 
-  return sequelize.define('User', attributes, options);
+  return sequelize.define('User', attributes, options, {
+    tableName: 'User',
+  });
 }

@@ -9,6 +9,9 @@ const bodyParser = require('body-parser');
 const errorHandler = require('server/middleware/error-handler');
 require('server/whatsapp/main.js');
 
+const authorize = require('server/middleware/authorize');
+const uploadController = require('server/controller/upload.controller');
+
 global.db = require('server/helper/db');
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -16,20 +19,24 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // api routes
-router.use('/chairBrand', require('server/routes/chairbrand.routes'));
-router.use('/chairModel', require('server/routes/chairmodel.routes'));
-router.use('/chairStock', require('server/routes/chairstock.routes'));
-router.use('/chairOrder', require('server/routes/chairorder.routes'));
-router.use('/deskModel', require('server/routes/deskmodel.routes'));
-router.use('/deskStock', require('server/routes/deskstock.routes'));
-router.use('/deskOrder', require('server/routes/deskorder.routes'));
-router.use('/productColor', require('server/routes/productcolor.routes'));
+router.post('/upload', authorize(), uploadController.upload);
+router.use('/chairStock', require('server/routes/chairStock.routes'));
+router.use('/deskStock', require('server/routes/deskStock.routes'));
+router.use('/accessoryStock', require('server/routes/accessoryStock.routes'));
+router.use('/salesOrder', require('server/routes/salesOrder.routes'));
+router.use('/delivery', require('server/routes/delivery.routes'));
+router.use('/quotation', require('server/routes/quotation.routes'));
 router.use('/user', require('server/routes/user.routes'));
 router.use('/email', require('server/routes/email.routes'));
 router.use('/whatsapp', require('server/routes/whatsapp.routes'));
 app.use('/api', router);
 
 app.use('/uploads', express.static(path.join(__dirname, 'server', 'uploads')));
+app.use('/images', express.static(path.join(__dirname, 'server', 'images')));
+app.use(
+  '/deliveryPDFs',
+  express.static(path.join(__dirname, 'server', 'uploads', 'deliveryPDFs'))
+);
 app.use(express.static(path.join(__dirname, 'client', 'build')));
 app.use('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));

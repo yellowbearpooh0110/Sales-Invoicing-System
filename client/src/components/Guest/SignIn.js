@@ -74,11 +74,7 @@ export default connect(mapStateToProps, { login })((props) => {
           alignItems: 'center',
         }}
       >
-        <img
-          src={LogoTitile}
-          style={{ maxWidth: '100%' }}
-          alt="Ergoseating"
-        ></img>
+        <img src={LogoTitile} style={{ maxWidth: '100%' }} alt="Ergoseating" />
         <Avatar sx={{ m: 2, bgcolor: 'secondary.main' }}>
           <LockOutlinedIcon />
         </Avatar>

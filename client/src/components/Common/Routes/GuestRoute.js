@@ -10,9 +10,9 @@ const GuestRoute = ({ component: Component, auth, ...rest }) => (
       auth.isLoggedIn === false ? (
         <Component {...props} />
       ) : auth.isAdmin === true ? (
-        <Redirect to="/admin" />
+        <Redirect to="/admin/order" />
       ) : (
-        <Redirect to="/user" />
+        <Redirect to="/user/order" />
       )
     }
   />

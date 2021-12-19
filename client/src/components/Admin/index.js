@@ -4,8 +4,7 @@ import { connect } from 'react-redux';
 import { Box } from '@mui/material';
 import {
   BookOnline as BookOnlineIcon,
-  BlurOn as BlurOnIcon,
-  ColorLens as ColorLensIcon,
+  DeliveryDining as DeliveryDiningIcon,
   PeopleAlt as PeopleAltIcon,
   Storefront as StorefrontIcon,
 } from '@mui/icons-material';
@@ -14,10 +13,21 @@ import Swal from 'sweetalert2';
 import AppHeader from 'components/Common/AppHeader';
 import { CollapsedSidebar, FixedSidebar } from 'components/Common/Sidebar';
 import { logout } from 'services/auth.service';
-import Users from './Users';
-import { ChairBrand, ChairModel, ChairOrder, ChairStock } from './Chair';
-import { DeskModel, DeskOrder, DeskStock } from './Desk';
-import Color from './Color';
+import User from './User';
+import { ChairStock } from './Chair';
+import { DeskStock } from './Desk';
+import { AccessoryStock } from './Accessory';
+import {
+  SalesOrderCreate,
+  SalesOrderEdit,
+  SalesOrderView,
+} from './Salement/SalesOrder';
+import {
+  QuotationCreate,
+  QuotationEdit,
+  QuotationView,
+} from './Salement/Quotation';
+import { ChairDelivery, DeskDelivery } from './Delivery';
 
 function mapStateToProps(state) {
   const { auth } = state;
@@ -31,39 +41,54 @@ const menuLists = [
   {
     category: 'Chair',
     content: [
-      {
-        icon: <BlurOnIcon />,
-        label: 'Basic',
-        children: [
-          { path: '/admin/chair/brand', label: 'Brand' },
-          { path: '/admin/chair/model', label: 'Model' },
-        ],
-      },
-      { path: '/admin/chair/stock', icon: <StorefrontIcon />, label: 'Stock' },
-      { path: '/admin/chair/order', icon: <BookOnlineIcon />, label: 'Order' },
+      { to: '/admin/chair/stock', icon: <StorefrontIcon />, label: 'Stock' },
     ],
   },
   {
     category: 'Desk',
     content: [
-      {
-        icon: <BlurOnIcon />,
-        label: 'Basic',
-        children: [{ path: '/admin/desk/model', label: 'Model' }],
-      },
-      { path: '/admin/desk/stock', icon: <StorefrontIcon />, label: 'Stock' },
-      { path: '/admin/desk/order', icon: <BookOnlineIcon />, label: 'Order' },
+      { to: '/admin/desk/stock', icon: <StorefrontIcon />, label: 'Stock' },
     ],
   },
   {
-    category: 'Common',
+    category: 'Accessory',
     content: [
-      { path: '/admin/color', icon: <ColorLensIcon />, label: 'Color' },
+      {
+        to: '/admin/accessory/stock',
+        icon: <StorefrontIcon />,
+        label: 'Stock',
+      },
+    ],
+  },
+  {
+    category: 'Sales',
+    content: [
+      { to: '/admin/order', icon: <BookOnlineIcon />, label: 'Order' },
+      {
+        to: '/admin/quotation',
+        icon: <BookOnlineIcon />,
+        label: 'Quotation',
+      },
+    ],
+  },
+  {
+    category: 'Delivery',
+    content: [
+      {
+        to: '/admin/delivery/chair',
+        icon: <DeliveryDiningIcon />,
+        label: 'Chair',
+      },
+      {
+        to: '/admin/delivery/desk',
+        icon: <DeliveryDiningIcon />,
+        label: 'Desk',
+      },
     ],
   },
   {
     category: 'User',
-    content: [{ path: '/admin/user', icon: <PeopleAltIcon />, label: 'Users' }],
+    content: [{ to: '/admin/user', icon: <PeopleAltIcon />, label: 'Users' }],
   },
 ];
 
@@ -129,22 +154,51 @@ const Admin = (props) => {
           component="main"
           sx={{
             flexGrow: 1,
-            p: 3,
             width: { sm: `calc(100% - ${drawerWidth}px)` },
             maxWidth: '100%',
           }}
         >
           <Switch>
-            <Route path={`${path}/user`} component={Users} />
-            <Route path={`${path}/chair/brand`} exact component={ChairBrand} />
-            <Route path={`${path}/chair/model`} exact component={ChairModel} />
-            <Route path={`${path}/chair/order`} exact component={ChairOrder} />
+            <Route path={`${path}/user`} component={User} />
             <Route path={`${path}/chair/stock`} exact component={ChairStock} />
-
-            <Route path={`${path}/desk/model`} exact component={DeskModel} />
-            <Route path={`${path}/desk/order`} exact component={DeskOrder} />
             <Route path={`${path}/desk/stock`} exact component={DeskStock} />
-            <Route path={`${path}/color`} exact component={Color} />
+            <Route
+              path={`${path}/accessory/stock`}
+              exact
+              component={AccessoryStock}
+            />
+            <Route path={`${path}/order`} exact component={SalesOrderView} />
+            <Route
+              path={`${path}/order/create`}
+              exact
+              component={SalesOrderCreate}
+            />
+            <Route
+              path={`${path}/order/edit`}
+              exact
+              component={SalesOrderEdit}
+            />
+            <Route path={`${path}/quotation`} exact component={QuotationView} />
+            <Route
+              path={`${path}/quotation/create`}
+              exact
+              component={QuotationCreate}
+            />
+            <Route
+              path={`${path}/quotation/edit`}
+              exact
+              component={QuotationEdit}
+            />
+            <Route
+              path={`${path}/delivery/chair`}
+              exact
+              component={ChairDelivery}
+            />
+            <Route
+              path={`${path}/delivery/desk`}
+              exact
+              component={DeskDelivery}
+            />
           </Switch>
         </Box>
       </Box>

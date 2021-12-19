@@ -56,6 +56,7 @@ function registerSchema(req, res, next) {
     prefix: Joi.string().max(2).allow(''),
     lastName: Joi.string().required(),
     email: Joi.string().required(),
+    prefix: Joi.string().required(),
     type: Joi.string().valid('salesman', 'driver', ''),
     password: Joi.string().min(6).required(),
     avatarURL: Joi.string(),
@@ -95,6 +96,7 @@ function updateSchema(req, res, next) {
     firstName: Joi.string().empty(''),
     lastName: Joi.string().empty(''),
     username: Joi.string().empty(''),
+    prefix: Joi.string().empty(''),
     type: Joi.string().empty(''),
     password: Joi.string().min(6).empty(''),
     isActive: Joi.boolean(),
@@ -118,7 +120,7 @@ function _delete(req, res, next) {
 
 function _bulkDelete(req, res, next) {
   userController
-    .bulkDelete({ id: req.body.ids })
+    .bulkDelete({ id: req.body.ids.map((tmp) => tmp.toString()) })
     .then((affectedRows) =>
       res.json({
         message: `${affectedRows} User${

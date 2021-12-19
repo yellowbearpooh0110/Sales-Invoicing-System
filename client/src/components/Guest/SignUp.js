@@ -54,6 +54,7 @@ export default connect(mapStateToProps)((props) => {
         lastName: data.get('lastName'),
         email: data.get('email'),
         password: data.get('password'),
+        prefix: data.get('prefix'),
         type: data.get('type'),
       })
       .then(() => {
@@ -91,11 +92,7 @@ export default connect(mapStateToProps)((props) => {
           alignItems: 'center',
         }}
       >
-        <img
-          src={LogoTitile}
-          style={{ maxWidth: '100%' }}
-          alt="Ergoseating"
-        ></img>
+        <img src={LogoTitile} style={{ maxWidth: '100%' }} alt="Ergoseating" />
         <Avatar sx={{ m: 2, bgcolor: 'secondary.main' }}>
           <LockOutlinedIcon />
         </Avatar>
@@ -150,11 +147,20 @@ export default connect(mapStateToProps)((props) => {
                 name="password"
                 label="Password"
                 type="password"
-                id="password"
                 autoComplete="current-password"
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                fullWidth
+                name="prefix"
+                label="Prefix"
+                type="text"
+                autoComplete="prefix"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel id="user-type-select-label">Type</InputLabel>
                 <Select
@@ -163,8 +169,6 @@ export default connect(mapStateToProps)((props) => {
                   defaultValue=""
                   name="type"
                   label="Type"
-                  margin="dense"
-                  variant="outlined"
                 >
                   <MenuItem value="salesman">Salesman</MenuItem>
                   <MenuItem value="driver">Driver</MenuItem>
