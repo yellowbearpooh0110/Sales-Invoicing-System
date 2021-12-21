@@ -47,6 +47,7 @@ function drawDeskTop(params) {
         ctx.fillText(`${topWidth}`, 0, 0);
         ctx.restore();
         if (topRoundedCorners > 0) {
+          ctx.save();
           ctx.translate(1050, 590);
           ctx.rotate((26 * Math.PI) / 180);
           ctx.fillText(`${topRoundedCorners}-R${topCornerRadius}`, 0, 0);

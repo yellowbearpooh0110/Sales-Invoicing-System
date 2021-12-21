@@ -1211,6 +1211,7 @@ export default connect(mapStateToProps)((props) => {
             name="paymentTerms"
             size="small"
             sx={{ flexBasis: '100%', minWidth: '100%' }}
+            defaultValue={initialClient.paymentTerms}
             label="Payment Terms"
           />
           <FormControlLabel
@@ -1342,7 +1343,16 @@ export default connect(mapStateToProps)((props) => {
                 productType,
                 productDetail,
                 productAmount,
-                productDeliveryOption: data.get('deliveryOption'),
+                productDeliveryOption: JSON.stringify(
+                  [
+                    'Delivery Included',
+                    'Delivery and installation included',
+                    'Remote Area Surcharge',
+                    'Stairs Surcharge',
+                  ].filter((item, index) =>
+                    Boolean(data.get(`deliveryOption_${index}`))
+                  )
+                ),
                 productPrice: e.currentTarget.unitPrice.value,
               })
             );
@@ -1399,27 +1409,34 @@ export default connect(mapStateToProps)((props) => {
               <AddIcon />
             </IconButton>
           </Box>
-          <FormControl sx={{ width: 200 }}>
-            <InputLabel id="delivery-options-select-label">
-              Delivery Options
-            </InputLabel>
-            <Select
-              labelId="delivery-options-select-label"
-              id="delivery-options-select"
-              name="deliveryOption"
-              defaultValue="Delivery Included"
-              label="Delivery Options"
-            >
-              <MenuItem value="Delivery Included">Delivery Included</MenuItem>
-              <MenuItem value="Delivery and installation included">
-                Delivery and installation included
-              </MenuItem>
-              <MenuItem value="Remote Area Surcharge">
-                Remote Area Surcharge
-              </MenuItem>
-              <MenuItem value="Stairs Surcharge">Stairs Surcharge</MenuItem>
-            </Select>
-          </FormControl>
+          <FormControlLabel
+            sx={{ display: 'block' }}
+            control={
+              <Checkbox name="deliveryOption_0" defaultChecked={false} />
+            }
+            label="Delivery Included"
+          />
+          <FormControlLabel
+            sx={{ display: 'block' }}
+            control={
+              <Checkbox name="deliveryOption_1" defaultChecked={false} />
+            }
+            label="Delivery and installation included"
+          />
+          <FormControlLabel
+            sx={{ display: 'block' }}
+            control={
+              <Checkbox name="deliveryOption_2" defaultChecked={false} />
+            }
+            label="Remote Area Surcharge"
+          />
+          <FormControlLabel
+            sx={{ display: 'block' }}
+            control={
+              <Checkbox name="deliveryOption_3" defaultChecked={false} />
+            }
+            label="Stairs Surcharge"
+          />
         </DialogContent>
         <DialogActions>
           <Button
@@ -1478,7 +1495,16 @@ export default connect(mapStateToProps)((props) => {
                 productType,
                 productDetail,
                 productAmount,
-                productDeliveryOption: data.get('deliveryOption'),
+                productDeliveryOption: JSON.stringify(
+                  [
+                    'Delivery Included',
+                    'Delivery and installation included',
+                    'Remote Area Surcharge',
+                    'Stairs Surcharge',
+                  ].filter((item, index) =>
+                    Boolean(data.get(`deliveryOption_${index}`))
+                  )
+                ),
                 productPrice: Boolean(data.get('hasDeskTop'))
                   ? Number(data.get('deskTotalPrice'))
                   : Number(data.get('deskLegPrice')),
@@ -1727,7 +1753,6 @@ export default connect(mapStateToProps)((props) => {
               sx={{ flexBasis: 200, minWidth: 200, mx: 'auto' }}
               disabled={!hasDeskTop}
               InputProps={{
-                readOnly: true,
                 endAdornment: (
                   <InputAdornment position="end">HKD</InputAdornment>
                 ),
@@ -1770,27 +1795,34 @@ export default connect(mapStateToProps)((props) => {
               <AddIcon />
             </IconButton>
           </Box>
-          <FormControl sx={{ width: 200 }}>
-            <InputLabel id="desk-delivery-options-select-label">
-              Delivery Options
-            </InputLabel>
-            <Select
-              labelId="desk-delivery-options-select-label"
-              id="desk-delivery-options-select"
-              name="deliveryOption"
-              defaultValue="Delivery Included"
-              label="Delivery Options"
-            >
-              <MenuItem value="Delivery Included">Delivery Included</MenuItem>
-              <MenuItem value="Delivery and installation included">
-                Delivery and installation included
-              </MenuItem>
-              <MenuItem value="Remote Area Surcharge">
-                Remote Area Surcharge
-              </MenuItem>
-              <MenuItem value="Stairs Surcharge">Stairs Surcharge</MenuItem>
-            </Select>
-          </FormControl>
+          <FormControlLabel
+            sx={{ display: 'block' }}
+            control={
+              <Checkbox name="deliveryOption_0" defaultChecked={false} />
+            }
+            label="Delivery Included"
+          />
+          <FormControlLabel
+            sx={{ display: 'block' }}
+            control={
+              <Checkbox name="deliveryOption_1" defaultChecked={false} />
+            }
+            label="Delivery and installation included"
+          />
+          <FormControlLabel
+            sx={{ display: 'block' }}
+            control={
+              <Checkbox name="deliveryOption_2" defaultChecked={false} />
+            }
+            label="Remote Area Surcharge"
+          />
+          <FormControlLabel
+            sx={{ display: 'block' }}
+            control={
+              <Checkbox name="deliveryOption_3" defaultChecked={false} />
+            }
+            label="Stairs Surcharge"
+          />
         </DialogContent>
         <DialogActions>
           <Button

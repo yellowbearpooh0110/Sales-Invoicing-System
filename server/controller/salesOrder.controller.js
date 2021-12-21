@@ -64,7 +64,9 @@ async function create(req, res, next) {
     const { products, ...restParams } = req.body;
     restParams.sellerId = req.user.id;
 
-    const salesOrder = await db.SalesOrder.create({ ...restParams });
+    const id = (await db.SalesOrder.create({ ...restParams })).id;
+
+    const salesOrder = await getSalesOrder(id);
 
     for (var index = 0; index < products.length; index++) {
       if (products[index].productType === 'chair') {
@@ -117,7 +119,6 @@ async function create(req, res, next) {
           productType,
           ...restParams
         } = products[index];
-
         if (restParams.hasDeskTop && !restParams.topSketchUrl) {
           const invoiceNum = `I-${salesOrder.Seller.prefix}${new Date(
             salesOrder.createdAt
@@ -273,7 +274,6 @@ async function update(req, res, next) {
             ...restParams,
           })}`;
         }
-        console.log(restParams);
         await salesOrder.addDeskStock(stock, {
           through: {
             unitPrice,
