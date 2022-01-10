@@ -93,6 +93,7 @@ function getById(req, res, next) {
 
 function updateSchema(req, res, next) {
   const schema = Joi.object({
+    email: Joi.string().email().empty(''),
     firstName: Joi.string().empty(''),
     lastName: Joi.string().empty(''),
     username: Joi.string().empty(''),

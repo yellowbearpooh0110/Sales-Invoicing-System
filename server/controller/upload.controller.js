@@ -31,7 +31,6 @@ async function uploadCreate(req, res, next) {
     if (req.file === undefined) next(new Error('Please upload a file!'));
     const workbook = XLSX.readFile(req.file.src);
     let worksheets = {};
-    // console.log();
     for (const sheetName of workbook.SheetNames) {
       worksheets[sheetName] = XLSX.utils.sheet_to_json(
         workbook.Sheets[sheetName]
@@ -67,8 +66,8 @@ async function uploadCreate(req, res, next) {
       }))
     );
     res.json({ chairs: chairStocks.length, desks: deskStocks.length });
-  } catch (err) {
-    console.log(err);
-    next(err);
+  } catch (error) {
+    console.log(error);
+    next(error);
   }
 }

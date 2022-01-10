@@ -570,8 +570,8 @@ const Stock = connect(mapStateToProps)((props) => {
                 );
                 getStocks();
               }
-            } catch (err) {
-              console.log(err);
+            } catch (error) {
+              console.log(error);
             } finally {
               e.target.value = null;
             }

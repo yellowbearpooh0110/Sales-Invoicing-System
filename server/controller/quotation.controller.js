@@ -62,7 +62,9 @@ async function create(req, res, next) {
     const { products, ...restParams } = req.body;
     restParams.sellerId = req.user.id;
 
-    const quotation = await db.Quotation.create({ ...restParams });
+    const id = (await db.Quotation.create({ ...restParams })).id;
+
+    const quotation = await getQuotation(id);
 
     for (var index = 0; index < products.length; index++) {
       if (products[index].productType === 'chair') {

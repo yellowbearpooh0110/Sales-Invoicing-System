@@ -1,3 +1,5 @@
+const Sequelize = require('sequelize');
+
 const chairStockController = require('./chairStock.controller');
 const deskStockController = require('./deskStock.controller');
 const accessoryStockController = require('./accessoryStock.controller');
@@ -63,6 +65,9 @@ async function create(req, res, next) {
     const protocol = req.protocol;
     const { products, ...restParams } = req.body;
     restParams.sellerId = req.user.id;
+
+    // const currentYear = new Date().getFullYear();
+    // if (!(await findSalesOrderByYear(currentYear))) restParams.invoiceNum = 1;
 
     const id = (await db.SalesOrder.create({ ...restParams })).id;
 
@@ -478,4 +483,17 @@ async function getSalesOrder(id) {
   });
   if (!salesOrder) throw 'ChairStock was not found.';
   return salesOrder;
+}
+
+async function findSalesOrderByYear(year) {
+  const salesOrder = await db.SalesOrder.findOne({
+    where: {
+      createdAt: {
+        [Sequelize.Op.lt]: `${year + 1}-01-01`,
+        [Sequelize.Op.gte]: `${year}-01-01`,
+      },
+    },
+  });
+  if (!salesOrder) return false;
+  return true;
 }

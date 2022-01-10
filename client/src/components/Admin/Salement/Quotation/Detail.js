@@ -475,7 +475,6 @@ export default connect(mapStateToProps)((props) => {
               type: 'email',
               defaultValue: initialClient.email,
               width: '48%',
-              required: true,
             },
             {
               name: 'district',

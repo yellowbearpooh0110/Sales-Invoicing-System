@@ -162,7 +162,9 @@ export default connect(mapStateToProps)((props) => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
-                <InputLabel id="user-type-select-label">Type</InputLabel>
+                <InputLabel id="user-type-select-label" size="small">
+                  Type
+                </InputLabel>
                 <Select
                   labelId="user-type-select-label"
                   id="user-type-select"

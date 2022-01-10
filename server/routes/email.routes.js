@@ -39,8 +39,6 @@ router.post('/send', authorize(), sendSchema, (req, res, next) => {
       console.log(error);
       next(error);
     }
-    console.log('email is send');
-    console.log(info);
     res.send(info);
   });
 });
