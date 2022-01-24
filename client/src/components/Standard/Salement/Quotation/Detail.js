@@ -1402,7 +1402,7 @@ export default connect(mapStateToProps)((props) => {
             <IconButton
               onClick={(e) => {
                 e.preventDefault();
-                setProductAmount(Math.min(productAmount + 1, 9));
+                setProductAmount(Math.min(productAmount + 1, 99));
               }}
             >
               <AddIcon />
@@ -1788,7 +1788,7 @@ export default connect(mapStateToProps)((props) => {
             <IconButton
               onClick={(e) => {
                 e.preventDefault();
-                setProductAmount(Math.min(productAmount + 1, 9));
+                setProductAmount(Math.min(productAmount + 1, 99));
               }}
             >
               <AddIcon />
