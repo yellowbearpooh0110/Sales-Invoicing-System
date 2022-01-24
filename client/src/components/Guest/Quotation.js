@@ -16,7 +16,7 @@ import axios from 'axios';
 import { Warning as WarningIcon } from '@mui/icons-material';
 import { Backdrop, CircularProgress, Typography } from '@mui/material';
 
-import microsoft_sans_serif from 'fonts/Microsoft Sans Serif.ttf';
+import microsoft_yahei from 'fonts/chinese.msyh.ttf';
 import logoTitle from 'images/logo_title.png';
 
 const styles = StyleSheet.create({
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 35,
   },
   header: {
-    fontFamily: 'Microsoft Sans Serif',
+    fontFamily: 'Microsoft Yahei',
     width: '100%',
     fontSize: 8,
     lineHeight: 1.2,
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontFamily: 'Microsoft Sans Serif',
+    fontFamily: 'Microsoft Yahei',
     fontSize: 15,
     marginBottom: 10,
     textTransform: 'uppercase',
@@ -49,14 +49,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   companyInfo: {
-    fontFamily: 'Microsoft Sans Serif',
+    fontFamily: 'Microsoft Yahei',
     fontSize: 8,
     width: 200,
     paddingRight: 10,
     lineHeight: 1.2,
   },
   clientInfo: {
-    fontFamily: 'Microsoft Sans Serif',
+    fontFamily: 'Microsoft Yahei',
     fontSize: 8,
     width: 200,
     paddingRight: 10,
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     margin: 12,
     fontWeight: 100,
-    fontFamily: 'Microsoft Sans Serif',
+    fontFamily: 'Microsoft Yahei',
   },
   text: {
     margin: 12,
@@ -97,8 +97,8 @@ const styles = StyleSheet.create({
 });
 
 Font.register({
-  family: 'Microsoft Sans Serif',
-  src: microsoft_sans_serif,
+  family: 'Microsoft Yahei',
+  src: microsoft_yahei,
 });
 
 const monthNames = [
