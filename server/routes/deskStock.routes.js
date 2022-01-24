@@ -11,7 +11,7 @@ const uploadController = require('server/controller/upload.controller');
 router.post('/create', admin(), createSchema, create);
 router.post('/upload', admin(), uploadController.upload);
 router.get('/', authorize(), getAll);
-router.get('/features', authorize(), getFeatures);
+router.get('/features', authorize(), deskStockController.getFeatures);
 router.get('/:id', authorize(), getById);
 router.put('/:id', admin(), createSchema, update);
 router.delete('/:id', admin(), _delete);
@@ -63,13 +63,6 @@ function create(req, res, next) {
 function getAll(req, res, next) {
   deskStockController
     .getAll()
-    .then((deskStocks) => res.json(deskStocks))
-    .catch(next);
-}
-
-function getFeatures(req, res, next) {
-  deskStockController
-    .getFeatures()
     .then((deskStocks) => res.json(deskStocks))
     .catch(next);
 }

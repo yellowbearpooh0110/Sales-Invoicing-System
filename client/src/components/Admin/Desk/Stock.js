@@ -111,6 +111,7 @@ const Stock = connect(mapStateToProps)((props) => {
 
   const [features, setFeatures] = useState([]);
 
+  const [filterSupplier, setFilterSupplier] = useState(null);
   const [filterModel, setFilterModel] = useState(null);
   const [filterColor, setFilterColor] = useState(null);
 
@@ -539,6 +540,19 @@ const Stock = connect(mapStateToProps)((props) => {
       >
         {[
           {
+            label: 'Supplier',
+            value: filterSupplier,
+            onChange: (event, value) => {
+              event.preventDefault();
+              setFilterSupplier(value);
+              setFilterModel(null);
+              setFilterColor(null);
+            },
+            options: features
+              .map((item) => item.supplierCode)
+              .filter((c, index, chars) => chars.indexOf(c) === index),
+          },
+          {
             label: 'Model',
             value: filterModel,
             onChange: (event, value) => {
@@ -547,6 +561,10 @@ const Stock = connect(mapStateToProps)((props) => {
               setFilterColor(null);
             },
             options: features
+              .filter(
+                (item) =>
+                  !filterSupplier || item.supplierCode === filterSupplier
+              )
               .map((item) => item.model)
               .filter((c, index, chars) => chars.indexOf(c) === index),
           },
@@ -558,7 +576,11 @@ const Stock = connect(mapStateToProps)((props) => {
               setFilterColor(value);
             },
             options: features
-              .filter((item) => !filterModel || item.model === filterModel)
+              .filter(
+                (item) =>
+                  (!filterSupplier || item.supplierCode === filterSupplier) &&
+                  (!filterModel || item.model === filterModel)
+              )
               .map((item) => item.color)
               .filter((c, index, chars) => chars.indexOf(c) === index),
           },
@@ -636,6 +658,7 @@ const Stock = connect(mapStateToProps)((props) => {
           )
           .filter(
             (item) =>
+              (!filterSupplier || item.supplierCode === filterSupplier) &&
               (!filterModel || item.model === filterModel) &&
               (!filterColor || item.color === filterColor)
           )}

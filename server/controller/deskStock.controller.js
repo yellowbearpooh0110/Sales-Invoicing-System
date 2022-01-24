@@ -10,11 +10,16 @@ module.exports = {
   bulkDelete: _bulkDelete,
 };
 
-async function getFeatures() {
-  return await db.DeskStock.findAll({
-    attributes: ['model', 'color'],
-    group: ['model', 'color'],
-  });
+async function getFeatures(req, res, next) {
+  try {
+    const features = await db.DeskStock.findAll({
+      attributes: ['supplierCode', 'model', 'color'],
+      group: ['supplierCode', 'model', 'color'],
+    });
+    res.json(features);
+  } catch (err) {
+    next(err);
+  }
 }
 
 async function getAll(where) {
