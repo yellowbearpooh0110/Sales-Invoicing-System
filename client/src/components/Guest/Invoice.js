@@ -672,13 +672,15 @@ export default connect(mapStateToProps)((props) => {
             <View key={index} style={{ flexDirection: 'row', margin: '5px 0' }}>
               <View
                 style={{
-                  width: 12,
-                  height: 12,
-                  margin: '2px 5px 0 0',
-                  border: '2px solid #888888',
-                  borderRadius: 2,
+                  width: 2,
+                  fontSize: 10,
+                  lineHeight: 1.2,
+                  margin: '0 10px 0 0',
+                  color: '#888888',
                 }}
-              />
+              >
+                <Text>•</Text>
+              </View>
               <View
                 style={{
                   flexGrow: 1,
@@ -723,11 +725,14 @@ export default connect(mapStateToProps)((props) => {
               <View
                 style={{
                   width: 2,
-                  height: 2,
-                  margin: '5px 10px 0 0',
-                  backgroundColor: '#888888',
+                  fontSize: 10,
+                  lineHeight: 1.2,
+                  margin: '0 10px 0 0',
+                  color: '#888888',
                 }}
-              />
+              >
+                <Text>•</Text>
+              </View>
               <View
                 style={{
                   flexGrow: 1,
