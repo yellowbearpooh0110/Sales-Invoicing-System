@@ -13,7 +13,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   ChairToOrder.init(
     {
-      id: DataTypes.UUID,
+      stockId: DataTypes.UUID,
+      orderId: DataTypes.UUID,
       unitPrice: DataTypes.FLOAT,
       qty: DataTypes.INTEGER,
       deliveryOption: DataTypes.STRING,
