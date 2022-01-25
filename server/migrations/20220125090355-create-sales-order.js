@@ -124,6 +124,15 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
       },
+      sellerId: {
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE',
+        references: {
+          key: 'id',
+          model: 'Users',
+        },
+        type: Sequelize.UUID,
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {

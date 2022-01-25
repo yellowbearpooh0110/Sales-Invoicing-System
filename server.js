@@ -12,7 +12,7 @@ require('server/whatsapp/main.js');
 const authorize = require('server/middleware/authorize');
 const uploadController = require('server/controller/upload.controller');
 
-global.db = require('server/helper/db');
+global.db = require('server/models');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());

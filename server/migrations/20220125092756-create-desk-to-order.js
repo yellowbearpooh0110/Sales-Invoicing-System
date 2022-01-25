@@ -50,7 +50,7 @@ module.exports = {
       topCornerRadius: {
         allowNull: false,
         defaultValue: 0,
-        type: DataTypes.FLOAT,
+        type: Sequelize.FLOAT,
       },
       topHoleCount: {
         allowNull: false,
