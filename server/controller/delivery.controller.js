@@ -54,7 +54,7 @@ async function getChairDelivery(req, res, next) {
         'from',
         'to',
         'delivered',
-        'signUrl',
+        'signURL',
       ],
       where: {
         proDeliveryDate: {
@@ -88,7 +88,7 @@ async function getChairDelivery(req, res, next) {
 
     res.json(
       result.map((item) => {
-        const { SalesOrder, signUrl, ...restProps } = item.get();
+        const { SalesOrder, signURL, ...restProps } = item.get();
         return {
           clientName: SalesOrder.name,
           clientPhone: SalesOrder.phone,
@@ -150,7 +150,7 @@ async function getDeskDelivery(req, res, next) {
         'from',
         'to',
         'delivered',
-        'signUrl',
+        'signURL',
       ],
       where: {
         proDeliveryDate: {
@@ -184,7 +184,7 @@ async function getDeskDelivery(req, res, next) {
 
     res.json(
       result.map((item) => {
-        const { SalesOrder, signUrl, ...restProps } = item.get();
+        const { SalesOrder, signURL, ...restProps } = item.get();
         return {
           clientName: SalesOrder.name,
           clientPhone: SalesOrder.phone,
@@ -215,7 +215,7 @@ async function getAccessoryDelivery(req, res, next) {
         'from',
         'to',
         'delivered',
-        'signUrl',
+        'signURL',
       ],
       where: {
         proDeliveryDate: {
@@ -249,7 +249,7 @@ async function getAccessoryDelivery(req, res, next) {
 
     res.json(
       result.map((item) => {
-        const { SalesOrder, signUrl, ...restProps } = item.get();
+        const { SalesOrder, signURL, ...restProps } = item.get();
         return {
           clientName: SalesOrder.name,
           clientPhone: SalesOrder.phone,
@@ -282,7 +282,7 @@ async function signDelivery(req, res, next) {
     const dirpath = 'uploads/signature';
     const filepath = `${dirpath}/${Date.now()}.png`;
     fs.writeFileSync(`server/${filepath}`, signature, 'base64');
-    Object.assign(delivery, { signUrl: filepath, delivered: true });
+    Object.assign(delivery, { signURL: filepath, delivered: true });
     await delivery.save();
 
     await _generateDeliveryPDF(type, delivery.id, `${protocol}://${host}`);
@@ -421,7 +421,7 @@ async function _generateDeliveryPDF(type, id, host) {
       client,
       delivery,
       product,
-      signUrl: deliveryInfo.signUrl ? `${host}/${deliveryInfo.signUrl}` : null,
+      signURL: deliveryInfo.signURL ? `${host}/${deliveryInfo.signURL}` : null,
     },
     path: `server/uploads/deliveryPDFs/${type}-${deliveryInfo.id}.pdf`,
     type: '',

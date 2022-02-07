@@ -17,7 +17,6 @@ module.exports = (sequelize, DataTypes) => {
   }
   DeskStock.init(
     {
-      id: DataTypes.UUID,
       supplierCode: DataTypes.STRING,
       model: DataTypes.STRING,
       color: DataTypes.STRING,

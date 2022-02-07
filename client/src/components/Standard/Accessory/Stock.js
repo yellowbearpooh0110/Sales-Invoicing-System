@@ -136,7 +136,7 @@ const Stock = connect(mapStateToProps)((props) => {
         rows={stocks
           .map(
             (
-              { thumbnailUrl, shipmentDate, arrivalDate, ...restProps },
+              { thumbnailURL, shipmentDate, arrivalDate, ...restProps },
               index
             ) => ({
               thumbnail: (
@@ -145,7 +145,7 @@ const Stock = connect(mapStateToProps)((props) => {
                   onClick={(e) => {
                     e.preventDefault();
                     Swal.fire({
-                      html: `<img alt="" width="400px" src="${thumbnailUrl}" />`,
+                      html: `<img alt="" width="400px" src="${thumbnailURL}" />`,
                       showCloseButton: true,
                       showConfirmButton: false,
                       allowOutsideClick: false,
@@ -155,7 +155,7 @@ const Stock = connect(mapStateToProps)((props) => {
                   <img
                     alt=""
                     width="80px"
-                    src={thumbnailUrl}
+                    src={thumbnailURL}
                     style={{ marginTop: '5px' }}
                   />
                 </a>

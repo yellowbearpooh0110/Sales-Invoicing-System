@@ -269,7 +269,7 @@ const Stock = connect(mapStateToProps)((props) => {
   const handleSave = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    let thumbnailUrl = '';
+    let thumbnailURL = '';
     if (data.get('thumbnail').name) {
       const uploadData = new FormData();
       uploadData.append('file', data.get('thumbnail'));
@@ -279,7 +279,7 @@ const Stock = connect(mapStateToProps)((props) => {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
         });
-        thumbnailUrl = response.data.url;
+        thumbnailURL = response.data.url;
       } catch (err) {}
     }
     axios
@@ -291,7 +291,7 @@ const Stock = connect(mapStateToProps)((props) => {
         feetSize: data.get('feetSize'),
         beamSize: data.get('beamSize'),
         remark: data.get('remark'),
-        thumbnailUrl,
+        thumbnailURL,
         unitPrice: data.get('unitPrice'),
         shipmentDate: data.get('shipmentDate') || null,
         arrivalDate: data.get('arrivalDate') || null,
@@ -324,7 +324,7 @@ const Stock = connect(mapStateToProps)((props) => {
   const handleCreate = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    let thumbnailUrl = '';
+    let thumbnailURL = '';
     if (data.get('thumbnail').name) {
       const uploadData = new FormData();
       uploadData.append('file', data.get('thumbnail'));
@@ -334,7 +334,7 @@ const Stock = connect(mapStateToProps)((props) => {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
         });
-        thumbnailUrl = response.data.url;
+        thumbnailURL = response.data.url;
       } catch (err) {}
     }
     axios
@@ -346,7 +346,7 @@ const Stock = connect(mapStateToProps)((props) => {
         feetSize: data.get('feetSize'),
         beamSize: data.get('beamSize'),
         remark: data.get('remark'),
-        thumbnailUrl,
+        thumbnailURL,
         unitPrice: data.get('unitPrice'),
         shipmentDate: data.get('shipmentDate') || null,
         arrivalDate: data.get('arrivalDate') || null,
@@ -601,7 +601,7 @@ const Stock = connect(mapStateToProps)((props) => {
               {
                 withHeadrest,
                 withAdArmrest,
-                thumbnailUrl,
+                thumbnailURL,
                 shipmentDate,
                 arrivalDate,
                 ...restProps
@@ -614,7 +614,7 @@ const Stock = connect(mapStateToProps)((props) => {
                   onClick={(e) => {
                     e.preventDefault();
                     Swal.fire({
-                      html: `<img alt="" width="400px" src="${thumbnailUrl}" />`,
+                      html: `<img alt="" width="400px" src="${thumbnailURL}" />`,
                       showCloseButton: true,
                       showConfirmButton: false,
                       allowOutsideClick: false,
@@ -624,7 +624,7 @@ const Stock = connect(mapStateToProps)((props) => {
                   <img
                     alt=""
                     width="80px"
-                    src={thumbnailUrl}
+                    src={thumbnailURL}
                     style={{ marginTop: '5px' }}
                   />
                 </a>

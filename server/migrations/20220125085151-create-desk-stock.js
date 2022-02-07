@@ -69,7 +69,6 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       shipmentDate: {
-        allowNull: false,
         type: Sequelize.DATEONLY,
       },
       arrivalDate: {

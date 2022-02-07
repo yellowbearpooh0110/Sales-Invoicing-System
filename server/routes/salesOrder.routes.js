@@ -141,7 +141,7 @@ function signDelivery(req, res, next) {
     .then((salesOrder) => {
       res.json({
         success: true,
-        url: `${protocol}://${host}/${salesOrder.signUrl}`,
+        url: `${protocol}://${host}/${salesOrder.signURL}`,
       });
     })
     .catch(next);

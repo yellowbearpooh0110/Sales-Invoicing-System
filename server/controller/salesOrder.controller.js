@@ -124,11 +124,11 @@ async function create(req, res, next) {
           productType,
           ...restParams
         } = products[index];
-        if (restParams.hasDeskTop && !restParams.topSketchUrl) {
+        if (restParams.hasDeskTop && !restParams.topSketchURL) {
           const invoiceNum = `I-${salesOrder.Seller.prefix}${new Date(
             salesOrder.createdAt
           ).getFullYear()}-${('000' + salesOrder.invoiceNum).substr(-3)}`;
-          restParams.topSketchUrl = `${protocol}://${host}/${await drawDeskTop({
+          restParams.topSketchURL = `${protocol}://${host}/${await drawDeskTop({
             invoiceNum,
             ...restParams,
           })}`;
@@ -270,11 +270,11 @@ async function update(req, res, next) {
           productType,
           ...restParams
         } = products[index];
-        if (restParams.hasDeskTop && !restParams.topSketchUrl) {
+        if (restParams.hasDeskTop && !restParams.topSketchURL) {
           const invoiceNum = `I-${salesOrder.Seller.prefix}${new Date(
             salesOrder.createdAt
           ).getFullYear()}-${('000' + salesOrder.invoiceNum).substr(-3)}`;
-          restParams.topSketchUrl = `${protocol}://${host}/${await drawDeskTop({
+          restParams.topSketchURL = `${protocol}://${host}/${await drawDeskTop({
             invoiceNum,
             ...restParams,
           })}`;
@@ -439,7 +439,7 @@ async function signDelivery(id, signature) {
   const dirpath = 'uploads/signature';
   const filepath = `${dirpath}/${Date.now()}.png`;
   fs.writeFileSync(`server/${filepath}`, signature, 'base64');
-  Object.assign(salesOrder, { signUrl: filepath, finished: true });
+  Object.assign(salesOrder, { signURL: filepath, finished: true });
   await salesOrder.save();
   return salesOrder.get();
 }

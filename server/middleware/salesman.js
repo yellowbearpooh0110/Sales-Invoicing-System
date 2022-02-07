@@ -1,5 +1,5 @@
 const jwt = require('express-jwt');
-const db = require('server/helper/db');
+// const db = require('server/helper/db');
 
 module.exports = salesman;
 

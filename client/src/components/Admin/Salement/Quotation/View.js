@@ -630,7 +630,7 @@ export default connect(mapStateToProps)((props) => {
                         <span>
                           {`${item.DeskToQuotation.topMaterial}, ${item.DeskToQuotation.topColor}, ${item.DeskToQuotation.topLength}x${item.DeskToQuotation.topWidth}x${item.DeskToQuotation.topThickness}, ${item.DeskToQuotation.topRoundedCorners}-R${item.DeskToQuotation.topCornerRadius}, ${item.DeskToQuotation.topHoleCount}-${item.DeskToQuotation.topHoleType} `}
                           <a
-                            href={item.DeskToQuotation.topSketchUrl}
+                            href={item.DeskToQuotation.topSketchURL}
                             target="_blank"
                           >
                             Sketch

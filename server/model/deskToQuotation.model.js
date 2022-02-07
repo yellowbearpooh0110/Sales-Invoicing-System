@@ -60,7 +60,7 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: 'Rounded',
     },
-    topSketchUrl: {
+    topSketchURL: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: '',

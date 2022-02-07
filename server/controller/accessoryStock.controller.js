@@ -33,7 +33,7 @@ async function create(req, res, next) {
   try {
     const params = req.body;
     const {
-      thumbnailUrl,
+      thumbnailURL,
       balance,
       qty,
       shipmentDate,
@@ -66,7 +66,7 @@ async function create(req, res, next) {
 async function update(id, params) {
   const accessoryStock = await getAccessoryStock(id);
   const {
-    thumbnailUrl,
+    thumbnailURL,
     balance,
     qty,
     shipmentDate,

@@ -17,7 +17,6 @@ module.exports = (sequelize, DataTypes) => {
   }
   AccessoryStock.init(
     {
-      id: DataTypes.UUID,
       name: DataTypes.STRING,
       color: DataTypes.STRING,
       remark: DataTypes.STRING,

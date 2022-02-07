@@ -17,7 +17,6 @@ module.exports = (sequelize, DataTypes) => {
   }
   ChairStock.init(
     {
-      id: DataTypes.UUID,
       brand: DataTypes.STRING,
       model: DataTypes.STRING,
       frameColor: DataTypes.STRING,
@@ -34,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
       qty: DataTypes.INTEGER,
       shipmentDate: DataTypes.DATEONLY,
       arrivalDate: DataTypes.DATEONLY,
-      isRegsitered: DataTypes.BOOLEAN,
+      isRegistered: DataTypes.BOOLEAN,
     },
     {
       sequelize,

@@ -13,8 +13,6 @@ module.exports = (sequelize, DataTypes) => {
   }
   ChairToQuotation.init(
     {
-      stockId: DataTypes.UUID,
-      quotationId: DataTypes.UUID,
       unitPrice: DataTypes.FLOAT,
       qty: DataTypes.INTEGER,
       deliveryOption: DataTypes.STRING,

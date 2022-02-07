@@ -90,14 +90,14 @@ async function create(req, res, next) {
           ...restParams
         } = products[index];
 
-        if (restParams.hasDeskTop && !restParams.topSketchUrl) {
+        if (restParams.hasDeskTop && !restParams.topSketchURL) {
           const tmp = new Date(quotation.createdAt);
           const quotationNum = `Q-${
             quotation.Seller.prefix
           }${tmp.getFullYear()}${tmp.getMonth()}${tmp.getDate()}${(
             '000' + quotation.quotationNum
           ).substr(-3)}`;
-          restParams.topSketchUrl = `${protocol}://${host}/${await drawDeskTop({
+          restParams.topSketchURL = `${protocol}://${host}/${await drawDeskTop({
             quotationNum,
             ...restParams,
           })}`;
@@ -171,14 +171,14 @@ async function update(req, res, next) {
           productType,
           ...restParams
         } = products[index];
-        if (restParams.hasDeskTop && !restParams.topSketchUrl) {
+        if (restParams.hasDeskTop && !restParams.topSketchURL) {
           const tmp = new Date(quotation.createdAt);
           const quotationNum = `Q-${
             quotation.Seller.prefix
           }${tmp.getFullYear()}${tmp.getMonth()}${tmp.getDate()}${(
             '000' + quotation.quotationNum
           ).substr(-3)}`;
-          restParams.topSketchUrl = `${protocol}://${host}/${await drawDeskTop({
+          restParams.topSketchURL = `${protocol}://${host}/${await drawDeskTop({
             quotationNum,
             ...restParams,
           })}`;

@@ -722,7 +722,7 @@ export default connect(mapStateToProps)((props) => {
                         <span>
                           {`${item.DeskToOrder.topMaterial}, ${item.DeskToOrder.topColor}, ${item.DeskToOrder.topLength}x${item.DeskToOrder.topWidth}x${item.DeskToOrder.topThickness}, ${item.DeskToOrder.topRoundedCorners}-R${item.DeskToOrder.topCornerRadius}, ${item.DeskToOrder.topHoleCount}-${item.DeskToOrder.topHoleType} `}
                           <a
-                            href={item.DeskToOrder.topSketchUrl}
+                            href={item.DeskToOrder.topSketchURL}
                             target="_blank"
                           >
                             Sketch

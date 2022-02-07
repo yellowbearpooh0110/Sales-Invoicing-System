@@ -24,7 +24,7 @@ function createSchema(req, res, next) {
     name: Joi.string().allow('').required(),
     color: Joi.string().allow('').required(),
     remark: Joi.string().allow('').required(),
-    thumbnailUrl: Joi.string().empty(''),
+    thumbnailURL: Joi.string().empty(''),
     unitPrice: Joi.number().min(0).required(),
     balance: Joi.number().integer().min(0).required(),
     qty: Joi.number().integer().min(0).required(),

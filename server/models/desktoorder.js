@@ -13,8 +13,6 @@ module.exports = (sequelize, DataTypes) => {
   }
   DeskToOrder.init(
     {
-      stockId: DataTypes.UUID,
-      orderId: DataTypes.UUID,
       hasDeskTop: DataTypes.BOOLEAN,
       topMaterial: DataTypes.STRING,
       topColor: DataTypes.STRING,

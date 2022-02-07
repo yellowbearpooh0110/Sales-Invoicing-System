@@ -25,7 +25,7 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: '',
     },
-    thumbnailUrl: {
+    thumbnailURL: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: '',

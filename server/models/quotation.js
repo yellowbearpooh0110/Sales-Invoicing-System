@@ -22,7 +22,6 @@ module.exports = (sequelize, DataTypes) => {
   }
   Quotation.init(
     {
-      id: DataTypes.UUID,
       name: DataTypes.STRING,
       quotationNum: DataTypes.INTEGER,
       name: DataTypes.STRING,

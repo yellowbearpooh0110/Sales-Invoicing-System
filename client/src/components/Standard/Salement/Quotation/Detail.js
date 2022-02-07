@@ -693,7 +693,7 @@ export default connect(mapStateToProps)((props) => {
                   .map(
                     (
                       {
-                        thumbnailUrl,
+                        thumbnailURL,
                         withHeadrest,
                         withAdArmrest,
                         shipmentDate,
@@ -708,7 +708,7 @@ export default connect(mapStateToProps)((props) => {
                           onClick={(e) => {
                             e.preventDefault();
                             Swal.fire({
-                              html: `<img alt="" width="400px" src="${thumbnailUrl}" />`,
+                              html: `<img alt="" width="400px" src="${thumbnailURL}" />`,
                               showCloseButton: true,
                               showConfirmButton: false,
                               allowOutsideClick: false,
@@ -718,7 +718,7 @@ export default connect(mapStateToProps)((props) => {
                           <img
                             alt=""
                             width="80px"
-                            src={thumbnailUrl}
+                            src={thumbnailURL}
                             style={{ marginTop: '5px' }}
                           />
                         </a>
@@ -839,7 +839,7 @@ export default connect(mapStateToProps)((props) => {
                 rows={deskStocks
                   .map(
                     (
-                      { thumbnailUrl, shipmentDate, arrivalDate, ...restProps },
+                      { thumbnailURL, shipmentDate, arrivalDate, ...restProps },
                       index
                     ) => ({
                       thumbnail: (
@@ -848,7 +848,7 @@ export default connect(mapStateToProps)((props) => {
                           onClick={(e) => {
                             e.preventDefault();
                             Swal.fire({
-                              html: `<img alt="" width="400px" src="${thumbnailUrl}" />`,
+                              html: `<img alt="" width="400px" src="${thumbnailURL}" />`,
                               showCloseButton: true,
                               showConfirmButton: false,
                               allowOutsideClick: false,
@@ -858,7 +858,7 @@ export default connect(mapStateToProps)((props) => {
                           <img
                             alt=""
                             width="80px"
-                            src={thumbnailUrl}
+                            src={thumbnailURL}
                             style={{ marginTop: '5px' }}
                           />
                         </a>
@@ -962,7 +962,7 @@ export default connect(mapStateToProps)((props) => {
                 rows={accessoryStocks
                   .map(
                     (
-                      { thumbnailUrl, shipmentDate, arrivalDate, ...restProps },
+                      { thumbnailURL, shipmentDate, arrivalDate, ...restProps },
                       index
                     ) => ({
                       thumbnail: (
@@ -971,7 +971,7 @@ export default connect(mapStateToProps)((props) => {
                           onClick={(e) => {
                             e.preventDefault();
                             Swal.fire({
-                              html: `<img alt="" width="400px" src="${thumbnailUrl}" />`,
+                              html: `<img alt="" width="400px" src="${thumbnailURL}" />`,
                               showCloseButton: true,
                               showConfirmButton: false,
                               allowOutsideClick: false,
@@ -981,7 +981,7 @@ export default connect(mapStateToProps)((props) => {
                           <img
                             alt=""
                             width="80px"
-                            src={thumbnailUrl}
+                            src={thumbnailURL}
                             style={{ marginTop: '5px' }}
                           />
                         </a>
@@ -1458,7 +1458,7 @@ export default connect(mapStateToProps)((props) => {
           onSubmit: async (e) => {
             e.preventDefault();
             const data = new FormData(e.currentTarget);
-            let topSketchUrl = '';
+            let topSketchURL = '';
             if (data.get('topSketchImg') && data.get('topSketchImg').name) {
               const uploadData = new FormData();
               uploadData.append('file', data.get('topSketchImg'));
@@ -1468,7 +1468,7 @@ export default connect(mapStateToProps)((props) => {
                     'Content-Type': 'application/x-www-form-urlencoded',
                   },
                 });
-                topSketchUrl = response.data.url;
+                topSketchURL = response.data.url;
               } catch (err) {}
             }
             setDeskAddOpen(false);
@@ -1519,7 +1519,7 @@ export default connect(mapStateToProps)((props) => {
                 topHoleType: data.get('topHoleType') || '',
                 topHolePosition: data.get('topHolePosition') || '',
                 topRemark: data.get('topRemark') || '',
-                topSketchUrl: topSketchUrl,
+                topSketchURL: topSketchURL,
               })
             );
           },

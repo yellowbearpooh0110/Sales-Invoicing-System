@@ -36,7 +36,7 @@ async function getById(id) {
 
 async function create(params) {
   const {
-    thumbnailUrl,
+    thumbnailURL,
     balance,
     qty,
     shipmentDate,
@@ -65,7 +65,7 @@ async function create(params) {
 async function update(id, params) {
   const deskStock = await getDeskStock(id);
   const {
-    thumbnailUrl,
+    thumbnailURL,
     balance,
     qty,
     shipmentDate,
